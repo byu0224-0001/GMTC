@@ -1,0 +1,17 @@
+node_modules
+dist
+.venv
+.DS_Store
+*.log
+.env
+.env.local
+private-source/reports/
+private-source/**/*.pdf
+data/*.pdf
+*.pdf
+gpt-pack.txt
+tsconfig.tsbuildinfo
+__pycache__/
+*.pyc
+
+

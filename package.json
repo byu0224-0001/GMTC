@@ -1,0 +1,31 @@
+{
+  "name": "voca",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "extract": ".venv/bin/python scripts/extract_terms.py",
+    "validate": "python3 scripts/validate_content.py",
+    "editorial": "python3 scripts/fetch_editorial.py",
+    "editorial:fetch": "python3 scripts/fetch_editorial.py",
+    "editorial:draft": "python3 scripts/editorial_draft.py",
+    "editorial:validate": "python3 scripts/validate_content.py",
+    "editorial:publish": "python3 scripts/editorial_publish.py",
+    "reconcile": ".venv/bin/python scripts/reconcile_800.py"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.8.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.7.0",
+    "typescript": "^5.8.3",
+    "vite": "^7.1.2"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "fs-example-cpi",
+  "headline": "미국 소비자물가가 시장 예상보다 높게 나왔어요",
+  "sourceName": "BLS",
+  "sourceUrl": "https://www.bls.gov/",
+  "officialNotes": "학습용 예시 팩트시트입니다. 실제 수치를 넣기 전에는 이 파일을 복사해 확인된 숫자만 적습니다.",
+  "confirmedFacts": [
+    "소비자물가 상승률이 시장 예상치를 웃돌았다",
+    "근원물가도 같이 올랐는지는 이 시트에 적지 않았다"
+  ],
+  "confirmedNumbers": [],
+  "officialSourceUrls": ["https://www.bls.gov/"],
+  "primaryTermIds": ["소비자물가지수-cpi", "기준금리", "듀레이션"],
+  "supportTermIds": ["근원인플레이션율"],
+  "contentMode": "real_event"
+}

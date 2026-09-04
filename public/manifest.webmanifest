@@ -1,0 +1,14 @@
+{
+  "name": "금융문맹 탈출하기",
+  "short_name": "금맹탈출",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#101010",
+  "theme_color": "#101010",
+  "lang": "ko",
+  "description": "경제·투자 정보가 덜 막히도록, 짧게 학습합니다.",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

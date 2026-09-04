@@ -1,0 +1,144 @@
+{
+  "id": "bf-draft-소비자물가지수-cpi-20260903",
+  "kicker": "오늘의 이슈",
+  "minutes": 4,
+  "headline": "미국 소비자물가가 시장 예상보다 높게 나왔어요",
+  "subtitle": "확인된 사실만으로 개념을 연결합니다.",
+  "primaryTermIds": [
+    "소비자물가지수-cpi",
+    "기준금리",
+    "듀레이션"
+  ],
+  "supportTermIds": [
+    "근원인플레이션율"
+  ],
+  "learningObjectives": [
+    "소비자물가지수-cpi가 이 이슈에서 어떻게 쓰이는지 읽는다",
+    "기준금리가 이 이슈에서 어떻게 쓰이는지 읽는다",
+    "듀레이션가 이 이슈에서 어떻게 쓰이는지 읽는다"
+  ],
+  "contentMode": "real_event",
+  "sourceMode": "official",
+  "sourceRefs": [
+    {
+      "label": "BLS",
+      "url": "https://www.bls.gov/"
+    }
+  ],
+  "eventDate": null,
+  "reviewStatus": "draft",
+  "difficulty": "core",
+  "evergreen": false,
+  "blocks": [
+    {
+      "type": "p",
+      "text": "소비자물가 상승률이 시장 예상치를 웃돌았다"
+    },
+    {
+      "type": "p",
+      "text": "이 숫자만으로 금리 경로가 바뀌었다고 단정하지 않습니다. 함께 봐야 할 개념이 있습니다."
+    },
+    {
+      "type": "choice",
+      "depth": "term",
+      "question": "이때 알아두면 좋은 개념은 무엇일까요?",
+      "answerId": "소비자물가지수-cpi",
+      "choices": [
+        {
+          "id": "소비자물가지수-cpi",
+          "label": "소비자물가지수-cpi"
+        },
+        {
+          "id": "기준금리",
+          "label": "기준금리"
+        },
+        {
+          "id": "듀레이션",
+          "label": "듀레이션"
+        },
+        {
+          "id": "주가수익비율-per",
+          "label": "주가수익비율-per"
+        }
+      ],
+      "note": "팩트시트에 적힌 사실 범위 안에서만 해석합니다."
+    },
+    {
+      "type": "choice",
+      "depth": "cause",
+      "question": "확인된 사실로 가장 적절한 해석은 무엇일까요?",
+      "answerId": "fact",
+      "choices": [
+        {
+          "id": "fact",
+          "label": "팩트시트에 적힌 사실까지만 확인된 내용이다"
+        },
+        {
+          "id": "guess",
+          "label": "적히지 않은 다음 달 수치까지 확정된 것이다"
+        },
+        {
+          "id": "always",
+          "label": "한 지표면 금리 경로가 항상 바뀐다"
+        },
+        {
+          "id": "ignore",
+          "label": "관련 개념은 같이 볼 필요가 없다"
+        }
+      ],
+      "note": "확인되지 않은 숫자와 전망을 사실처럼 쓰지 않습니다."
+    },
+    {
+      "type": "p",
+      "text": "방금 본 개념은 이어지는 금리·가격 이야기에서도 같은 이름으로 나옵니다."
+    },
+    {
+      "type": "choice",
+      "depth": "next",
+      "question": "다음에 확인하면 좋은 것은 무엇일까요?",
+      "answerId": "more",
+      "choices": [
+        {
+          "id": "more",
+          "label": "팩트시트에 없는 숫자는 공식자료에서 따로 확인한다"
+        },
+        {
+          "id": "invent",
+          "label": "없는 숫자는 관례로 채워도 된다"
+        },
+        {
+          "id": "once",
+          "label": "헤드라인 한 줄이면 충분하다"
+        },
+        {
+          "id": "skip",
+          "label": "관련 개념은 다시 볼 필요가 없다"
+        }
+      ],
+      "note": "초안은 검수 전까지 사용자 앱에 나가지 않습니다."
+    },
+    {
+      "type": "causal",
+      "title": "한 번에 연결하면",
+      "chain": [
+        "소비자물가지수-cpi",
+        "기준금리",
+        "듀레이션",
+        "해석"
+      ]
+    },
+    {
+      "type": "concepts",
+      "ids": [
+        "소비자물가지수-cpi",
+        "기준금리",
+        "듀레이션"
+      ]
+    }
+  ],
+  "_editorial": {
+    "mock": true,
+    "factSheetId": "fs-example-cpi",
+    "generatedAt": "2026-09-03T20:31:25.886346+09:00"
+  }
+}
