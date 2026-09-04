@@ -27,6 +27,9 @@ export function addDays(key: string, days: number): string {
   return `${yy}-${mm}-${dd}`;
 }
 
+/** 출퇴근 파일럿: 맞혀도 1일, 그다음은 2일. Anki식 장기 간격은 쓰지 않는다. */
+export const MAX_INTERVAL_DAYS = 2;
+
 export function newCard(termId: string, now = new Date()): SrsCard {
   return {
     termId,
@@ -53,10 +56,7 @@ export function grade(card: SrsCard, label: GradeLabel, now = new Date()): SrsCa
     interval = 1;
   } else {
     repetitions += 1;
-    if (repetitions === 1) interval = 1;
-    else if (repetitions === 2) interval = 6;
-    else interval = Math.max(1, Math.round(interval * ease));
-    if (label === "hard") interval = Math.max(1, Math.ceil(interval * 1.0));
+    interval = repetitions === 1 ? 1 : MAX_INTERVAL_DAYS;
   }
   ease = ease + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02));
   ease = Math.max(1.3, ease);
@@ -76,10 +76,16 @@ export function grade(card: SrsCard, label: GradeLabel, now = new Date()): SrsCa
 export function dueLabel(days: number): string {
   if (days <= 0) return "다음 복습은 오늘입니다";
   if (days === 1) return "다음 복습은 내일입니다";
-  if (days < 7) return `다음 복습은 ${days}일 뒤입니다`;
-  if (days < 30) return `다음 복습은 약 ${Math.round(days / 7)}주 뒤입니다`;
-  if (days < 365) return `다음 복습은 약 ${Math.round(days / 30)}개월 뒤입니다`;
-  return `다음 복습은 약 ${Math.round(days / 365)}년 뒤입니다`;
+  return `다음 복습은 ${days}일 뒤입니다`;
+}
+
+/** 예전에 SM-2로 수개월까지 밀린 카드를 1~2일 안으로 당긴다. */
+export function clampCardSchedule(card: SrsCard, now = new Date()): SrsCard {
+  const interval = Math.min(Math.max(card.interval, card.repetitions >= 1 ? 1 : 0), MAX_INTERVAL_DAYS);
+  const remaining = daysUntil(card.dueAt, now);
+  if (remaining <= interval && card.interval === interval) return card;
+  const dueAt = remaining <= 0 ? card.dueAt : addDays(kstDateKey(now), interval || 1);
+  return { ...card, interval, dueAt };
 }
 
 export function daysUntil(dueAt: string, now = new Date()): number {

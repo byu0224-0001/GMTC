@@ -1,10 +1,10 @@
 import type { ProgressState, GradeLabel, BriefingAttempt, SrsCard } from "../types";
 import { REPORT_BOK_CANON, canonBokId } from "../content/reportLexicon";
-import { grade, kstDateKey, newCard } from "./srs";
+import { clampCardSchedule, grade, kstDateKey, newCard } from "./srs";
 
 export const STORAGE_KEY = "voca:progress:v2";
 const LEGACY_KEY = "voca:progress:v1";
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 function empty(): ProgressState {
   return {
@@ -36,10 +36,13 @@ export function loadProgress(): ProgressState {
     if (!raw) return empty();
     const parsed = JSON.parse(raw) as ProgressState & { version?: number; seenNewsIds?: string[] };
     const cards = parsed.cards && typeof parsed.cards === "object" ? parsed.cards : {};
-    return {
+    const migrated = Object.fromEntries(
+      Object.entries(migrateCanonCards(cards)).map(([id, card]) => [id, clampCardSchedule(card)]),
+    );
+    const next: ProgressState = {
       version: SCHEMA_VERSION,
       displayName: parsed.displayName || "학습자",
-      cards: migrateCanonCards(cards),
+      cards: migrated,
       contextStats: parsed.contextStats ?? {},
       seenContextIds: parsed.seenContextIds ?? parsed.seenNewsIds ?? [],
       streakDays: parsed.streakDays ?? 0,
@@ -47,6 +50,8 @@ export function loadProgress(): ProgressState {
       briefingAttempts: parsed.briefingAttempts ?? [],
       lastBriefingDate: parsed.lastBriefingDate ?? null,
     };
+    if (parsed.version !== SCHEMA_VERSION) saveProgress(next);
+    return next;
   } catch {
     return empty();
   }
@@ -148,7 +153,7 @@ export function resetProgress(): ProgressState {
 export function stats(state: ProgressState, coreIds: string[], now = new Date()) {
   const coreSet = new Set(coreIds);
   const coreCards = Object.values(state.cards).filter((c) => coreSet.has(c.termId));
-  const known = coreCards.filter((c) => c.interval >= 6 && c.repetitions >= 2).length;
+  const known = coreCards.filter((c) => c.repetitions >= 2).length;
   const due = coreCards.filter((c) => c.dueAt <= kstDateKey(now)).length;
   const ctx = Object.entries(state.contextStats)
     .filter(([id]) => !id.startsWith("bf-"))
