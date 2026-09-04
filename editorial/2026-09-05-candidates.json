@@ -1,0 +1,60 @@
+{
+  "generatedAt": "2026-09-05T08:11:10.983851+09:00",
+  "windowHours": 24,
+  "count": 2,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Federal Reserve Board announces termination of enforcement actions with United Texas Bank, Quontic Bank Acquisition Corp., and Quontic Bank Holdings Corp.",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260904a.htm",
+      "publishedAt": "2026-09-04T15:00:00+00:00",
+      "matchedTermIds": [
+        "은행인수어음-ba",
+        "환매조건부매매",
+        "기준금리"
+      ],
+      "termIds": [
+        "은행인수어음-ba",
+        "환매조건부매매",
+        "기준금리"
+      ],
+      "score": 11,
+      "fitness": "높음"
+    },
+    {
+      "id": "c2",
+      "title": "Philip R. Lane: Diversity at the European Central Bank",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260904~7b9257099b.en.pdf",
+      "publishedAt": "2026-09-04T09:10:00+00:00",
+      "matchedTermIds": [
+        "유럽연합-eu",
+        "은행인수어음-ba"
+      ],
+      "termIds": [
+        "유럽연합-eu",
+        "은행인수어음-ba"
+      ],
+      "score": 6,
+      "fitness": "중간"
+    }
+  ]
+}
