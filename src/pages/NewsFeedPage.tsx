@@ -64,7 +64,7 @@ export function ContextFeedPage({
           ))}
         </section>
 
-        <p className="notice">실제 기사나 리포트 원문을 옮기지 않았습니다.</p>
+        <p className="notice">실제 기사나 리포트 문장을 그대로 가져오지 않았습니다.</p>
       </div>
     </>
   );

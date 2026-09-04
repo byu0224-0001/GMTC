@@ -62,7 +62,7 @@ export const CONTRAST: Record<string, ContrastSpec> = {
     foilIds: ["국내총생산-gdp", "경상수지", "국제수지-bop"],
   },
   "기준금리": {
-    question: "한국은행이 시중 금리의 기준으로 쓰는 금리는?",
+    question: "한국은행이 시중 금리의 방향을 가리키려고 운용하는 정책금리는?",
     foilIds: ["명목금리", "가산금리", "만기수익률"],
   },
   "명목금리": {

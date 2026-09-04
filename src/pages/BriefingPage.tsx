@@ -123,9 +123,9 @@ export function BriefingReader({
       ))}
 
       <button className="btn btn-primary" onClick={finish}>
-        {allDone ? finishLabel : "나중에 이어가기"}
+        {allDone ? finishLabel : "나중에 이어서 하기"}
       </button>
-      <p className="notice">실제 기사나 리포트 원문을 옮기지 않았습니다.</p>
+      <p className="notice">실제 기사나 리포트 문장을 그대로 가져오지 않았습니다.</p>
     </div>
   );
 }

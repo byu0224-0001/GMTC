@@ -86,8 +86,9 @@ export function searchTerms(terms: Term[], q: string): Term[] {
 }
 
 export function displayTitle(term: Term): string {
-  const base = term.pairHeadwords.length > 1 ? term.pairHeadwords.join(" / ") : term.headword;
+  const base = term.headword;
   const abbr = term.abbr?.trim();
-  if (abbr && !base.includes(`(${abbr})`)) return `${base} (${abbr})`;
-  return base;
+  if (!abbr) return base;
+  if (base.includes(`(${abbr})`) || base.includes(abbr)) return base;
+  return `${base} (${abbr})`;
 }

@@ -52,7 +52,7 @@ export function LexiconPage() {
         <Link className="btn btn-primary" to="/learn/session" style={{ display: "grid", placeItems: "center" }}>
           오늘 학습하기
         </Link>
-        <p className="notice">증권사 리포트 원문을 그대로 옮기지 않았습니다.</p>
+        <p className="notice">증권사 리포트 문장을 그대로 가져오지 않았습니다.</p>
       </div>
     </>
   );

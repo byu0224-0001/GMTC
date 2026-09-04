@@ -12,12 +12,6 @@ import { lessonPool, todayQueue, type SessionStep } from "../lib/today";
 import { BriefingReader } from "./BriefingPage";
 import type { GradeLabel, Term } from "../types";
 
-const DRILL_LABEL = {
-  recall: "개념 확인",
-  cloze: "문장 속 용어",
-  contrast: "개념 구분",
-} as const;
-
 export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: TodayPlanFile }) {
   const nav = useNavigate();
   const [plan] = useState(() =>
@@ -189,7 +183,7 @@ export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: Tod
           <>
             <div className="card pad-lg">
               <div className="caption">
-                {step.kind === "first_recall" ? "방금 학습한 용어" : `${taxLabel ? `${taxLabel} · ` : ""}${DRILL_LABEL[drill.kind]}`}
+                {step.kind === "first_recall" ? "방금 학습한 용어" : taxLabel ? taxLabel : "복습"}
               </div>
               <p style={{ margin: "12px 0 0", lineHeight: 1.65 }}>{drill.prompt}</p>
             </div>
