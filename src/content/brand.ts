@@ -2,7 +2,7 @@
 export const APP_NAME = "금융문맹 탈출하기";
 /** 홈 화면 로고·아이콘·홈 화면 이름 */
 export const APP_SHORT_NAME = "금맹탈출";
-export const APP_TAGLINE = "경제·투자 정보가 덜 막히도록";
+export const APP_TAGLINE = "경제·투자 정보를 읽는 데 막힘이 없도록";
 
 export const SOURCE_DISCLAIMER =
-  "한국은행 경제금융용어를 학습 자료로 활용합니다. 투자 권유나 추천은 하지 않습니다.";
+  "한국은행 경제금융용어를 학습 자료로 활용하며, 투자 권유나 추천은 하지 않습니다.";

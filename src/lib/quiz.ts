@@ -94,7 +94,7 @@ function explanationNote(term: Term, prompt: string): string {
 export function makeFirstRecall(term: Term, pool: Term[], seed: number): DrillItem {
   const item = makeRecall(term, pool, seed);
   const base = (term.oneLiner || term.easyExplanation || term.shortDef).replace(/입니다\.?$/, "").replace(/\.$/, "");
-  const prompt = `${base}. 이 설명에 해당하는 용어는 무엇일까요?`;
+  const prompt = `${base}. 다음 설명에 맞는 용어를 고르세요.`;
   return {
     ...item,
     prompt,
