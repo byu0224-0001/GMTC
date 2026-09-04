@@ -18,11 +18,11 @@ export const CONTRAST: Record<string, ContrastSpec> = {
     foilIds: ["유동성", "인플레이션", "레버리지비율"],
   },
   "주가수익비율-per": {
-    question: "주가가 회사 이익의 몇 배인지 보는 숫자는?",
+    question: "주가가 회사 이익의 몇 배인지를 나타내는 지표는?",
     foilIds: ["주가순자산비율-pbr", "주당순이익-eps", "자기자본이익률-roe"],
   },
   "주가순자산비율-pbr": {
-    question: "주가가 장부 순자산의 몇 배인지 보는 숫자는?",
+    question: "주가가 장부 순자산의 몇 배인지를 나타내는 지표는?",
     foilIds: ["주가수익비율-per", "주당순이익-eps", "부채비율"],
   },
   "실업률": {
@@ -90,11 +90,11 @@ export const CONTRAST: Record<string, ContrastSpec> = {
     foilIds: ["총부채원리금상환비율-dsr", "총부채상환비율-dti", "부채비율"],
   },
   "총부채원리금상환비율-dsr": {
-    question: "버는 돈 대비 모든 대출 원리금을 보는 비율은?",
+    question: "버는 돈 대비 모든 대출의 원리금이 얼마인지를 나타내는 비율은?",
     foilIds: ["담보인정비율-ltv", "총부채상환비율-dti", "이자보상배율"],
   },
   "총부채상환비율-dti": {
-    question: "연 소득 대비 그 대출 원리금을 보는 비율은?",
+    question: "연 소득 대비 해당 대출 원리금이 얼마인지를 나타내는 비율은?",
     foilIds: ["총부채원리금상환비율-dsr", "담보인정비율-ltv", "부채비율"],
   },
   "테이퍼링": {

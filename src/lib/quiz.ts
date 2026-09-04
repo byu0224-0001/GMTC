@@ -67,26 +67,53 @@ export function makeMcq(term: Term, pool: Term[], seed: number) {
   return makeRecall(term, pool, seed);
 }
 
+function compactText(s: string): string {
+  return s.replace(/\s+/g, "").replace(/[.?!,。·]/g, "").replace(/입니다/g, "");
+}
+
+function tooSimilar(a: string, b: string): boolean {
+  const x = compactText(a);
+  const y = compactText(b);
+  if (!x || !y) return true;
+  if (x === y) return true;
+  const n = Math.min(22, x.length, y.length);
+  return n >= 12 && x.slice(0, n) === y.slice(0, n);
+}
+
+/** 문제 문장과 겹치지 않는 해설. 정의 반복을 피한다. */
+function explanationNote(term: Term, prompt: string): string {
+  const pool = [term.commonConfusions[0], term.whyItMatters, term.easyExplanation, term.keyPoints[0]].filter(
+    (s): s is string => Boolean(s),
+  );
+  for (const s of pool) {
+    if (!tooSimilar(s, prompt)) return s;
+  }
+  return term.commonConfusions[0] || term.whyItMatters || term.easyExplanation || "";
+}
+
 export function makeFirstRecall(term: Term, pool: Term[], seed: number): DrillItem {
   const item = makeRecall(term, pool, seed);
   const base = (term.oneLiner || term.easyExplanation || term.shortDef).replace(/입니다\.?$/, "").replace(/\.$/, "");
+  const prompt = `${base}. 이 설명에 해당하는 용어는 무엇일까요?`;
   return {
     ...item,
-    prompt: `${base}. 이 설명에 해당하는 용어는 무엇일까요?`,
+    prompt,
+    note: explanationNote(term, prompt),
   };
 }
 
 function makeRecall(term: Term, pool: Term[], seed: number): DrillItem {
   const foils = pickDistractors(term, pool, 3, seed);
   const { choices, answerId } = packChoices(term, foils, seed);
+  const prompt = term.oneLiner || term.easyExplanation || term.shortDef;
   return {
     kind: "recall",
     termId: term.id,
-    prompt: term.oneLiner || term.easyExplanation || term.shortDef,
+    prompt,
     caption: "",
     choices,
     answerId,
-    note: term.oneLiner || term.easyExplanation,
+    note: explanationNote(term, prompt),
   };
 }
 
@@ -102,7 +129,7 @@ function makeContrast(term: Term, pool: Term[], seed: number): DrillItem {
     caption: "",
     choices,
     answerId,
-    note: term.commonConfusions[0] || term.oneLiner,
+    note: explanationNote(term, spec.question),
   };
 }
 
@@ -111,14 +138,15 @@ function makeCloze(term: Term, pool: Term[], seed: number): DrillItem {
   const foils = resolveFoils(spec?.foilIds ?? [], pool, term, seed);
   const { choices, answerId } = packChoices(term, foils, seed);
   if (spec) {
+    const prompt = `${spec.before}□□${spec.after}`;
     return {
       kind: "cloze",
       termId: term.id,
-      prompt: `${spec.before}□□${spec.after}`,
+      prompt,
       caption: "",
       choices,
       answerId,
-      note: term.oneLiner,
+      note: explanationNote(term, prompt),
     };
   }
   const needle = [term.headword, term.abbr ?? ""].find((k) => k && term.easyExplanation.includes(k));
@@ -126,14 +154,15 @@ function makeCloze(term: Term, pool: Term[], seed: number): DrillItem {
     const i = term.easyExplanation.indexOf(needle);
     const before = term.easyExplanation.slice(0, i);
     const after = term.easyExplanation.slice(i + needle.length);
+    const prompt = `${before}□□${after}`;
     return {
       kind: "cloze",
       termId: term.id,
-      prompt: `${before}□□${after}`,
+      prompt,
       caption: "",
       choices,
       answerId,
-      note: term.oneLiner,
+      note: explanationNote(term, prompt),
     };
   }
   return makeRecall(term, pool, seed);

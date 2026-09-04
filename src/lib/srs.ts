@@ -74,11 +74,12 @@ export function grade(card: SrsCard, label: GradeLabel, now = new Date()): SrsCa
 }
 
 export function dueLabel(days: number): string {
-  if (days <= 0) return "오늘 복습";
-  if (days === 1) return "1일 뒤 복습";
-  if (days < 7) return `${days}일 뒤 복습`;
-  if (days < 30) return `${Math.round(days / 7)}주 뒤 복습`;
-  return `${Math.round(days / 30)}개월 뒤 복습`;
+  if (days <= 0) return "다음 복습은 오늘입니다";
+  if (days === 1) return "다음 복습은 내일입니다";
+  if (days < 7) return `다음 복습은 ${days}일 뒤입니다`;
+  if (days < 30) return `다음 복습은 약 ${Math.round(days / 7)}주 뒤입니다`;
+  if (days < 365) return `다음 복습은 약 ${Math.round(days / 30)}개월 뒤입니다`;
+  return `다음 복습은 약 ${Math.round(days / 365)}년 뒤입니다`;
 }
 
 export function daysUntil(dueAt: string, now = new Date()): number {

@@ -51,7 +51,7 @@ export function CoreListPage({ terms, progress }: { terms: Term[]; progress: Pro
             return (
               <Link key={t.id} to={`/terms/${encodeURIComponent(t.id)}`} className="term-row">
                 <strong>{displayTitle(t)}</strong>
-                <span>{seen ? "학습 · " : ""}{t.oneLiner || t.easyExplanation || t.shortDef}</span>
+                <span>{seen ? "학습함 · " : ""}{t.oneLiner || t.easyExplanation || t.shortDef}</span>
               </Link>
             );
           })}

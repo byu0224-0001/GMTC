@@ -20,7 +20,7 @@ export function ThinkPage() {
 
   return (
     <>
-      <TopBar title="자주 나오는 분석 틀" back />
+      <TopBar title="리포트 읽는 순서" back />
       <div className="page stack">
         <div className="card pad-lg">
           <div className="eyebrow">리포트에서 자주 보는 순서</div>
@@ -48,7 +48,7 @@ export function ThinkPage() {
             );
           })}
         </div>
-        {picked ? <p className="why"><strong>{p.title}</strong>{p.why}</p> : null}
+        {picked ? <p className="why"><strong>{p.title}</strong> {p.why}</p> : null}
         <Link className="btn btn-ghost" to="/context" style={{ display: "grid", placeItems: "center" }}>
           실전으로
         </Link>

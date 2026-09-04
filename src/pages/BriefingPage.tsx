@@ -160,11 +160,11 @@ function BriefingBlockView({
       <div>
         {recapChain && recapChain.length > 0 ? (
           <>
-            <div className="caption">오늘은 이렇게 이어집니다</div>
+            <div className="caption">오늘의 흐름</div>
             <Chain items={recapChain} terms={terms} />
           </>
         ) : null}
-        <div className="caption" style={{ marginTop: recapChain?.length ? 16 : 0 }}>오늘 익힌 개념</div>
+        <div className="caption" style={{ marginTop: recapChain?.length ? 16 : 0 }}>오늘 학습한 개념</div>
         <div className="chip-row" style={{ marginTop: 10 }}>
           {block.ids.map((id) => (
             <Link key={id} to={conceptHref(id)} className="chip">

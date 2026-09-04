@@ -273,7 +273,7 @@ export const REPORT_ESSENTIALS: ReportTerm[] = [
     aliases: ["턴어라운드"],
     easyExplanation: "실적이 바닥을 찍고 회복 쪽으로 꺾이는 국면입니다.",
     whyItMatters: "실적이 바닥을 찍고 회복 쪽으로 꺾이는 국면입니다. 적자가 줄었다는 것과 흑자·안정은 다른 단계입니다.",
-    reportUsage: "적자가 줄었다는 문장을 흑자 전환과 같은 말로 읽지 않습니다.",
+    reportUsage: "적자가 줄었다는 문장을 흑자 전환과 같은 뜻으로 읽지 않습니다.",
     chain: ["저점", "턴어라운드", "컨센서스"],
     relatedBokIds: [],
     freshness: "evergreen",

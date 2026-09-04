@@ -230,10 +230,9 @@ export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: Tod
             {picked ? (
               <>
                 <p className="why">
-                  <strong>{displayTitle(step.term)}</strong>
-                  {drill.note}
-                  {lastDue ? ` · ${dueLabel(daysUntil(lastDue))}` : null}
+                  <strong>{displayTitle(step.term)}</strong> {drill.note}
                 </p>
+                {lastDue ? <div className="caption">{dueLabel(daysUntil(lastDue))}</div> : null}
                 <div className="caption">함께 보면</div>
                 <Chain items={step.term.chain} terms={terms} />
                 <button className="btn btn-primary" onClick={goNext}>다음</button>

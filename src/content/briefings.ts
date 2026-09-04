@@ -1,6 +1,6 @@
 import type { LearningBriefing } from "../types";
 
-const SRC = { label: "학습용으로 다시 쓴 글입니다. 기사 원문을 옮기지 않았습니다." };
+const SRC = { label: "실제 기사가 아닌 학습을 위해 재구성한 내용입니다." };
 
 /** 학습용 브리핑. 실제 기사 문장을 옮기지 않음. */
 export const LEARNING_BRIEFINGS: LearningBriefing[] = [
@@ -22,7 +22,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "최근 소비자물가지수(CPI)가 시장 예상보다 높게 나왔습니다. 시장이 본 것은 한 달 숫자만이 아니었습니다. 물가 압력이 다시 세지는지였습니다.",
+        text: "최근 소비자물가 상승률이 시장 예상치를 웃돌았습니다. 투자자들이 주목한 것은 이러한 흐름이 지속되고 있는지, 물가 압력이 다시 강해지고 있는지였습니다.",
       },
       {
         type: "p",
@@ -55,7 +55,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "cut", label: "금리 인하 기대가 줄었기 때문" },
           { id: "supply", label: "국채를 더 많이 찍기로 이미 확정됐기 때문" },
           { id: "div", label: "기업 배당이 늘면 국채 금리가 반드시 오르기 때문" },
-          { id: "core", label: "근원물가가 내려서 완화 기대로 읽혔기 때문" },
+          { id: "core", label: "근원물가(Core CPI)가 내려서 완화 기대로 읽혔기 때문" },
         ],
         note: "물가 압력이 남아 있으면 중앙은행이 금리를 빠르게 내리기 어렵다고 봅니다. 그 기대가 줄어 시장금리가 오릅니다.",
       },

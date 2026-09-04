@@ -318,7 +318,7 @@ export const CONTEXT_CASES: ContextCase[] = [
     title: "금리가 오르니 대출 한도가 줄었다",
     era: "가계부채",
     situation: "대출금리가 오르자 같은 연봉으로도 원리금 부담이 커져, 새로 받을 수 있는 주담대 한도가 깎였습니다.",
-    question: "버는 돈 대비 모든 대출 원리금을 보는 비율은?",
+    question: "버는 돈 대비 모든 대출의 원리금이 얼마인지를 나타내는 비율은?",
     answerTermId: "총부채원리금상환비율-dsr",
     choiceIds: ["총부채원리금상환비율-dsr", "GDP갭", "옵션", "블록체인"],
     why: "금리 인상이 집과 소비로 전해지는 길이 바로 이 비율입니다.",
