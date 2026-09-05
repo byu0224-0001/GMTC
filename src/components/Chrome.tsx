@@ -5,7 +5,7 @@ import type { Term } from "../types";
 const TABS: { to: string; label: string; end?: boolean; icon: string }[] = [
   { to: "/", label: "오늘", end: true, icon: "today" },
   { to: "/learn", label: "학습", end: true, icon: "learn" },
-  { to: "/context", label: "실전", icon: "practice" },
+  { to: "/context", label: "연습", icon: "practice" },
   { to: "/terms", label: "사전", icon: "dict" },
 ];
 

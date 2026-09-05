@@ -68,7 +68,7 @@ export function ClaimQuizPage() {
             <p className="why">{cse.why}</p>
             {cse.nextToCheck?.length ? (
               <div className="card">
-                <div className="caption">다음에 확인할 항목</div>
+                <div className="caption">다음으로 확인할 것</div>
                 <ul className="point-list">
                   {cse.nextToCheck.map((x) => <li key={x}>{x}</li>)}
                 </ul>

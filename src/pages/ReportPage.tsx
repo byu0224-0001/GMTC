@@ -48,12 +48,12 @@ export function ReportPage({ terms, progress }: { terms: Term[]; progress: Progr
           </div>
           <div className="stat-box">
             <strong>{s.contextSeen >= 5 ? `${s.contextAcc}%` : s.contextSeen}</strong>
-            <span>실전</span>
+            <span>연습</span>
           </div>
         </div>
         {weakField ? (
           <div className="card">
-            <div className="caption">아직 덜 학습한 분야</div>
+            <div className="caption">아직 많이 보지 않은 분야</div>
             <div style={{ marginTop: 6 }}>{TAXONOMY_LABEL[weakField.k as keyof typeof TAXONOMY_LABEL] ?? weakField.k} · {Math.round(weakField.pct * 100)}%</div>
             <div className="muted" style={{ marginTop: 4 }}>오늘 복습 {due}개</div>
           </div>

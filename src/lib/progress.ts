@@ -153,6 +153,7 @@ export function resetProgress(): ProgressState {
 export function stats(state: ProgressState, coreIds: string[], now = new Date()) {
   const coreSet = new Set(coreIds);
   const coreCards = Object.values(state.cards).filter((c) => coreSet.has(c.termId));
+  /** 파일럿 집계. 장기적으로는 서로 다른 날짜·문제 형식에서의 성공을 요구해야 한다. */
   const known = coreCards.filter((c) => c.repetitions >= 2).length;
   const due = coreCards.filter((c) => c.dueAt <= kstDateKey(now)).length;
   const ctx = Object.entries(state.contextStats)

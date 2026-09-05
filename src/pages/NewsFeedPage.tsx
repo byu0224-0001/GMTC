@@ -33,7 +33,7 @@ export function ContextFeedPage({
 
   return (
     <>
-      <TopBar title="실전" />
+      <TopBar title="연습" />
       <div className="page stack">
         <Link to={`/briefing/${featured.id}`} className="card pad-lg featured" style={{ color: "inherit" }}>
           <div className="eyebrow">오늘의 브리핑 · {featured.kicker}</div>
@@ -64,7 +64,7 @@ export function ContextFeedPage({
           ))}
         </section>
 
-        <p className="notice">실제 기사나 리포트 문장을 그대로 가져오지 않았습니다.</p>
+        <p className="notice">학습을 위해 재구성한 예시입니다.</p>
       </div>
     </>
   );

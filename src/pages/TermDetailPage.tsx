@@ -42,10 +42,10 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
                 <strong>쉬운 설명</strong>
                 {term.easyExplanation}
               </div>
-              <p className="why"><strong>투자할 때</strong> {term.whyItMatters}</p>
+          <p className="why"><strong>알아두면 좋은 이유</strong> {term.whyItMatters}</p>
               {term.keyPoints.length > 0 ? (
                 <>
-                  <div className="caption">핵심</div>
+                  <div className="caption">핵심 포인트</div>
                   <ul className="point-list">
                     {term.keyPoints.map((p) => <li key={p}>{p}</li>)}
                   </ul>
@@ -61,7 +61,7 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
               ) : null}
               {term.chain.length > 0 ? (
                 <>
-                  <div className="caption" style={{ marginTop: 12 }}>함께 보면</div>
+                  <div className="caption" style={{ marginTop: 12 }}>연결되는 개념</div>
                   <Chain items={term.chain} terms={terms} />
                 </>
               ) : null}

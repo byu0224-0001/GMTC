@@ -125,6 +125,7 @@ export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: Tod
           terms={terms}
           finishLabel={i + 1 >= queue.length ? "학습 마치기" : "다음"}
           onFinish={goNext}
+          onPause={() => nav("/")}
         />
       </>
     );
@@ -151,8 +152,8 @@ export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: Tod
                 <p style={{ marginTop: 16, fontWeight: 500, lineHeight: 1.65 }}>{step.term.oneLiner}</p>
               ) : null}
               <p style={{ marginTop: 12 }}>{step.term.easyExplanation}</p>
-              <p className="why"><strong>투자할 때</strong> {step.term.whyItMatters}</p>
-              <div className="caption">함께 보면</div>
+              <p className="why"><strong>알아두면 좋은 이유</strong> {step.term.whyItMatters}</p>
+              <div className="caption">연결되는 개념</div>
               <Chain items={step.term.chain} terms={terms} />
             </div>
             <div className="grade-bar two">
@@ -227,7 +228,7 @@ export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: Tod
                   <strong>{displayTitle(step.term)}</strong> {drill.note}
                 </p>
                 {lastDue ? <div className="caption">{dueLabel(daysUntil(lastDue))}</div> : null}
-                <div className="caption">함께 보면</div>
+                <div className="caption">연결되는 개념</div>
                 <Chain items={step.term.chain} terms={terms} />
                 <button className="btn btn-primary" onClick={goNext}>다음</button>
               </>

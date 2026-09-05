@@ -29,7 +29,7 @@ export function HomePage({
         title={APP_SHORT_NAME}
         trailing={
           <Link to="/report" className="streak">
-            {s.streakDays}일째
+            {s.streakDays}일 연속
           </Link>
         }
       />
@@ -39,8 +39,11 @@ export function HomePage({
             <>
               <div className="caption">오늘의 학습</div>
               <div className="display" style={{ margin: "8px 0 10px", fontSize: 22, lineHeight: 1.35 }}>
-                {briefing.subtitle}
+                {briefing.headline}
               </div>
+              {briefing.subtitle ? (
+                <p className="muted" style={{ margin: "0 0 12px" }}>{briefing.subtitle}</p>
+              ) : null}
               <p className="muted" style={{ margin: "0 0 12px" }}>
                 {primary.map((id) => labelFor(id, terms)).join(" · ")}
               </p>

@@ -143,8 +143,13 @@ export function todayQueue(terms: Term[], progress: ProgressState, plan: TodayPl
   return steps;
 }
 
-export function estimateMinutes(neu: number, review: number, briefingMinutes: number): number {
-  const raw = neu * 1.15 + review * 0.8 + briefingMinutes;
+export function estimateMinutes(
+  neu: number,
+  review: number,
+  briefingMinutes: number,
+  firstRecall = 0,
+): number {
+  const raw = neu * 1.15 + firstRecall * 0.7 + review * 0.8 + briefingMinutes;
   if (raw <= 0) return 0;
   return Math.min(12, Math.max(1, Math.round(raw)));
 }
@@ -152,6 +157,7 @@ export function estimateMinutes(neu: number, review: number, briefingMinutes: nu
 export function planCounts(terms: Term[], progress: ProgressState, plan: TodayPlanFile) {
   const q = todayQueue(terms, progress, plan);
   const neu = q.filter((s) => s.kind === "new").length;
+  const firstRecall = q.filter((s) => s.kind === "first_recall").length;
   const review = q.filter((s) => s.kind === "recall").length;
   const briefing = q.find((s) => s.kind === "briefing");
   const briefingMinutes = briefing && briefing.kind === "briefing" ? briefing.briefing.minutes : 0;
@@ -161,6 +167,6 @@ export function planCounts(terms: Term[], progress: ProgressState, plan: TodayPl
     context: q.filter((s) => s.kind === "briefing").length,
     briefing: briefing && briefing.kind === "briefing" ? briefing.briefing : null,
     total: q.length,
-    minutes: estimateMinutes(neu, review, briefingMinutes),
+    minutes: estimateMinutes(neu, review, briefingMinutes, firstRecall),
   };
 }

@@ -14,7 +14,7 @@ export type ClozeSpec = {
 
 export const CONTRAST: Record<string, ContrastSpec> = {
   "기회비용": {
-    question: "하나를 고르면서 포기한 쪽의 가치는?",
+    question: "어떤 선택을 하면서 포기한 다른 대안의 가치를 무엇이라고 할까요?",
     foilIds: ["유동성", "인플레이션", "레버리지비율"],
   },
   "주가수익비율-per": {
@@ -38,7 +38,7 @@ export const CONTRAST: Record<string, ContrastSpec> = {
     foilIds: ["생산자물가지수-ppi", "GDP디플레이터", "근원인플레이션율"],
   },
   "근원인플레이션율": {
-    question: "식료품·에너지처럼 들쭉날쭉한 항목을 빼고 본 물가는?",
+    question: "식료품·에너지처럼 변동성이 큰 항목을 빼고 본 물가는?",
     foilIds: ["소비자물가지수-cpi", "생산자물가지수-ppi", "기대인플레이션"],
   },
   "인플레이션": {
@@ -54,7 +54,7 @@ export const CONTRAST: Record<string, ContrastSpec> = {
     foilIds: ["인플레이션", "디스인플레이션", "긴축정책"],
   },
   "국내총생산-gdp": {
-    question: "한 나라 안에서 만든 생산을 합친 숫자는?",
+    question: "한 나라 안에서 일정 기간 생산된 재화와 서비스의 가치를 합한 지표는 무엇일까요?",
     foilIds: ["국민총소득-gni", "경제성장률", "경상수지"],
   },
   "국민총소득-gni": {
@@ -62,7 +62,7 @@ export const CONTRAST: Record<string, ContrastSpec> = {
     foilIds: ["국내총생산-gdp", "경상수지", "국제수지-bop"],
   },
   "기준금리": {
-    question: "한국은행이 시중 금리의 방향을 가리키려고 운용하는 정책금리는?",
+    question: "한국은행이 시중 금리에 영향을 주기 위해 정하는 대표적인 정책금리는 무엇일까요?",
     foilIds: ["명목금리", "가산금리", "만기수익률"],
   },
   "명목금리": {
@@ -114,15 +114,15 @@ export const CONTRAST: Record<string, ContrastSpec> = {
     foilIds: ["옵션", "선물거래", "공매도"],
   },
   "자본적지출": {
-    question: "공장·서버처럼 오래 쓸 자산에 넣는 돈은?",
-    foilIds: ["유동성", "주당순이익-eps", "소매판매"],
+    question: "공장·서버·장비처럼 장기간 사용하는 자산에 쓰는 투자 지출은 무엇일까요?",
+    foilIds: ["주당순이익-eps", "자기자본이익률-roe", "주주환원정책"],
   },
   "만기수익률": {
     question: "지금 값으로 산 채권을 만기까지 들고 있을 때 기대하는 수익률은?",
     foilIds: ["표면금리", "기준금리", "지급준비제도"],
   },
   "스태그플레이션": {
-    question: "경기는 느린데 물가가 같이 오르는 상황은?",
+    question: "경기 둔화와 물가 상승이 동시에 나타나는 상황은 무엇일까요?",
     foilIds: ["인플레이션", "디플레이션", "골디락스경제"],
   },
   "생산자물가지수-ppi": {
@@ -133,13 +133,13 @@ export const CONTRAST: Record<string, ContrastSpec> = {
 
 export const CLOZE: Record<string, ClozeSpec> = {
   "기회비용": {
-    before: "기준금리가 오르면 예금 이자가 커집니다. 주식을 들고 있는 동안에도 ",
-    after: "이 커집니다.",
+    before: "예금금리가 오르면 주식에 투자할 때 포기하는 예금 이자, 즉 ",
+    after: "이 커질 수 있습니다.",
     foilIds: ["유동성", "공매도", "주가지수"],
   },
   "기준금리": {
-    before: "물가가 예상보다 빠르게 오르면, 시장은 중앙은행이 ",
-    after: "를 쉽게 내리기 어렵다고 봅니다.",
+    before: "물가 상승세가 예상보다 강하면 중앙은행이 ",
+    after: "를 빠르게 내리기 어려울 수 있습니다.",
     foilIds: ["국내총생산-gdp", "경상수지", "주주환원정책"],
   },
   "듀레이션": {
@@ -160,15 +160,15 @@ export const CLOZE: Record<string, ClozeSpec> = {
   "신용스프레드": {
     before: "국채 금리는 그대로인데 회사채 금리만 더 올랐다면 ",
     after: "가 벌어진 것입니다.",
-    foilIds: ["기준환율", "자기자본이익률-roe", "테이퍼링"],
+    foilIds: ["평가절상", "자기자본이익률-roe", "테이퍼링"],
   },
   "자본적지출": {
     before: "공장이나 장비를 늘리는 데 쓰는 돈은 ",
     after: "입니다.",
-    foilIds: ["주당순이익-eps", "유동성", "소매판매"],
+    foilIds: ["주당순이익-eps", "자기자본이익률-roe", "주주환원정책"],
   },
   "기준환율": {
-    before: "원/달러처럼 서로 다른 통화를 교환하는 기준은 ",
+    before: "원/엔 등 다른 환율을 산출할 때 기준으로 쓰는 원/달러 환율은 ",
     after: "입니다.",
     foilIds: ["기준금리", "평가절상", "경상수지"],
   },

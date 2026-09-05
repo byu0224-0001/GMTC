@@ -21,7 +21,7 @@ export function CurriculumPage({ terms, progress }: { terms: Term[]; progress: P
         <Link to="/learn/core" className="card pad-lg" style={{ color: "inherit" }}>
           <h2 className="term-title" style={{ margin: "0 0 6px" }}>핵심 용어</h2>
           <p className="muted" style={{ margin: 0 }}>
-            뉴스와 리포트에서 자주 접하는 핵심 용어입니다.
+            경제·금융 정보를 이해할 때 자주 쓰이는 핵심 용어입니다.
           </p>
           <div className="tax-meta" style={{ marginTop: 12 }}>
             <strong>{s.seen} / {s.coreTotal}</strong>
@@ -36,7 +36,7 @@ export function CurriculumPage({ terms, progress }: { terms: Term[]; progress: P
           </p>
           <div className="tax-meta" style={{ marginTop: 12 }}>
             <strong>{reportSeen} / {REPORT_ESSENTIALS.length}</strong>
-            <span className="tax-count">확인한 표현</span>
+            <span className="tax-count">학습한 표현</span>
           </div>
         </Link>
 

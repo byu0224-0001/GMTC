@@ -33,9 +33,9 @@ export function LexiconPage() {
           <p style={{ marginTop: 16, color: "var(--color-ink-strong)", fontWeight: 500, lineHeight: 1.6 }}>
             {term.easyExplanation}
           </p>
-          <p className="why"><strong>투자할 때</strong> {term.whyItMatters}</p>
+          <p className="why"><strong>알아두면 좋은 이유</strong> {term.whyItMatters}</p>
           <p className="why"><strong>리포트에서는</strong> {term.reportUsage}</p>
-          <div className="caption">함께 보면</div>
+          <div className="caption">연결되는 개념</div>
           <Chain items={term.chain} />
         </div>
         {related.length > 0 ? (

@@ -19,7 +19,7 @@ export function CoreListPage({ terms, progress }: { terms: Term[]; progress: Pro
       <TopBar title="핵심 용어" back />
       <div className="page stack">
         <p className="muted" style={{ margin: 0 }}>
-          원하는 용어를 골라 학습하세요.
+          원하는 용어부터 학습해보세요.
         </p>
         <div className="card">
           <div className="tax-meta">
@@ -46,15 +46,12 @@ export function CoreListPage({ terms, progress }: { terms: Term[]; progress: Pro
         </div>
         <div className="caption">{list.length}개</div>
         <div>
-          {list.map((t) => {
-            const seen = Boolean(progress.cards[t.id]);
-            return (
+          {list.map((t) => (
               <Link key={t.id} to={`/terms/${encodeURIComponent(t.id)}`} className="term-row">
                 <strong>{displayTitle(t)}</strong>
-                <span>{seen ? "학습함 · " : ""}{t.oneLiner || t.easyExplanation || t.shortDef}</span>
+                <span>{t.oneLiner || t.easyExplanation || t.shortDef}</span>
               </Link>
-            );
-          })}
+            ))}
         </div>
       </div>
     </>

@@ -66,13 +66,13 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
             <div className="card">
               {cse.nextToCheck?.length ? (
                 <>
-                  <div className="caption">다음에 확인할 항목</div>
+                  <div className="caption">다음으로 확인할 것</div>
                   <ul className="point-list">
                     {cse.nextToCheck.map((x) => <li key={x}>{x}</li>)}
                   </ul>
                 </>
               ) : null}
-              <div className="caption" style={{ marginTop: cse.nextToCheck?.length ? 12 : 0 }}>함께 보면</div>
+              <div className="caption" style={{ marginTop: cse.nextToCheck?.length ? 12 : 0 }}>연결되는 개념</div>
               <Chain items={cse.chain} terms={terms} />
             </div>
             <button className="btn btn-primary" onClick={() => nav("/context")}>목록으로</button>

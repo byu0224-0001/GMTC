@@ -103,7 +103,10 @@ export function makeFirstRecall(term: Term, pool: Term[], seed: number): DrillIt
 }
 
 function makeRecall(term: Term, pool: Term[], seed: number): DrillItem {
-  const foils = pickDistractors(term, pool, 3, seed);
+  const specFoils = CONTRAST[term.id]?.foilIds ?? [];
+  const foils = specFoils.length > 0
+    ? resolveFoils(specFoils, pool, term, seed)
+    : pickDistractors(term, pool, 3, seed);
   const { choices, answerId } = packChoices(term, foils, seed);
   const prompt = term.oneLiner || term.easyExplanation || term.shortDef;
   return {

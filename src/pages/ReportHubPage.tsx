@@ -22,7 +22,7 @@ export function ReportHubPage({ progress }: { progress: ProgressState }) {
         <div className="card">
           <div className="tax-meta">
             <strong>{seen} / {REPORT_ESSENTIALS.length}</strong>
-            <span className="tax-count">확인한 표현</span>
+            <span className="tax-count">학습한 표현</span>
           </div>
         </div>
         <Link className="btn btn-primary" to="/learn/session" style={{ display: "grid", placeItems: "center" }}>

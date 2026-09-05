@@ -58,7 +58,7 @@ export function GlossaryPage({ terms }: { terms: Term[] }) {
         />
         <div className="chip-row">
           <button className={filter === "all" ? "chip picked" : "chip"} onClick={() => setFilter("all")}>전체</button>
-          <button className={filter === "bok" ? "chip picked" : "chip"} onClick={() => setFilter("bok")}>경제금융용어</button>
+          <button className={filter === "bok" ? "chip picked" : "chip"} onClick={() => setFilter("bok")}>경제·금융 용어</button>
           <button className={filter === "report" ? "chip picked" : "chip"} onClick={() => setFilter("report")}>리포트 표현</button>
         </div>
         <div className="cho-grid">
@@ -76,7 +76,7 @@ export function GlossaryPage({ terms }: { terms: Term[] }) {
           ))}
         </div>
         <div className="caption">
-          {q.trim() || cho || filter !== "all" ? `${list.length}개${mode ? ` · ${mode}` : ""}` : "경제금융용어 · 리포트 표현"}
+          {q.trim() || cho || filter !== "all" ? `${list.length}개${mode ? ` · ${mode}` : ""}` : "경제·금융 용어 · 리포트 표현"}
         </div>
         <div>
           {list.map((t) => {

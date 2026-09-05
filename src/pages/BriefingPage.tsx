@@ -24,11 +24,13 @@ export function BriefingReader({
   briefing,
   terms,
   onFinish,
-  finishLabel = "실전으로",
+  onPause,
+  finishLabel = "연습 목록으로",
 }: {
   briefing: LearningBriefing;
   terms: Term[];
   onFinish: () => void;
+  onPause?: () => void;
   finishLabel?: string;
 }) {
   const startedAt = useRef(new Date().toISOString()).current;
@@ -89,7 +91,8 @@ export function BriefingReader({
 
   function finish() {
     persistAttempt(allDone);
-    onFinish();
+    if (allDone) onFinish();
+    else (onPause ?? onFinish)();
   }
 
   return (
@@ -125,7 +128,6 @@ export function BriefingReader({
       <button className="btn btn-primary" onClick={finish}>
         {allDone ? finishLabel : "나중에 이어서 하기"}
       </button>
-      <p className="notice">실제 기사나 리포트 문장을 그대로 가져오지 않았습니다.</p>
     </div>
   );
 }
@@ -235,7 +237,7 @@ export function BriefingPage({ terms }: { terms: Term[] }) {
     return (
       <div className="page">
         <p>브리핑을 찾지 못했습니다.</p>
-        <button className="btn btn-primary" onClick={() => nav("/context")}>실전으로</button>
+        <button className="btn btn-primary" onClick={() => nav("/context")}>연습 목록으로</button>
       </div>
     );
   }
@@ -246,14 +248,15 @@ export function BriefingPage({ terms }: { terms: Term[] }) {
         <button className="icon-btn" onClick={() => nav("/context")} aria-label="닫기">
           ✕
         </button>
-        <h1>실전 브리핑</h1>
+        <h1>브리핑</h1>
         <span />
       </header>
       <BriefingReader
         briefing={briefing}
         terms={terms}
         onFinish={() => nav("/context")}
-        finishLabel="실전으로"
+        onPause={() => nav("/context")}
+        finishLabel="연습 목록으로"
       />
     </>
   );
