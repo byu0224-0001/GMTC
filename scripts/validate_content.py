@@ -61,6 +61,59 @@ def validate_briefing_obj(obj: dict, errors: list[str], known: set[str], term_ma
 
 
 
+# 읽을 거리인지 판별하는 신호. 이 중 둘 이상이 있어야 상황문이 아니라 글이 된다.
+READING_SIGNALS: list[tuple[str, str]] = [
+    ("변화", r"(올랐|내렸|늘었|줄었|커졌|낮아졌|높아졌|벌어졌|뛰었|무너졌|길어졌|빠져나갔|바뀌|앞당|불었)"),
+    ("대조", r"(그런데|그러나|반면|다만|오히려|한편|-지만|았지만|었지만)"),
+    ("원인", r"(때문|영향|탓|덕에|까닭|결과|로 인해|따라)"),
+    ("해석", r"(평가|해석|전망|분석|판단|봤습니다|보기 때문|말했습니다|적었습니다|나왔습니다)"),
+]
+
+# 숫자를 쓸 때 허용하는 형식. 단위 없는 맨숫자가 떠다니면 무엇의 값인지 알 수 없다.
+FIGURE_OK = re.compile(
+    r"[0-9]+(\.[0-9]+)?\s*(%포인트|%p|%|배|주|개|곳|년|개월|주간|일|월|분기|번|명|원|달러|억|조|만|천|대|분)"
+    r"|[0-9]+(\.[0-9]+)?\s*(억|조|만)?\s*(원|달러)"
+    r"|[0-9]+분의|[0-9]+%대|[0-9]+년물|BBB|AA|[0-9]+대"
+)
+
+# 실제 규제·정책 수치로 읽힐 수 있는 표현. 지어낸 글이 현행 제도로 오해되면 안 된다.
+POLICY_LOOKALIKE = re.compile(
+    r"(상한이\s*[0-9]+%에서\s*[0-9]+%로|규제.{0,12}[0-9]+%에서\s*[0-9]+%로|"
+    r"기준금리를?\s*[0-9]+(\.[0-9]+)?%(에서|로)|정책금리를?\s*[0-9]+(\.[0-9]+)?%(에서|로))"
+)
+
+
+def check_reading_body(cid: str, text: str) -> list[str]:
+    """읽기 본문 품질 검사.
+
+    이전에는 `숫자가 없으면 실패`로 두었는데 그건 잘못된 규칙이었다. 규칙을 그렇게
+    쓰면 숫자가 없어도 자연스러운 글에 억지로 숫자를 밀어넣게 된다. 필요한 것은
+    숫자의 존재가 아니라 **읽을 거리인가**이고, 숫자를 쓸 때는 **정확한가**다.
+
+    그래서 세 가지만 본다.
+      1. 변화·대조·원인·해석 신호가 둘 이상 있는가 (읽을 거리인지)
+      2. 숫자를 썼다면 단위가 붙어 있는가 (맨숫자가 떠다니지 않는지)
+      3. 실제 규제 수치처럼 읽힐 표현을 쓰지 않았는가 (지어낸 글이니까)
+    """
+    out: list[str] = []
+    found = [name for name, pat in READING_SIGNALS if re.search(pat, text)]
+    if len(found) < 2:
+        out.append(f"{cid} reads like a prompt, not a passage (signals: {found or 'none'})")
+
+    for m in re.finditer(r"[0-9]+(?:\.[0-9]+)?", text):
+        # `4분의 1`처럼 앞에서 단위를 이미 밝힌 경우는 뒤 숫자를 따로 보지 않는다.
+        if text[max(0, m.start() - 4) : m.start()].endswith("분의 "):
+            continue
+        tail = text[m.start() : m.start() + 24]
+        if not FIGURE_OK.match(tail):
+            out.append(f"{cid} figure without a unit: …{tail[:16]}…")
+            break
+
+    if POLICY_LOOKALIKE.search(text):
+        out.append(f"{cid} figure reads like an actual regulation; use a relative change instead")
+    return out
+
+
 def ids_in(text: str, pattern: str) -> list[str]:
     return re.findall(pattern, text)
 
@@ -112,21 +165,95 @@ def main() -> int:
         if bok not in terms:
             errors.append(f"REPORT_BOK_CANON missing BOK: {bok}")
 
-    # context cases
-    for block in re.finditer(
-        r'answerTermId: "([^"]+)"[\s\S]*?choiceIds: \[([^\]]+)\]',
-        literacy,
-    ):
-        ans, raw = block.group(1), block.group(2)
-        choices = re.findall(r'"([^"]+)"', raw)
-        if ans not in choices:
-            errors.append(f"context answer {ans} not in choices {choices}")
-        known = ans in terms or ans in report_id_set
-        if not known:
-            errors.append(f"context answer unknown: {ans}")
+    reading_src = (ROOT / "src/content/readingCases.ts").read_text(encoding="utf-8")
+    reading_ids = re.findall(r'\n    id: "(cx-[^"]+)"', reading_src)
+    if len(reading_ids) != 32:
+        errors.append(f"reading cases {len(reading_ids)} != 32")
+    if len(reading_ids) != len(set(reading_ids)):
+        errors.append("duplicate reading case ids")
+    reading_chunks = re.split(r'\n  \{\n    id: "cx-', reading_src)[1:]
+    lens_counts: dict[str, int] = {}
+    for cid, chunk in zip(reading_ids, reading_chunks):
+        lens = re.search(r'lens: "(name|cause|next)"', chunk)
+        if not lens:
+            errors.append(f"{cid} missing lens")
+        else:
+            lens_counts[lens.group(1)] = lens_counts.get(lens.group(1), 0) + 1
+        body = re.search(r'situation:\s*\n?\s*"((?:[^"\\]|\\.)*)"', chunk)
+        if not body:
+            errors.append(f"{cid} missing situation")
+        else:
+            text = body.group(1)
+            n = len(text)
+            if not 150 <= n <= 400:
+                errors.append(f"{cid} situation {n} chars, want 150-400")
+            # 문장이 두세 개면 상황문이지 읽을 거리가 아니다.
+            if text.count("다.") < 4:
+                errors.append(f"{cid} situation has only {text.count('다.')} sentences, want >=4")
+            errors.extend(check_reading_body(cid, text))
+        ans = re.search(r'answerTermId: "([^"]+)"', chunk)
+        raw = re.search(r'choiceIds: \[([^\]]+)\]', chunk)
+        if not ans or not raw:
+            errors.append(f"{cid} missing answerTermId/choiceIds")
+            continue
+        choices = re.findall(r'"([^"]+)"', raw.group(1))
+        if ans.group(1) not in choices:
+            errors.append(f"{cid} answer {ans.group(1)} not in choices")
+        if len(choices) != len(set(choices)):
+            errors.append(f"{cid} duplicate choiceIds")
+        if len(choices) != 4:
+            errors.append(f"{cid} choiceIds should be 4, got {len(choices)}")
         for c in choices:
             if c not in terms and c not in report_id_set:
-                errors.append(f"context choice unknown: {c}")
+                errors.append(f"{cid} unknown choice: {c}")
+        for tid in re.findall(r'termIds: \[([^\]]*)\]', chunk):
+            for t in re.findall(r'"([^"]+)"', tid):
+                if t not in terms and t not in report_id_set:
+                    errors.append(f"{cid} unknown termId: {t}")
+        fact = re.search(r'fact: \{([\s\S]*?)\n    \},', chunk)
+        if fact:
+            fids = re.findall(r'id: "([^"]+)"', fact.group(1))
+            fans = re.search(r'answerId: "([^"]+)"', fact.group(1))
+            if len(fids) != 4:
+                errors.append(f"{cid} fact choices should be 4, got {len(fids)}")
+            if not fans or fans.group(1) not in fids:
+                errors.append(f"{cid} fact answerId not in choices")
+            if not re.search(r'why: "', fact.group(1)):
+                errors.append(f"{cid} fact missing why")
+    # 32편이 한 방식으로 몰리면 본문이 아니라 문제 형식을 외우게 된다.
+    for lens in ("name", "cause", "next"):
+        if lens_counts.get(lens, 0) < 6:
+            errors.append(f"reading lens {lens} only {lens_counts.get(lens, 0)}, want >=6")
+
+    # 읽기 사례는 지어낸 상황이므로 특정 날짜를 사실처럼 적지 않는다.
+    for m in re.finditer(r'(20[0-9]{2})년 ?[0-9]{1,2}월', reading_src):
+        errors.append(f"reading case has a concrete date: {m.group(0)}")
+
+    drills_src = (ROOT / "src/content/drills.ts").read_text(encoding="utf-8")
+    mis_block = re.search(
+        r'export const MISCONCEPTIONS[\s\S]*?\n\};', drills_src
+    )
+    if not mis_block:
+        errors.append("MISCONCEPTIONS not found")
+    else:
+        mis = re.findall(
+            r'\n  "([^"]+)": \{\s*\n\s*claim: "((?:[^"\\]|\\.)*)",\s*\n\s*correct: (true|false),\s*\n\s*why: "((?:[^"\\]|\\.)*)",',
+            mis_block.group(0),
+        )
+        if len(mis) < 20:
+            errors.append(f"MISCONCEPTIONS {len(mis)} < 20")
+        trues = sum(1 for _, _, c, _ in mis if c == "true")
+        if mis and not 0.25 <= trues / len(mis) <= 0.75:
+            errors.append(f"MISCONCEPTIONS O/X unbalanced: {trues} true of {len(mis)}")
+        for tid, claim, _, why in mis:
+            if tid not in terms and tid not in report_id_set:
+                errors.append(f"MISCONCEPTIONS unknown term: {tid}")
+            if tid not in core_ids:
+                errors.append(f"MISCONCEPTIONS {tid} is not in CORE100 (needs reviewed copy)")
+            if len(claim) < 12:
+                errors.append(f"MISCONCEPTIONS {tid} claim too short")
+            if len(why) < 20:
+                errors.append(f"MISCONCEPTIONS {tid} why too short")
 
     # BOK_REPORT_BRIDGE ids
     for bid in re.findall(r'^  "([^"]+)": \{', report_src, re.M):
@@ -212,6 +339,28 @@ def main() -> int:
     if briefing_count < 8:
         errors.append(f"briefings {briefing_count} < 8")
 
+    maps_src = (ROOT / "src/content/learningMaps.ts").read_text(encoding="utf-8")
+    map_ids = re.findall(r'\n    id: "(map-[^"]+)"', maps_src)
+    if len(map_ids) < 8:
+        errors.append(f"learning maps {len(map_ids)} < 8")
+    if len(map_ids) != len(set(map_ids)):
+        errors.append("duplicate learning map ids")
+    for mid, chunk in zip(map_ids, re.split(r'\n  \{\n    id: "map-', maps_src)[1:]):
+        reading = re.search(r'readingId: "([^"]+)"', chunk)
+        if not reading:
+            errors.append(f"{mid} missing readingId")
+        elif reading.group(1) not in ts_ids:
+            errors.append(f"{mid} unknown readingId {reading.group(1)}")
+        steps = re.findall(r'termId: "([^"]+)"', chunk)
+        if not 2 <= len(steps) <= 5:
+            errors.append(f"{mid} steps should be 2-5, got {len(steps)}")
+        for tid in steps:
+            if tid not in known:
+                errors.append(f"{mid} unknown term {tid}")
+        minutes = re.search(r"minutes: (\d+)", chunk)
+        if minutes and not 3 <= int(minutes.group(1)) <= 5:
+            errors.append(f"{mid} minutes {minutes.group(1)} not in 3-5")
+
     pub_ids: list[str] = []
     pub_path = ROOT / "public/content/published-briefings.json"
     if pub_path.exists():
@@ -256,6 +405,9 @@ def main() -> int:
                 "coreCopy": len(copy_ids),
                 "report": len(report_id_set),
                 "briefings": briefing_count,
+                "readingCases": len(reading_ids),
+                "readingLens": lens_counts,
+                "learningMaps": len(map_ids),
             },
             ensure_ascii=False,
         )

@@ -26,7 +26,7 @@ export function ReportHubPage({ progress }: { progress: ProgressState }) {
           </div>
         </div>
         <Link className="btn btn-primary" to="/learn/session" style={{ display: "grid", placeItems: "center" }}>
-          오늘 학습하기
+          시작하기
         </Link>
         <div className="chip-row">
           {REPORT_GROUPS.map((g) => (

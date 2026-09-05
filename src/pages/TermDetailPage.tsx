@@ -108,7 +108,7 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
         ) : null}
         {core ? (
           <Link className="btn btn-primary" to="/learn/session" style={{ display: "grid", placeItems: "center" }}>
-            오늘 학습하기
+            시작하기
           </Link>
         ) : (
           <Link className="btn btn-ghost" to="/terms" style={{ display: "grid", placeItems: "center" }}>

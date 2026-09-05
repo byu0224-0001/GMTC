@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Chain } from "../components/Chrome";
 import { briefingById } from "../content/briefings";
+import { mapForBriefing } from "../content/learningMaps";
 import { REPORT_BOK_CANON, canonBokId } from "../content/reportLexicon";
 import { logEvent } from "../lib/events";
 import { labelFor } from "../lib/lookup";
@@ -25,7 +26,7 @@ export function BriefingReader({
   terms,
   onFinish,
   onPause,
-  finishLabel = "연습 목록으로",
+  finishLabel = "읽기 목록으로",
 }: {
   briefing: LearningBriefing;
   terms: Term[];
@@ -42,6 +43,7 @@ export function BriefingReader({
   );
   const answered = interactive.filter((x) => picked[x.i]).length;
   const allDone = interactive.length === 0 || answered === interactive.length;
+  const relatedMap = mapForBriefing(briefing.id);
 
   useEffect(() => {
     logEvent("briefing_start", { briefingId: briefing.id });
@@ -125,6 +127,16 @@ export function BriefingReader({
         />
       ))}
 
+      {allDone && relatedMap ? (
+        <Link
+          to={`/learn/map/${relatedMap.id}`}
+          className="btn btn-ghost"
+          style={{ display: "grid", placeItems: "center" }}
+        >
+          학습에서 연결 다시 보기
+        </Link>
+      ) : null}
+
       <button className="btn btn-primary" onClick={finish}>
         {allDone ? finishLabel : "나중에 이어서 하기"}
       </button>
@@ -162,11 +174,11 @@ function BriefingBlockView({
       <div>
         {recapChain && recapChain.length > 0 ? (
           <>
-            <div className="caption">오늘의 흐름</div>
+            <div className="caption">이렇게 연결됩니다</div>
             <Chain items={recapChain} terms={terms} />
           </>
         ) : null}
-        <div className="caption" style={{ marginTop: recapChain?.length ? 16 : 0 }}>오늘 학습한 개념</div>
+        <div className="caption" style={{ marginTop: recapChain?.length ? 16 : 0 }}>이 글에서 나온 개념</div>
         <div className="chip-row" style={{ marginTop: 10 }}>
           {block.ids.map((id) => (
             <Link key={id} to={conceptHref(id)} className="chip">
@@ -237,7 +249,7 @@ export function BriefingPage({ terms }: { terms: Term[] }) {
     return (
       <div className="page">
         <p>브리핑을 찾지 못했습니다.</p>
-        <button className="btn btn-primary" onClick={() => nav("/context")}>연습 목록으로</button>
+        <button className="btn btn-primary" onClick={() => nav("/context")}>읽기 목록으로</button>
       </div>
     );
   }
@@ -256,7 +268,7 @@ export function BriefingPage({ terms }: { terms: Term[] }) {
         terms={terms}
         onFinish={() => nav("/context")}
         onPause={() => nav("/context")}
-        finishLabel="연습 목록으로"
+        finishLabel="읽기 목록으로"
       />
     </>
   );

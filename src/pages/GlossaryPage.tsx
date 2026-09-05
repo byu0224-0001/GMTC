@@ -47,6 +47,7 @@ export function GlossaryPage({ terms }: { terms: Term[] }) {
     <>
       <TopBar title="사전" />
       <div className="page stack">
+        <p className="muted" style={{ margin: 0 }}>모르는 용어를 바로 찾습니다.</p>
         <input
           className="search"
           placeholder="듀레이션, CPI, CAPEX"

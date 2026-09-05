@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "extract": ".venv/bin/python scripts/extract_terms.py",
     "validate": "python3 scripts/validate_content.py",
+    "verify": "npm run validate && npm run build && tsc -p api/tsconfig.json --noEmit && node scripts/test-nudge.mjs && node scripts/sim-personas.mjs && node scripts/sim-accuracy.mjs",
+    "report": "python3 scripts/report_pool.py && python3 scripts/report_reading.py",
     "editorial": "python3 scripts/fetch_editorial.py",
     "editorial:fetch": "python3 scripts/fetch_editorial.py",
     "editorial:draft": "python3 scripts/editorial_draft.py",
@@ -19,11 +21,14 @@
   "dependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.8.0"
+    "react-router-dom": "^7.8.0",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@types/web-push": "^3.6.4",
+    "@vercel/node": "^12.0.1",
     "@vitejs/plugin-react": "^4.7.0",
     "typescript": "^5.8.3",
     "vite": "^7.1.2"

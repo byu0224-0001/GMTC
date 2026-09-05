@@ -3,20 +3,20 @@ import { resolveChainHref } from "../lib/lookup";
 import type { Term } from "../types";
 
 const TABS: { to: string; label: string; end?: boolean; icon: string }[] = [
-  { to: "/", label: "오늘", end: true, icon: "today" },
+  { to: "/", label: "홈", end: true, icon: "home" },
   { to: "/learn", label: "학습", end: true, icon: "learn" },
-  { to: "/context", label: "연습", icon: "practice" },
+  { to: "/context", label: "읽기", icon: "read" },
   { to: "/terms", label: "사전", icon: "dict" },
 ];
 
 function TabIcon({ name, active }: { name: string; active: boolean }) {
   const c = active ? "currentColor" : "currentColor";
   const common = { width: 18, height: 18, fill: "none", stroke: c, strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-  if (name === "today") {
+  if (name === "home") {
     return (
       <svg {...common} viewBox="0 0 24 24" aria-hidden>
-        <rect x="4" y="5" width="16" height="15" rx="2" />
-        <path d="M8 3v4M16 3v4M4 10h16" />
+        <path d="M4 11.5 12 4l8 7.5" />
+        <path d="M7 10.8V20h10v-9.2" />
       </svg>
     );
   }
@@ -28,11 +28,12 @@ function TabIcon({ name, active }: { name: string; active: boolean }) {
       </svg>
     );
   }
-  if (name === "practice") {
+  if (name === "read") {
     return (
       <svg {...common} viewBox="0 0 24 24" aria-hidden>
-        <circle cx="12" cy="12" r="8" />
-        <path d="M12 8v4l3 2" />
+        <path d="M5 6h9a2 2 0 0 1 2 2v12H7a2 2 0 0 0-2 2V6z" />
+        <path d="M16 6v14a2 2 0 0 1-2 2" />
+        <path d="M8 10h6M8 14h5" />
       </svg>
     );
   }
@@ -83,7 +84,7 @@ export function TabBar({ learnBadge }: { learnBadge?: number }) {
             <>
               <TabIcon name={t.icon} active={isActive} />
               {t.label}
-              {t.to === "/learn" && learnBadge ? <span className="badge">{learnBadge}</span> : null}
+              {t.to === "/" && learnBadge ? <span className="badge">{learnBadge}</span> : null}
             </>
           )}
         </NavLink>

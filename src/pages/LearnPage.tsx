@@ -1,40 +1,82 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Chain, ProgressBar } from "../components/Chrome";
+import { PushPrompt, shouldAskPush } from "../components/PushPrompt";
 import { TAXONOMY_LABEL, type Taxonomy } from "../content/literacy";
+import { mapForBriefing } from "../content/learningMaps";
 import { beginTodaySession, endTodaySession, logEvent } from "../lib/events";
 import { displayTitle } from "../lib/hangul";
-import { applyGrade, loadProgress, saveProgress } from "../lib/progress";
+import { flushEvents, syncDailyStatus } from "../lib/learner";
+import { topicOf } from "../lib/pool";
+import {
+  applyGrade,
+  loadProgress,
+  markDefaultDone,
+  markExtraSession,
+  saveProgress,
+} from "../lib/progress";
 import { makeDrill, makeFirstRecall } from "../lib/quiz";
-import { dueLabel, daysUntil } from "../lib/srs";
-import { fallbackPlan, lockTodayLesson, type TodayPlanFile } from "../lib/todayPlan";
-import { lessonPool, todayQueue, type SessionStep } from "../lib/today";
-import { BriefingReader } from "./BriefingPage";
+import { dueLabel, daysUntil, practice } from "../lib/srs";
+import { briefingForPlan, fallbackPlan, lockTodayLesson, type TodayPlanFile } from "../lib/todayPlan";
+import {
+  extraQueue,
+  lessonPool,
+  todayQueue,
+  type SessionSource,
+  type SessionStep,
+} from "../lib/today";
 import type { GradeLabel, Term } from "../types";
 
-export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: TodayPlanFile }) {
+export function LearnPage({
+  terms,
+  todayPlan,
+  source = "home_default",
+}: {
+  terms: Term[];
+  todayPlan?: TodayPlanFile;
+  source?: SessionSource;
+}) {
   const nav = useNavigate();
   const [plan] = useState(() =>
     lockTodayLesson(todayPlan ?? fallbackPlan(), loadProgress().seenContextIds),
   );
 
-  const queue = useMemo<SessionStep[]>(() => todayQueue(terms, loadProgress(), plan), [terms, plan]);
+  const queue = useMemo<SessionStep[]>(
+    () => (source === "extra" ? extraQueue(terms, loadProgress()) : todayQueue(terms, loadProgress())),
+    [terms, source],
+  );
 
   const [i, setI] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [lastDue, setLastDue] = useState<string | null>(null);
+  const [askPush, setAskPush] = useState(false);
   const askedAt = useRef(Date.now());
   const viewedNew = useRef(new Set<string>());
   const gradedKeys = useRef(new Set<string>());
+  const closed = useRef(false);
 
   useEffect(() => {
-    beginTodaySession({ briefingId: plan.briefingId, contentVersion: plan.contentVersion });
-  }, [plan.briefingId, plan.contentVersion]);
+    beginTodaySession({
+      briefingId: plan.briefingId,
+      contentVersion: plan.contentVersion,
+      source,
+    });
+  }, [plan.briefingId, plan.contentVersion, source]);
 
+  /** 세션을 끝까지 본 것만 완료로 센다. 중간에 닫으면 홈은 여전히 미완료다. */
   useEffect(() => {
-    if (done) endTodaySession();
-  }, [done]);
+    if (!done || closed.current) return;
+    closed.current = true;
+    const state = loadProgress();
+    const next = source === "extra" ? markExtraSession(state) : markDefaultDone(state);
+    saveProgress(next);
+    endTodaySession();
+    setAskPush(shouldAskPush(next.doneSessions, Boolean(next.pushAskedAt)));
+    // 서버 전송은 학습을 막지 않는다. 실패하면 다음 세션에서 다시 보낸다.
+    void flushEvents();
+    void syncDailyStatus(next);
+  }, [done, source]);
 
   const step = queue[i];
   useEffect(() => {
@@ -42,53 +84,90 @@ export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: Tod
   }, [i, step?.kind]);
   const pool = useMemo(() => lessonPool(terms), [terms]);
   const drill = useMemo(() => {
-    if (!step || (step.kind !== "recall" && step.kind !== "first_recall")) return null;
-    const card = loadProgress().cards[step.term.id];
-    if (step.kind === "first_recall") return makeFirstRecall(step.term, pool.length ? pool : terms, i + 17);
-    return makeDrill(step.term, pool.length ? pool : terms, card, i + 17);
+    if (!step || step.kind === "new") return null;
+    const source2 = pool.length ? pool : terms;
+    if (step.kind === "first_recall") return makeFirstRecall(step.term, source2, i + 17);
+    return makeDrill(step.term, source2, loadProgress().cards[step.term.id], i + 17);
   }, [step, pool, terms, i]);
 
   const summary = {
     neu: queue.filter((s) => s.kind === "new").length,
-    review: queue.filter((s) => s.kind === "recall").length,
-    practice: queue.filter((s) => s.kind === "briefing").length,
+    review: queue.filter((s) => s.kind === "recall" || s.kind === "practice").length,
   };
 
   if (done || !step) {
+    const reading = briefingForPlan(plan, loadProgress().seenContextIds);
+    const map = mapForBriefing(reading.id);
+    const emptyExtra = source === "extra" && queue.length === 0;
     return (
       <div className="page session">
         <div className="empty">
-          <div className="display">오늘의 학습을 마쳤습니다</div>
-          <p className="muted" style={{ marginTop: 12 }}>
-            새로 학습한 용어 {summary.neu}개
-          </p>
-          <p className="muted">브리핑 {summary.practice}편</p>
-          <button className="btn btn-primary" onClick={() => nav("/")}>확인</button>
-          <button className="btn btn-ghost" onClick={() => nav("/learn")} style={{ marginTop: 8 }}>학습 목록으로</button>
+          <div className="display">
+            {emptyExtra ? "지금은 더 볼 것이 없습니다" : "오늘 할 건 다 했어요"}
+          </div>
+          {emptyExtra ? (
+            <p className="muted" style={{ marginTop: 12 }}>
+              복습은 날짜가 되면 돌아옵니다. 읽기에서 문맥을 보는 편이 낫습니다.
+            </p>
+          ) : (
+            <p className="muted" style={{ marginTop: 12 }}>
+              새로 익힌 용어 {summary.neu}개 · 다시 본 용어 {summary.review}개
+            </p>
+          )}
+          {askPush ? (
+            <div style={{ marginTop: 20, textAlign: "left" }}>
+              <PushPrompt onClose={() => setAskPush(false)} />
+            </div>
+          ) : null}
+          <Link
+            className="btn btn-primary"
+            to="/learn/extra"
+            style={{ display: "grid", placeItems: "center", marginTop: 20, textDecoration: "none" }}
+          >
+            5분 더 익히기
+          </Link>
+          <Link
+            className="btn btn-ghost"
+            to={`/briefing/${reading.id}`}
+            style={{ display: "grid", placeItems: "center", marginTop: 8, textDecoration: "none" }}
+          >
+            읽기 더 보기
+          </Link>
+          {map ? (
+            <Link
+              className="btn btn-ghost"
+              to={`/learn/map/${map.id}`}
+              style={{ display: "grid", placeItems: "center", marginTop: 8, textDecoration: "none" }}
+            >
+              개념 연결 보기
+            </Link>
+          ) : null}
+          <button className="btn btn-soft" onClick={() => nav("/")} style={{ marginTop: 8 }}>
+            홈으로
+          </button>
         </div>
       </div>
     );
   }
 
   const label =
-    step.kind === "new" ? "새 용어" : step.kind === "first_recall" ? "방금 학습한 용어" : step.kind === "recall" ? "복습" : "브리핑";
+    step.kind === "new"
+      ? "새 용어"
+      : step.kind === "first_recall"
+        ? "방금 본 용어"
+        : step.kind === "practice"
+          ? "다시 보기"
+          : "복습";
+  const topic = topicOf(terms, step.term.id) ?? step.term.taxonomy;
+  const taxLabel = topic ? TAXONOMY_LABEL[topic as Taxonomy] ?? topic : null;
+  /** 자체 원고가 있는 용어와, 한국은행 원문만 있는 용어를 다르게 보여 준다. */
+  const hasOwnCopy = Boolean(step.term.oneLiner || step.term.easyExplanation);
 
   function goNext() {
     setPicked(null);
     setLastDue(null);
     if (i + 1 >= queue.length) setDone(true);
     else setI(i + 1);
-  }
-
-  function goPrevNew() {
-    for (let j = i - 1; j >= 0; j--) {
-      if (queue[j].kind === "new") {
-        setPicked(null);
-        setLastDue(null);
-        setI(j);
-        return;
-      }
-    }
   }
 
   const prevNewIndex = (() => {
@@ -98,37 +177,11 @@ export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: Tod
     return -1;
   })();
 
-  function gradeTerm(term: Term, g: GradeLabel) {
-    const next = applyGrade(loadProgress(), term.id, g);
-    saveProgress(next);
-    setLastDue(next.cards[term.id].dueAt);
-  }
-
-  const taxLabel =
-    step.kind !== "briefing" && step.term.taxonomy
-      ? TAXONOMY_LABEL[step.term.taxonomy as Taxonomy] ?? step.term.taxonomy
-      : null;
-
-  if (step.kind === "briefing") {
-    return (
-      <>
-        <header className="topbar">
-          <button className="icon-btn" onClick={() => nav("/")} aria-label="닫기">✕</button>
-          <h1>{label} {i + 1}/{queue.length}</h1>
-          <span />
-        </header>
-        <div style={{ padding: "0 20px 8px" }}>
-          <ProgressBar value={i} total={queue.length} />
-        </div>
-        <BriefingReader
-          briefing={step.briefing}
-          terms={terms}
-          finishLabel={i + 1 >= queue.length ? "학습 마치기" : "다음"}
-          onFinish={goNext}
-          onPause={() => nav("/")}
-        />
-      </>
-    );
+  function goPrevNew() {
+    if (prevNewIndex < 0) return;
+    setPicked(null);
+    setLastDue(null);
+    setI(prevNewIndex);
   }
 
   return (
@@ -148,20 +201,33 @@ export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: Tod
               <div className="caption">{taxLabel ?? step.term.category}</div>
               <div className="term-title" style={{ marginTop: 12 }}>{displayTitle(step.term)}</div>
               {step.term.enName ? <div className="muted">{step.term.enName}</div> : null}
-              {step.term.oneLiner ? (
-                <p style={{ marginTop: 16, fontWeight: 500, lineHeight: 1.65 }}>{step.term.oneLiner}</p>
-              ) : null}
-              <p style={{ marginTop: 12 }}>{step.term.easyExplanation}</p>
-              <p className="why"><strong>알아두면 좋은 이유</strong> {step.term.whyItMatters}</p>
-              <div className="caption">연결되는 개념</div>
-              <Chain items={step.term.chain} terms={terms} />
+              {hasOwnCopy ? (
+                <>
+                  {step.term.oneLiner ? (
+                    <p style={{ marginTop: 16, fontWeight: 500, lineHeight: 1.65 }}>{step.term.oneLiner}</p>
+                  ) : null}
+                  {step.term.easyExplanation ? (
+                    <p style={{ marginTop: 12 }}>{step.term.easyExplanation}</p>
+                  ) : null}
+                  {step.term.whyItMatters ? (
+                    <p className="why"><strong>알아두면 좋은 이유</strong> {step.term.whyItMatters}</p>
+                  ) : null}
+                  {step.term.chain.length > 0 ? (
+                    <>
+                      <div className="caption">연결되는 개념</div>
+                      <Chain items={step.term.chain} terms={terms} />
+                    </>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  <div className="caption" style={{ marginTop: 16 }}>한국은행 설명</div>
+                  <p style={{ marginTop: 8, lineHeight: 1.7 }}>{step.term.definition}</p>
+                </>
+              )}
             </div>
             <div className="grade-bar two">
-              <button
-                className="btn btn-ghost"
-                disabled={prevNewIndex < 0}
-                onClick={goPrevNew}
-              >
+              <button className="btn btn-ghost" disabled={prevNewIndex < 0} onClick={goPrevNew}>
                 이전
               </button>
               <button
@@ -169,7 +235,7 @@ export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: Tod
                 onClick={() => {
                   if (!viewedNew.current.has(step.term.id)) {
                     viewedNew.current.add(step.term.id);
-                    logEvent("new_term_viewed", { termId: step.term.id, questionType: "new" });
+                    logEvent("new_term_viewed", { termId: step.term.id, questionForm: "new" });
                   }
                   goNext();
                 }}
@@ -180,13 +246,11 @@ export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: Tod
           </>
         ) : null}
 
-        {(step.kind === "recall" || step.kind === "first_recall") && drill ? (
+        {step.kind !== "new" && drill ? (
           <>
             <div className="card pad-lg">
-              <div className="caption">
-                {step.kind === "first_recall" ? "방금 학습한 용어" : taxLabel ? taxLabel : "복습"}
-              </div>
-              <p style={{ margin: "12px 0 0", lineHeight: 1.65 }}>{drill.prompt}</p>
+              <div className="caption">{drill.caption || taxLabel || label}</div>
+              <p style={{ margin: "12px 0 0", lineHeight: 1.65, whiteSpace: "pre-line" }}>{drill.prompt}</p>
             </div>
             <div className="stack-8">
               {drill.choices.map((c) => {
@@ -205,16 +269,40 @@ export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: Tod
                       setPicked(c.id);
                       const ok = c.id === drill.answerId;
                       const key = `${step.kind}:${step.term.id}`;
-                      if (!gradedKeys.current.has(key)) {
-                        gradedKeys.current.add(key);
-                        gradeTerm(step.term, ok ? "good" : "again");
-                        logEvent(step.kind === "first_recall" ? "first_recall_answer" : "review_answer", {
+                      if (gradedKeys.current.has(key)) return;
+                      gradedKeys.current.add(key);
+                      const before = loadProgress();
+                      const exposureIndex =
+                        (before.cards[step.term.id]?.repetitions ?? 0) +
+                        (before.cards[step.term.id] ? 1 : 0);
+                      if (step.kind === "practice") {
+                        const card = before.cards[step.term.id];
+                        if (card) {
+                          saveProgress({
+                            ...before,
+                            cards: {
+                              ...before.cards,
+                              [step.term.id]: practice(card, ok, new Date(), drill.kind),
+                            },
+                          });
+                        }
+                      } else {
+                        const g: GradeLabel = ok ? "good" : "again";
+                        const next = applyGrade(before, step.term.id, g, new Date(), drill.kind);
+                        saveProgress(next);
+                        setLastDue(next.cards[step.term.id].dueAt);
+                      }
+                      logEvent(
+                        step.kind === "first_recall" ? "first_recall_answer" : "review_answer",
+                        {
                           termId: step.term.id,
                           correct: ok,
-                          questionType: step.kind,
+                          questionForm: drill.kind,
+                          stepKind: step.kind,
+                          exposureIndex,
                           responseTimeMs: Date.now() - askedAt.current,
-                        });
-                      }
+                        },
+                      );
                     }}
                   >
                     {c.label}
@@ -227,9 +315,19 @@ export function LearnPage({ terms, todayPlan }: { terms: Term[]; todayPlan?: Tod
                 <p className="why">
                   <strong>{displayTitle(step.term)}</strong> {drill.note}
                 </p>
+                {/*
+                  추가 세션의 `다시 보기`에는 다음 복습 날짜를 적지 않는다. 일정이
+                  바뀌지 않았으므로 적을 날짜가 없다. 예전에는 그걸 문장으로 설명했지만,
+                  사용자는 복습 일정이 앞당겨지는지를 애초에 궁금해하지 않는다.
+                  내부 동작을 설명하려고 화면에 줄을 하나 더 두지 않는다.
+                */}
                 {lastDue ? <div className="caption">{dueLabel(daysUntil(lastDue))}</div> : null}
-                <div className="caption">연결되는 개념</div>
-                <Chain items={step.term.chain} terms={terms} />
+                {step.term.chain.length > 0 ? (
+                  <>
+                    <div className="caption">연결되는 개념</div>
+                    <Chain items={step.term.chain} terms={terms} />
+                  </>
+                ) : null}
                 <button className="btn btn-primary" onClick={goNext}>다음</button>
               </>
             ) : null}

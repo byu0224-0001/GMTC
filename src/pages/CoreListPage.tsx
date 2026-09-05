@@ -28,7 +28,7 @@ export function CoreListPage({ terms, progress }: { terms: Term[]; progress: Pro
           </div>
         </div>
         <Link className="btn btn-primary" to="/learn/session" style={{ display: "grid", placeItems: "center" }}>
-          오늘 학습하기
+          시작하기
         </Link>
         <div className="chip-row">
           <Link className={tax === "all" ? "chip picked" : "chip"} to="/learn/core">

@@ -13,7 +13,7 @@ export function ThinkPage() {
     return (
       <div className="page">
         <p>내용을 찾지 못했습니다.</p>
-        <button className="btn btn-primary" onClick={() => nav("/context")}>연습 목록으로</button>
+        <button className="btn btn-primary" onClick={() => nav("/context")}>읽기 목록으로</button>
       </div>
     );
   }
@@ -50,7 +50,7 @@ export function ThinkPage() {
         </div>
         {picked ? <p className="why"><strong>{p.title}</strong> {p.why}</p> : null}
         <Link className="btn btn-ghost" to="/context" style={{ display: "grid", placeItems: "center" }}>
-          연습 목록으로
+          읽기 목록으로
         </Link>
       </div>
     </>

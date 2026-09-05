@@ -57,6 +57,10 @@ export interface SrsCard {
   dueAt: string;
   lastQuality: 1 | 3 | 4 | null;
   updatedAt: string;
+  /** 맞힌 날(KST). 같은 날 여러 번 맞혀도 하루로 센다. */
+  successDates: string[];
+  /** 맞힌 문제 형태. 한 형태만 반복해서 맞힌 것을 익숙함으로 세지 않기 위해 쓴다. */
+  successForms: RetrievalForm[];
 }
 
 export interface ContextStat {
@@ -76,6 +80,16 @@ export interface ProgressState {
   lastStudyDate: string | null;
   briefingAttempts?: BriefingAttempt[];
   lastBriefingDate?: string | null;
+  /** 오늘 권장 분량을 마친 날(KST). 홈이 완료 상태로 바뀌는 기준이다. */
+  defaultDoneDate: string | null;
+  /** 날짜별 추가 세션 횟수. 권장 분량과 자율 학습을 구분해서 센다. */
+  extraSessions: Record<string, number>;
+  /** 첫 화면 안내를 본 시각. null이면 온보딩을 보여 준다. */
+  onboardedAt: string | null;
+  /** 알림 허용을 물어본 적이 있는지. 거절한 사람에게 반복해서 묻지 않는다. */
+  pushAskedAt: string | null;
+  /** 권장 분량을 마친 날의 수. 알림을 물어볼 시점을 정하는 데 쓴다. */
+  doneSessions: number;
 }
 
 export interface BriefingAttempt {
@@ -141,7 +155,14 @@ export interface ClaimCase {
   nextToCheck?: string[];
 }
 
-export type DrillKind = "recall" | "contrast" | "cloze";
+/**
+ * 학습이 요구하는 인지 형태. 보기 선택은 화면 방식이므로 여기에 넣지 않는다.
+ *  recognition 용어 → 뜻 / recall 뜻 → 용어 / contrast 비슷한 개념 구분
+ *  judgment 흔한 오해 판단 / context 짧은 상황에 적용
+ */
+export type RetrievalForm = "recognition" | "recall" | "contrast" | "judgment" | "context";
+
+export type DrillKind = RetrievalForm;
 
 export interface DrillItem {
   kind: DrillKind;

@@ -4,14 +4,20 @@ import { CORE100, TAXONOMY_LABEL } from "../content/literacy";
 import { resetProgress, stats } from "../lib/progress";
 import { exportStudyDump } from "../lib/events";
 import { displayTitle } from "../lib/hangul";
-import { isDue } from "../lib/srs";
+import { analyticsOptedOut, resetLearner, setAnalyticsOptOut } from "../lib/learner";
+import { unsubscribePush } from "../lib/push";
+import { GRADUATE_REPETITIONS, isDue } from "../lib/srs";
+import { planCounts } from "../lib/today";
+import { fallbackPlan } from "../lib/todayPlan";
 import type { ProgressState, Term } from "../types";
 import { useState } from "react";
 
 export function ReportPage({ terms, progress }: { terms: Term[]; progress: ProgressState }) {
   const [p, setP] = useState(progress);
+  const [optOut, setOptOut] = useState(() => analyticsOptedOut());
   const coreIds = CORE100.map((c) => c.id);
   const s = stats(p, coreIds);
+  const plan = planCounts(terms, p, fallbackPlan());
   const weak = terms
     .filter((t) => t.priority === "core" && p.cards[t.id]?.lastQuality === 1)
     .slice(0, 8);
@@ -48,8 +54,27 @@ export function ReportPage({ terms, progress }: { terms: Term[]; progress: Progr
           </div>
           <div className="stat-box">
             <strong>{s.contextSeen >= 5 ? `${s.contextAcc}%` : s.contextSeen}</strong>
-            <span>연습</span>
+            <span>읽기</span>
           </div>
+        </div>
+        <div className="card">
+          <div className="caption">익숙해진 기준</div>
+          <p className="muted" style={{ margin: "8px 0 0", lineHeight: 1.6 }}>
+            서로 다른 날에 {GRADUATE_REPETITIONS}번 맞히고, 묻는 방식도 두 가지 이상 통과한
+            용어를 익숙해진 것으로 셉니다.
+          </p>
+          <div className="term-row" style={{ cursor: "default" }}>
+            <strong>일반 기준</strong>
+            <span>{plan.familiarFull}개</span>
+          </div>
+          <div className="term-row" style={{ cursor: "default" }}>
+            <strong>면제 기준</strong>
+            <span>{plan.familiarFallback}개</span>
+          </div>
+          <p className="caption" style={{ marginTop: 10, marginBottom: 0 }}>
+            면제 기준은 묻는 방식을 하나만 만들 수 있는 용어에만 적용됩니다. 전체 후보{" "}
+            {plan.candidateTotal}개 중 {plan.fallbackEligible}개가 해당합니다.
+          </p>
         </div>
         {weakField ? (
           <div className="card">
@@ -88,12 +113,31 @@ export function ReportPage({ terms, progress }: { terms: Term[]; progress: Progr
         </button>
         <button
           className="btn btn-ghost"
-          onClick={() => {
-            if (confirm("이 기기의 학습 기록을 모두 지울까요?")) setP(resetProgress());
+          onClick={async () => {
+            if (!confirm("이 기기의 학습 기록을 모두 지울까요? 서버에 보관된 기록도 함께 지웁니다."))
+              return;
+            await unsubscribePush(p);
+            await resetLearner();
+            setAnalyticsOptOut(false);
+            setP(resetProgress());
           }}
         >
           기록 지우기
         </button>
+        <button
+          className="btn btn-ghost"
+          onClick={() => {
+            const next = !optOut;
+            setAnalyticsOptOut(next);
+            setOptOut(next);
+          }}
+        >
+          {optOut ? "파일럿 기록 보내기 켜기" : "파일럿 기록 보내지 않기"}
+        </button>
+        <p className="notice">
+          학습 진도는 이 기기에만 저장됩니다. 파일럿 기간에는 어떤 문제에서 얼마나 걸렸는지 같은
+          익명 기록만 서버로 보냅니다. 용어별 진도는 보내지 않습니다.
+        </p>
       </div>
     </>
   );
