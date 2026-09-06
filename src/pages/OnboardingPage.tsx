@@ -23,15 +23,15 @@ export function OnboardingPage({ onDone }: { onDone: () => void }) {
         <div className="card pad-lg">
           <div className="caption">하루 5~10분</div>
           <p style={{ margin: "6px 0 0", lineHeight: 1.6 }}>
-            앱이 오늘 할 만큼만 정해 줍니다. 더 하고 싶으면 이어서 해도 됩니다.
+            앱이 오늘 할 만큼만 정해 줘요. 더 하고 싶으면 이어서 해도 돼요.
           </p>
           <div className="caption" style={{ marginTop: 18 }}>같은 말을 다른 방식으로</div>
           <p style={{ margin: "6px 0 0", lineHeight: 1.6 }}>
-            뜻을 고르고, 용어를 떠올리고, 비슷한 개념과 구분합니다.
+            뜻을 고르고, 용어를 떠올리고, 비슷한 개념과 구분해요.
           </p>
           <div className="caption" style={{ marginTop: 18 }}>실제 문장에서 다시 만나기</div>
           <p style={{ margin: "6px 0 0", lineHeight: 1.6 }}>
-            읽기 탭에서 기사·리포트에 나올 법한 문단으로 배운 말을 확인합니다.
+            읽기 탭에서 기사·리포트에 나올 법한 문단으로 배운 말을 확인해요.
           </p>
         </div>
 
@@ -45,7 +45,7 @@ export function OnboardingPage({ onDone }: { onDone: () => void }) {
           시작하기
         </button>
         <p className="notice">
-          학습 기록은 이 기기에만 저장됩니다. 학습 기록 화면에서 언제든 지울 수 있습니다.
+          학습 기록은 이 기기에만 저장돼요. 학습 기록 화면에서 언제든 지울 수 있어요.
         </p>
       </div>
     </div>

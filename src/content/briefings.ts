@@ -8,7 +8,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-cpi-rates",
     kicker: "물가·금리",
     minutes: 4,
-    headline: "물가가 예상보다 높으면 금리는 왜 오를까요?",
+    headline: "물가가 예상보다 높으면 시장금리는 왜 오를까요?",
     subtitle: "물가·기준금리·채권 가격이 이어지는 흐름",
     primaryTermIds: ["소비자물가지수-cpi", "기준금리", "듀레이션"],
     supportTermIds: ["근원인플레이션율", "기대인플레이션"],
@@ -21,7 +21,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "소비자물가 상승률이 예상보다 높게 나오면, 물가 상승세가 예상보다 오래 이어질 가능성을 확인하게 돼요.",
+        text: "소비자물가 상승률이 예상보다 높게 나오면, 시장은 물가 상승세가 예상보다 오래 갈 가능성을 더 크게 볼 수 있어요.",
       },
       {
         type: "p",
@@ -42,7 +42,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "표면금리", label: "표면금리" },
           { id: "신용스프레드", label: "신용스프레드" },
         ],
-        note: "듀레이션은 금리 변화에 대한 채권 가격의 민감도를 나타내요. 일반적으로 듀레이션이 길수록 금리 변화에 가격이 더 크게 움직여요.",
+        note: "만기가 길고 이자를 적게 주는 채권일수록 듀레이션이 길어요. 그래서 금리가 같은 폭으로 움직여도 장기채의 가격이 더 크게 떨어질 수 있어요.",
       },
       {
         type: "choice",
@@ -60,20 +60,20 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
       {
         type: "causal",
         title: "한 번에 연결하면",
-        chain: ["물가 상승", "금리 인하 기대 약화", "시장금리 상승", "채권가격 하락"],
+        chain: ["물가 예상 상회", "금리 인하 기대 약화", "시장금리 상승 가능", "채권가격 하락 압력"],
         extra:
           "금리가 높아지면 미래 이익을 현재 가치로 환산할 때 쓰는 할인율도 커질 수 있어요. 성장 기대를 많이 반영하던 기업 주가에는 부담이 돼요.",
       },
       {
         type: "choice",
         depth: "next",
-        question: "물가 한 달만으로 금리 방향을 단정하기 어려운 이유는 무엇일까요?",
+        question: "한 달의 헤드라인 물가만으로 물가 흐름을 단정하기 어려운 이유는 무엇일까요?",
         answerId: "core",
         choices: [
-          { id: "core", label: "근원물가와 기대인플레이션을 같이 봐야 기조인지 알 수 있다" },
+          { id: "core", label: "근원물가와 기대인플레이션을 함께 봐야 흐름을 판단할 수 있다" },
           { id: "once", label: "헤드라인 물가 한 달이면 기조가 확정된다" },
-          { id: "div", label: "배당성향이 물가 경로를 결정한다" },
-          { id: "ignore", label: "예상과의 차이는 볼 필요가 없다" },
+          { id: "div", label: "헤드라인 물가가 한 달 오르면 기준금리도 그만큼 오른다" },
+          { id: "ignore", label: "에너지 값이 오른 달은 근원물가도 반드시 같이 오른다" },
         ],
         note: "헤드라인 물가 한 달은 에너지 같은 일시 충격이 섞일 수 있어요. 근원물가가 같이 올랐는지를 봐야 해요.",
       },

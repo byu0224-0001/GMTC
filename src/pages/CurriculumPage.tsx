@@ -117,13 +117,13 @@ export function CurriculumPage({
         </div>
 
         <p className="muted" style={{ margin: 0 }}>
-          같은 용어를 며칠에 걸쳐 다른 방식으로 다시 만납니다. 서로 다른 날에 {GRADUATE_REPETITIONS}번
-          맞히고 방식도 두 가지 이상 통과하면 복습에서 빠집니다.
+          같은 용어를 며칠에 걸쳐 다른 방식으로 다시 만나요. 서로 다른 날에 {GRADUATE_REPETITIONS}번
+          맞히고 방식도 두 가지 이상 통과하면 복습에서 빠져요.
         </p>
 
         <section>
           <div className="eyebrow">개념을 연결해서 보기</div>
-          <p className="caption" style={{ margin: "0 0 4px" }}>한 묶음에 3~5분입니다.</p>
+          <p className="caption" style={{ margin: "0 0 4px" }}>한 묶음에 3~5분이에요.</p>
           {LEARNING_MAP_GROUPS.map((group) => (
             <div key={group}>
               <div className="caption" style={{ marginTop: 14 }}>{group}</div>

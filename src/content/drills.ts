@@ -240,7 +240,7 @@ export const CONTRAST: Record<string, ContrastSpec> = {
     foilIds: ["기준금리", "명목금리", "표면금리"],
   },
   "듀레이션": {
-    question: "금리가 바뀔 때 채권 가격이 얼마나 움직이는지를 나타내는 지표는?",
+    question: "금리가 바뀔 때 채권 가격이 얼마나 민감하게 움직이는지 가늠할 때 보는 지표는?",
     foilIds: ["만기수익률", "표면금리", "신용스프레드"],
   },
   "수익률곡선": {

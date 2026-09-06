@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Chain, TopBar } from "../components/Chrome";
+import { ConceptFlowView, TopBar } from "../components/Chrome";
 import { briefingById } from "../content/briefings";
 import { learningMapById } from "../content/learningMaps";
 import { REPORT_BOK_CANON, canonBokId } from "../content/reportLexicon";
@@ -29,7 +29,7 @@ export function LearnMapPage({
   if (!map) {
     return (
       <div className="page">
-        <p>학습 지도를 찾지 못했습니다.</p>
+        <p>학습 지도를 찾지 못했어요.</p>
         <button className="btn btn-primary" onClick={() => nav("/learn")}>학습으로</button>
       </div>
     );
@@ -43,7 +43,7 @@ export function LearnMapPage({
           <div className="eyebrow">{map.group}</div>
           <h2 className="term-title" style={{ margin: "8px 0 6px" }}>{map.title}</h2>
           <p className="muted" style={{ margin: 0 }}>
-            {map.minutes}분 · 용어를 하나씩 외우는 대신, 같이 나오는 이유를 봅니다.
+            {map.minutes}분 · 용어를 하나씩 외우는 대신, 같이 나오는 이유를 봐요.
           </p>
           {seen > 0 ? (
             <div className="caption" style={{ marginTop: 8 }}>본 적 있는 용어 {seen}개</div>
@@ -65,9 +65,13 @@ export function LearnMapPage({
           </div>
         ))}
 
+        {/*
+          지도의 `connect`는 손으로 적어 둔 검수된 순서다. 위 카드들을 1·2·3으로
+          짚어 온 다음 그 순서를 한 줄로 되짚는 자리이므로 화살표를 쓴다.
+        */}
         <div className="card insight">
           <div className="caption">한 번에 연결하면</div>
-          <Chain items={map.connect} terms={terms} />
+          <ConceptFlowView steps={map.connect} terms={terms} />
         </div>
 
         {briefing ? (

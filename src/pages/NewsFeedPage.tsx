@@ -29,7 +29,7 @@ export function ContextFeedPage({
       <TopBar title="읽기" />
       <div className="page stack">
         <p className="muted" style={{ margin: 0 }}>
-          익힌 말이 실제 문장에서 어떻게 쓰이는지 확인합니다.
+          익힌 말이 실제 문장에서 어떻게 쓰이는지 확인해요.
         </p>
 
         <Link to={`/briefing/${featured.id}`} className="card pad-lg featured" style={{ color: "inherit" }}>
@@ -62,7 +62,7 @@ export function ContextFeedPage({
         <section>
           <div className="eyebrow">이어서 읽기</div>
           <p className="caption" style={{ margin: "0 0 8px" }}>
-            개념이 서로 어떻게 이어지는지까지 봅니다.
+            개념이 서로 어떻게 이어지는지까지 봐요.
           </p>
           {longer.map((b) => {
             const map = mapForBriefing(b.id);
@@ -78,7 +78,7 @@ export function ContextFeedPage({
           })}
         </section>
 
-        <p className="notice">실제 기사가 아니라 학습을 위해 지어낸 예시입니다.</p>
+        <p className="notice">실제 기사가 아니라 학습을 위해 지어낸 예시예요.</p>
       </div>
     </>
   );

@@ -17,7 +17,7 @@ export function ReportHubPage({ progress }: { progress: ProgressState }) {
       <TopBar title="리포트 표현" back />
       <div className="page stack">
         <p className="muted" style={{ margin: 0 }}>
-          증권사 리포트에서 자주 쓰이는 표현입니다.
+          증권사 리포트에서 자주 쓰이는 표현이에요.
         </p>
         <div className="card">
           <div className="tax-meta">

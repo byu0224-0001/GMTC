@@ -17,7 +17,7 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
   if (!term) {
     return (
       <div className="page">
-        <p>용어를 찾지 못했습니다.</p>
+        <p>용어를 찾지 못했어요.</p>
         <button className="btn btn-primary" onClick={() => nav("/terms")}>사전으로</button>
       </div>
     );

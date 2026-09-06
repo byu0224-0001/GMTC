@@ -106,8 +106,12 @@ export function ProgressBar({ value, total }: { value: number; total: number }) 
  * 검수된 흐름. 화살표를 쓴다.
  *
  * 화살표는 사용자가 `A가 B를 일으킨다`로 읽는다. 그래서 관계를 확인한 흐름에만
- * 쓰고, 그 관계가 무엇인지 한 문장으로 함께 밝힌다. 화살표만 두면 정의 관계도
- * 인과로 읽히기 때문이다.
+ * 쓴다. 어떤 데이터가 여기 올 자격이 있는지는 `src/content/conceptFlows.ts`에
+ * 적어 뒀다. 브리핑 본문이 순서대로 풀어 준 인과 사슬과 학습 지도의 연결도
+ * 손으로 검수한 흐름이라 같은 자격이다.
+ *
+ * note는 이 화살표를 어떻게 읽는지 밝히는 자리다. 해석을 적는 자리가 아니다.
+ * 브리핑처럼 본문이 이미 흐름을 설명한 곳에서는 없어도 된다.
  */
 export function ConceptFlowView({
   steps,
@@ -115,7 +119,7 @@ export function ConceptFlowView({
   terms,
 }: {
   steps: string[];
-  note: string;
+  note?: string;
   terms?: Term[];
 }) {
   if (!steps.length) return null;
@@ -138,9 +142,7 @@ export function ConceptFlowView({
           );
         })}
       </p>
-      <p className="muted" style={{ margin: "6px 0 0", fontSize: 14, lineHeight: 1.6 }}>
-        {note}
-      </p>
+      {note ? <p className="chain-note">{note}</p> : null}
     </>
   );
 }

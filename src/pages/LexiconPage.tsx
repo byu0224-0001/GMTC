@@ -12,7 +12,7 @@ export function LexiconPage() {
   if (!term) {
     return (
       <div className="page">
-        <p>표현을 찾지 못했습니다.</p>
+        <p>표현을 찾지 못했어요.</p>
         <button className="btn btn-primary" onClick={() => nav("/learn/report")}>리포트 표현으로</button>
       </div>
     );
@@ -52,7 +52,7 @@ export function LexiconPage() {
         <Link className="btn btn-primary" to="/learn/session" style={{ display: "grid", placeItems: "center" }}>
           시작하기
         </Link>
-        <p className="notice">증권사 리포트 문장을 그대로 가져오지 않았습니다.</p>
+        <p className="notice">증권사 리포트 문장을 그대로 가져오지 않았어요.</p>
       </div>
     </>
   );

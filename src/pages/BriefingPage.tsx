@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Chain } from "../components/Chrome";
+import { ConceptFlowView } from "../components/Chrome";
 import { briefingById } from "../content/briefings";
 import { mapForBriefing } from "../content/learningMaps";
 import { REPORT_BOK_CANON, canonBokId } from "../content/reportLexicon";
 import { logEvent } from "../lib/events";
 import { labelFor } from "../lib/lookup";
+import { withJosa } from "../lib/quiz";
 import { loadProgress, recordBriefingAttempt, saveProgress } from "../lib/progress";
 import type { BriefingAttempt, BriefingBlock, LearningBriefing, Term } from "../types";
 
@@ -99,9 +100,13 @@ export function BriefingReader({
 
   return (
     <div className="page stack briefing">
+      {/*
+        `학습용 브리핑` 배지를 뺐다. 상단 제목이 이미 브리핑이라 종류를 두 번 적는
+        셈이었고, 정작 필요한 고지는 없었다. 종류보다 사용자 목적을 앞에 두고,
+        지어낸 글이라는 사실은 본문에 들어가기 전에 한 줄로 밝힌다.
+      */}
       <div>
-        <span className="pill-badge">학습용 브리핑</span>
-        <span className="caption" style={{ marginLeft: 8 }}>
+        <span className="caption">
           {briefing.kicker}
           {briefing.asOf ? ` · ${briefing.asOf}` : ""}
           {` · ${briefing.minutes}분`}
@@ -111,17 +116,17 @@ export function BriefingReader({
         {briefing.headline}
       </h2>
       {briefing.subtitle ? <p className="muted" style={{ margin: 0 }}>{briefing.subtitle}</p> : null}
+      {briefing.sourceMode === "synthetic" ? (
+        <p className="notice" style={{ margin: 0 }}>
+          실제 기사가 아니라 학습을 위해 재구성한 예시예요.
+        </p>
+      ) : null}
 
       {briefing.blocks.map((block, i) => (
         <BriefingBlockView
           key={i}
           block={block}
           terms={terms}
-          recapChain={
-            block.type === "concepts"
-              ? briefing.blocks.find((b): b is Extract<BriefingBlock, { type: "causal" }> => b.type === "causal")?.chain
-              : undefined
-          }
           picked={picked[i] ?? null}
           onPick={(id) => gradeBlock(i, id)}
         />
@@ -137,7 +142,11 @@ export function BriefingReader({
         </Link>
       ) : null}
 
-      <button className="btn btn-primary" onClick={finish}>
+      {/*
+        아직 문제를 남긴 상태에서 가장 밝은 버튼이 `나중에 이어서 하기`였다.
+        초록 꽉 찬 버튼이 그만두기를 권한 셈이다. 끝냈을 때만 primary로 둔다.
+      */}
+      <button className={allDone ? "btn btn-primary" : "btn btn-ghost"} onClick={finish}>
         {allDone ? finishLabel : "나중에 이어서 하기"}
       </button>
     </div>
@@ -147,13 +156,11 @@ export function BriefingReader({
 function BriefingBlockView({
   block,
   terms,
-  recapChain,
   picked,
   onPick,
 }: {
   block: BriefingBlock;
   terms: Term[];
-  recapChain?: string[];
   picked: string | null;
   onPick: (id: string) => void;
 }) {
@@ -161,24 +168,29 @@ function BriefingBlockView({
     return <p className="briefing-p">{block.text}</p>;
   }
   if (block.type === "causal") {
+    /*
+      이 사슬은 바로 위 문단들이 순서대로 풀어 준 인과다. 손으로 검수해서
+      적어 둔 것이므로 화살표를 쓸 자격이 있다. 느슨한 관련 용어에 화살표를
+      씌우지 않으려고 `Chain`을 칩으로 바꿨더니 여기까지 같이 강등됐었다.
+    */
     return (
       <div className="card insight">
         <div className="caption">{block.title}</div>
-        <Chain items={block.chain} terms={terms} />
+        <ConceptFlowView steps={block.chain} terms={terms} />
         {block.extra ? <p className="muted" style={{ margin: "10px 0 0" }}>{block.extra}</p> : null}
       </div>
     );
   }
   if (block.type === "concepts") {
+    /*
+      예전에는 여기서 위 인과 사슬을 한 번 더 그렸다. `한 번에 연결하면`과
+      `이렇게 연결됩니다`가 같은 4개를 두 번 보여 주는 화면이 됐다. 둘이 멀리
+      떨어져 있을 때의 리마인더로 넣었지만, 실제로는 한 화면 안에 들어온다.
+      사슬은 본문이 그 순서를 설명한 자리에 한 번만 둔다.
+    */
     return (
       <div>
-        {recapChain && recapChain.length > 0 ? (
-          <>
-            <div className="caption">이렇게 연결됩니다</div>
-            <Chain items={recapChain} terms={terms} />
-          </>
-        ) : null}
-        <div className="caption" style={{ marginTop: recapChain?.length ? 16 : 0 }}>이 글에서 나온 개념</div>
+        <div className="caption">이 글에서 나온 개념</div>
         <div className="chip-row" style={{ marginTop: 10 }}>
           {block.ids.map((id) => (
             <Link key={id} to={conceptHref(id)} className="chip">
@@ -228,10 +240,29 @@ function BriefingBlockView({
         })}
       </div>
       {picked ? (
-        <p className="why" style={{ marginTop: 14 }}>
-          <strong>{answerLabel}</strong>
-          {block.note}
-        </p>
+        <>
+          {/*
+            학습 화면에는 `맞았어요`를 글로 적는데 브리핑에는 없었다. 같은 앱에서
+            정답을 알리는 방식이 두 개면 색을 구분하기 어려운 사람은 브리핑에서만
+            답을 못 읽는다.
+          */}
+          <p
+            className={picked === answerId ? "verdict ok" : "verdict no"}
+            role="status"
+            style={{ marginTop: 14 }}
+          >
+            {picked === answerId
+              ? "맞았어요"
+              : block.type === "cloze"
+                ? `정답은 ${withJosa(answerLabel, "이에요")}`
+                : "초록으로 표시한 쪽이 정답이에요"}
+          </p>
+          {/*
+            정답 라벨을 여기서 굵게 한 번 더 적지 않는다. 바로 위 선택지에 같은
+            문장이 초록 테두리로 남아 있어서 같은 말이 두 번 보였다.
+          */}
+          <p className="why" style={{ marginTop: 8 }}>{block.note}</p>
+        </>
       ) : null}
     </>
   );
@@ -248,7 +279,7 @@ export function BriefingPage({ terms }: { terms: Term[] }) {
   if (!briefing) {
     return (
       <div className="page">
-        <p>브리핑을 찾지 못했습니다.</p>
+        <p>브리핑을 찾지 못했어요.</p>
         <button className="btn btn-primary" onClick={() => nav("/context")}>읽기 목록으로</button>
       </div>
     );

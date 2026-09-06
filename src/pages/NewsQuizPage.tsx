@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Chain } from "../components/Chrome";
+import { ConceptFlowView } from "../components/Chrome";
 import { CONTEXT_CASES, type ContextCase } from "../content/literacy";
 import { canonBokId } from "../content/reportLexicon";
 import { beginTodaySession, endTodaySession, logEvent } from "../lib/events";
@@ -54,7 +54,7 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
   if (!cse) {
     return (
       <div className="page">
-        <p>읽을 글을 찾지 못했습니다.</p>
+        <p>읽을 글을 찾지 못했어요.</p>
         <button className="btn btn-primary" onClick={() => nav("/context")}>읽기 목록으로</button>
       </div>
     );
@@ -84,7 +84,7 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
             본문 바로 아래에 적는다.
           */}
           <p className="caption" style={{ margin: "14px 0 0" }}>
-            실제 기사가 아니라 학습을 위해 지어낸 상황이고, 숫자도 설명을 위해 만든 값입니다.
+            실제 기사가 아니라 학습을 위해 지어낸 상황이고, 숫자도 설명을 위해 만든 값이에요.
           </p>
         </div>
 
@@ -180,8 +180,9 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
         {stage === "done" ? (
           <>
             <div className="card">
-              <div className="caption">이렇게 연결됩니다</div>
-              <Chain items={cse.chain} terms={terms} />
+              <div className="caption">이렇게 이어져요</div>
+              {/* 읽기 사례의 chain은 사례마다 손으로 적은 순서다. 화살표를 쓴다. */}
+              <ConceptFlowView steps={cse.chain} terms={terms} />
               {cse.nextToCheck?.length ? (
                 <>
                   <div className="caption" style={{ marginTop: 14 }}>다음으로 확인할 것</div>

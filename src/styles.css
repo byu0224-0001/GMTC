@@ -44,6 +44,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
+  /*
+    한국어는 어절 단위로 끊어야 읽힌다. 기본값은 글자 단위로 끊어서
+    `오를까 / 요?`, `나타 / 내는`처럼 어절 가운데가 갈라진다. keep-all로
+    어절을 묶고, 한 어절이 줄보다 긴 예외(긴 영문·URL)만 break-word로 푼다.
+    요소별로 붙이면 새로 만드는 화면에서 또 빠지므로 body에 둔다.
+  */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 button, input { font: inherit; }
 button { cursor: pointer; }
@@ -418,10 +426,22 @@ a.chip {
   line-height: 1.6;
 }
 .chain-arrow { color: var(--color-mute); font-weight: 400; }
+/*
+  한 줄 안에서 어떤 칸만 초록으로 빛나면 왜 그 칸만 눌리는지 설명할 수 없다.
+  실제로는 용어명이 정확히 맞는 칸만 링크로 잡히는데, 사용자에게 그 규칙은
+  보이지 않는다. 글자색은 본문과 같게 두고 밑줄로만 눌린다는 것을 알린다.
+*/
 .chain-link {
-  color: var(--color-primary);
+  color: inherit;
   text-decoration: none;
-  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 30%, transparent);
+}
+/* 화살표를 어떻게 읽는지 알리는 줄. 두 번째 해설이 아니라 그림의 캡션이다. */
+.chain-note {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-mute);
 }
 .grade-bar {
   display: grid;

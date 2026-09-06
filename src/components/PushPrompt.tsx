@@ -28,7 +28,7 @@ export function PushPrompt({ onClose }: { onClose: () => void }) {
       <p className="muted" style={{ margin: "6px 0 0", lineHeight: 1.6 }}>{PUSH_PROMPT.body}</p>
       {install ? (
         <p className="notice" style={{ marginTop: 12 }}>
-          아이폰에서는 공유 버튼을 눌러 홈 화면에 추가한 뒤에 알림을 받을 수 있습니다.
+          아이폰에서는 공유 버튼을 눌러 홈 화면에 추가한 뒤에 알림을 받을 수 있어요.
         </p>
       ) : null}
       <div className="grade-bar two" style={{ marginTop: 14 }}>

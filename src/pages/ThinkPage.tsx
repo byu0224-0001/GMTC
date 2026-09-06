@@ -12,7 +12,7 @@ export function ThinkPage() {
   if (!p) {
     return (
       <div className="page">
-        <p>내용을 찾지 못했습니다.</p>
+        <p>내용을 찾지 못했어요.</p>
         <button className="btn btn-primary" onClick={() => nav("/context")}>읽기 목록으로</button>
       </div>
     );

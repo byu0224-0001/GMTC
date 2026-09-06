@@ -83,6 +83,45 @@ POLICY_LOOKALIKE = re.compile(
 )
 
 
+# 사람이 판단할 것. build를 막지 않는다.
+WARNINGS: list[str] = []
+
+JOSA = (
+    "으로", "에서", "이나", "까지", "부터", "에게", "라는", "와의", "과의",
+    "의", "가", "이", "은", "는", "을", "를", "에", "도", "만", "로", "과", "와",
+)
+
+
+def stem(word: str) -> str:
+    """조사를 뗀다.
+
+    조사를 떼지 않으면 굴절만 다른 같은 문장을 다른 문장으로 센다. 실제로
+    듀레이션이 이렇게 빠져나갔다.
+
+        문항  금리가 움직일 때 채권 가격이 얼마나 민감하게 변하는지를 나타내는 지표
+        해설  금리 변화에 대한 채권 가격의 민감도를 나타내는 지표
+
+    사람이 읽으면 같은 말인데, `금리가`와 `금리`, `가격이`와 `가격의`가 서로
+    다른 단어로 세어져서 겹침이 0.21로 나왔다. 조사를 떼면 0.42다. 형태소
+    분석기를 붙이지 않고도 이 정도는 걸러야 한다.
+    """
+    for j in sorted(JOSA, key=len, reverse=True):
+        if len(word) > len(j) + 1 and word.endswith(j):
+            return word[: -len(j)]
+    return word
+
+
+def tokens(text: str) -> set[str]:
+    return {stem(w) for w in re.findall(r"[가-힣A-Za-z]{2,}", text)}
+
+
+def overlap(a: str, b: str) -> float:
+    ta, tb = tokens(a), tokens(b)
+    if not ta or not tb:
+        return 0.0
+    return len(ta & tb) / len(ta | tb)
+
+
 def check_own_copy(core_ids: set, terms: set, report_ids: set) -> list[str]:
     """우리가 직접 쓴 학습 문구의 규칙.
 
@@ -119,17 +158,47 @@ def check_own_copy(core_ids: set, terms: set, report_ids: set) -> list[str]:
             for m in re.finditer(r"[가-힣]{1,8}니다(?=[.」\s]|$)", lit):
                 errors.append(f"{name}: 해요체가 아닌 어미 `{m.group(0)}`")
 
+    # 화면에 뜨는 UI 문구도 같이 본다.
+    #
+    # 예전에는 src/content만 스캔했다. 그래서 `verify`가 통과했는데도 화면에는
+    # 습니다체가 26곳 남아 있었다. 온보딩은 통째로 습니다체였다. 첫 화면만
+    # 목소리가 다른 앱이 된 셈이다. 검증이 화면을 안 보면 통과는 믿을 수 없다.
+    for path in sorted((ROOT / "src").rglob("*.tsx")):
+        raw = path.read_text(encoding="utf-8")
+        body = re.sub(r"/\*.*?\*/", "", raw, flags=re.S)
+        body = re.sub(r"^\s*//.*$", "", body, flags=re.M)
+        for m in re.finditer(r"[가-힣]{1,8}니다(?=[.」\s<{]|$)", body):
+            errors.append(f"{path.name}: 화면 문구가 해요체가 아니다 `{m.group(0)}`")
+
+    # `X에요`가 맞는 경우는 X가 `이`(책이에요) 또는 `니`(아니에요)일 때뿐이다.
+    # 받침 없는 말에는 `예요`가 붙는다. `여기에요`가 아니라 `여기예요`다.
+    # 자동 변환이 통과했다고 한국어가 맞다고 볼 수 없으므로 규칙으로 박아 둔다.
+    for path in sorted(list((ROOT / "src").rglob("*.ts")) + list((ROOT / "src").rglob("*.tsx"))):
+        raw = path.read_text(encoding="utf-8")
+        for m in re.finditer(r"([가-힣])에요", raw):
+            if m.group(1) not in ("이", "니"):
+                errors.append(f"{path.name}: `{m.group(0)}`는 `예요`로 써야 한다")
+
     copy_src = (root / "coreCopy.ts").read_text(encoding="utf-8")
+    why_by_id: dict[str, str] = {}
     for head, block in re.findall(r'\n  "([^"]+)": \{(.*?)\n  \},', copy_src, re.S):
         one = re.search(r'oneLiner: "((?:[^"\\]|\\.)*)"', block)
         why = re.search(r'whyItMatters: "((?:[^"\\]|\\.)*)"', block)
         if not (one and why):
             continue
+        why_by_id[head] = why.group(1)
         first = why.group(1).split(". ")[0]
-        a = set(re.findall(r"[가-힣A-Za-z]{2,}", one.group(1)))
-        b = set(re.findall(r"[가-힣A-Za-z]{2,}", first))
-        if a and b and len(a & b) / len(a | b) >= 0.34:
-            errors.append(f"coreCopy {head}: whyItMatters가 정의를 다시 말한다")
+        r = overlap(one.group(1), first)
+        # 심각도를 나눈다.
+        #
+        # 하나의 문턱으로 build를 막으면 두 방향으로 다 틀린다. 금융 설명은
+        # `기준금리`, `시장금리`처럼 같은 용어를 반복해야 할 때가 있어서 억울하게
+        # 막히고, 반대로 표현만 바꾼 되풀이는 문턱 아래로 빠져나간다.
+        # 거의 그대로 되풀이한 것만 막고, 애매한 구간은 사람이 판단하게 남긴다.
+        if r >= 0.5:
+            errors.append(f"coreCopy {head}: whyItMatters가 정의를 거의 그대로 되풀이한다 ({r:.2f})")
+        elif r >= 0.3:
+            WARNINGS.append(f"coreCopy {head}: whyItMatters가 정의와 겹친다 ({r:.2f}) — 사람이 판단")
         if len(why.group(1)) < 30:
             errors.append(f"coreCopy {head}: whyItMatters가 해석을 담기에 짧다")
 
@@ -143,11 +212,30 @@ def check_own_copy(core_ids: set, terms: set, report_ids: set) -> list[str]:
     for tid, steps, note in flows:
         if tid not in terms and tid not in report_ids:
             errors.append(f"conceptFlows 알 수 없는 용어: {tid}")
-        if len(re.findall(r'"([^"]+)"', steps)) < 3:
+        cells = re.findall(r'"([^"]+)"', steps)
+        if len(cells) < 3:
             errors.append(f"conceptFlows {tid}: 칸이 3개 미만이면 흐름이 아니다")
-        # 화살표만 두면 사용자가 정의 관계도 인과로 읽는다. 관계를 글로 밝혀야 한다.
-        if len(note) < 40:
-            errors.append(f"conceptFlows {tid}: 관계 설명이 짧다")
+        # 칸은 명사구여야 한다.
+        #
+        # `듀레이션이 길수록 변화 폭이 큼`, `가격 수준은 계속 상승`처럼 서술문이
+        # 들어간 칸이 있었다. 화살표는 단계를 잇는 것인데 마지막 칸이 결론
+        # 문장이면 화살표가 아니라 문단이 된다.
+        # `이/가`로는 못 가른다. `물가`, `증가`처럼 명사가 그 글자로 끝난다.
+        # 주제격 `은/는` 뒤에 공백이 오는 형태와 서술형 어미만 본다.
+        for cell in cells:
+            if (
+                re.search(r"(?:은|는)\s", cell)
+                or re.search(r"(?:다|음|큼|함|짐|됨)$", cell)
+                or "수록" in cell
+            ):
+                errors.append(f"conceptFlows {tid}: 칸에 서술문이 들어 있다 `{cell}`")
+        # note는 화살표 읽는 법만 말한다. 해석은 해설이 한다.
+        # 길어지면 반드시 해석으로 넘어가고, 그러면 해설과 같은 말이 된다.
+        if not 20 <= len(note) <= 90:
+            errors.append(f"conceptFlows {tid}: note는 20~90자 ({len(note)}자)")
+        r = overlap(why_by_id.get(tid, ""), note)
+        if why_by_id.get(tid) and r >= 0.3:
+            errors.append(f"conceptFlows {tid}: note가 해설과 같은 말을 한다 ({r:.2f})")
 
     drills_src = (root / "drills.ts").read_text(encoding="utf-8")
     contrast = drills_src[
@@ -492,6 +580,12 @@ def main() -> int:
         if len(errors) > 40:
             print(f"... +{len(errors) - 40} more")
         return 1
+    if WARNINGS:
+        print(f"WARN {len(WARNINGS)}건 — 사람이 읽고 판단할 것")
+        for w in WARNINGS[:20]:
+            print("·", w)
+        if len(WARNINGS) > 20:
+            print(f"... +{len(WARNINGS) - 20} more")
     print(
         json.dumps(
             {

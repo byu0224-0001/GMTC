@@ -71,10 +71,15 @@ export function HomePage({
               <div className="display" style={{ margin: 0, fontSize: 22, lineHeight: 1.35 }}>
                 오늘 할 건 다 했어요
               </div>
+              {/*
+                `권장 분량에 1번 더 얹었어요`, `복습이 돌아와요`는 우리 내부 개념을
+                한국어로 옮긴 말이다. 사용자는 분량을 얹지 않고 그냥 더 했을 뿐이고,
+                돌아오는 것은 복습이라는 일정이 아니라 다시 볼 용어다.
+              */}
               <p className="muted" style={{ margin: "10px 0 0" }}>
                 {extras
-                  ? `권장 분량에 ${extras}번 더 얹었어요. 내일 복습이 돌아와요.`
-                  : "내일 복습이 돌아와요. 더 하고 싶으면 이어서 해도 돼요."}
+                  ? `오늘은 ${extras}번 더 익혔어요. 내일 다시 볼 용어가 있어요.`
+                  : "내일 다시 볼 용어가 있어요. 더 하고 싶으면 이어서 해도 돼요."}
               </p>
             </>
           ) : (
@@ -121,25 +126,13 @@ export function HomePage({
           )}
         </div>
 
-        {done ? (
-          moreLeft ? (
-            <Link
-              to="/learn/extra"
-              className="btn btn-primary"
-              style={{ display: "grid", placeItems: "center", textDecoration: "none" }}
-            >
-              5분 더 익히기
-            </Link>
-          ) : (
-            <Link
-              to="/context"
-              className="btn btn-primary"
-              style={{ display: "grid", placeItems: "center", textDecoration: "none" }}
-            >
-              읽기 보러 가기
-            </Link>
-          )
-        ) : (
+        {/*
+          `오늘 할 건 다 했어요`라고 말하면서 가장 밝은 버튼으로 `5분 더`를 권하면
+          앱이 두 가지 말을 동시에 하는 셈이다. 대상은 공부 습관이 약한 사람이라
+          끝내도 괜찮다는 감각을 실제로 줘야 한다. 그래서 완료 상태에서는 primary를
+          두지 않는다. 아직 남은 상태에서만 `시작하기`가 primary다.
+        */}
+        {done ? null : (
           <Link
             to="/learn/session"
             className="btn btn-primary"
@@ -157,13 +150,30 @@ export function HomePage({
           </Link>
         ) : null}
 
-        <Link
-          to="/learn"
-          className="btn btn-ghost"
-          style={{ display: "grid", placeItems: "center", textDecoration: "none" }}
-        >
-          개념 흐름 보기
-        </Link>
+        {done && moreLeft ? (
+          <Link
+            to="/learn/extra"
+            className="btn btn-ghost"
+            style={{ display: "grid", placeItems: "center", textDecoration: "none" }}
+          >
+            5분 더 익히기
+          </Link>
+        ) : null}
+
+        {/*
+          예전에는 이 버튼이 학습 탭(`/learn`)으로 갔다. 하단 탭에 이미 `학습`이
+          있으니 한 화면에 같은 목적지가 두 번 있었고, 이름은 흐름인데 흐름 화면이
+          아닌 곳으로 갔다. 오늘 읽기에 붙은 개념 지도로 직접 보낸다.
+        */}
+        {map ? (
+          <Link
+            to={`/learn/map/${map.id}`}
+            className="btn btn-ghost"
+            style={{ display: "grid", placeItems: "center", textDecoration: "none" }}
+          >
+            개념 흐름 보기
+          </Link>
+        ) : null}
 
         {/*
           `학습 가능한 용어 221개 · 아직 안 본 용어 215개`를 지웠다.

@@ -12,7 +12,7 @@ export function ClaimQuizPage() {
   if (!cse) {
     return (
       <div className="page">
-        <p>문제를 찾지 못했습니다.</p>
+        <p>문제를 찾지 못했어요.</p>
         <button className="btn btn-primary" onClick={() => nav("/context")}>목록으로</button>
       </div>
     );

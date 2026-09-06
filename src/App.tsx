@@ -59,7 +59,7 @@ export default function App() {
   if (!terms) {
     return (
       <div className="app">
-        <div className="page empty">불러오는 중입니다</div>
+        <div className="page empty">불러오는 중이에요</div>
       </div>
     );
   }
