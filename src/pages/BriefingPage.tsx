@@ -27,7 +27,7 @@ export function BriefingReader({
   terms,
   onFinish,
   onPause,
-  finishLabel = "읽기 목록으로",
+  finishLabel = "읽기 마치기",
 }: {
   briefing: LearningBriefing;
   terms: Term[];
@@ -138,7 +138,7 @@ export function BriefingReader({
           className="btn btn-ghost"
           style={{ display: "grid", placeItems: "center" }}
         >
-          학습에서 연결 다시 보기
+          개념 흐름 보기
         </Link>
       ) : null}
 
@@ -299,7 +299,7 @@ export function BriefingPage({ terms }: { terms: Term[] }) {
         terms={terms}
         onFinish={() => nav("/context")}
         onPause={() => nav("/context")}
-        finishLabel="읽기 목록으로"
+        finishLabel="읽기 마치기"
       />
     </>
   );

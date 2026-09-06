@@ -61,8 +61,6 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
         type: "causal",
         title: "한 번에 연결하면",
         chain: ["물가 예상 상회", "금리 인하 기대 약화", "시장금리 상승 가능", "채권가격 하락 압력"],
-        extra:
-          "금리가 높아지면 미래 이익을 현재 가치로 환산할 때 쓰는 할인율도 커질 수 있어요. 성장 기대를 많이 반영하던 기업 주가에는 부담이 돼요.",
       },
       {
         type: "choice",

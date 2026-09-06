@@ -68,7 +68,7 @@ export function CurriculumPage({
             <p className="muted" style={{ margin: "8px 0 0", lineHeight: 1.5 }}>
               {extra.length
                 ? "오늘 권장 분량은 마쳤어요. 여기서부터는 원하는 만큼만 하면 돼요."
-                : "지금은 더 볼 것이 없어요. 복습은 날짜가 되면 돌아와요."}
+                : "지금은 더 볼 것이 없어요. 복습할 용어는 날짜가 되면 다시 나와요."}
             </p>
           ) : (
             <p style={{ margin: "8px 0 0", fontWeight: 600, lineHeight: 1.45 }}>
@@ -99,7 +99,7 @@ export function CurriculumPage({
                 className="btn btn-primary"
                 style={{ display: "grid", placeItems: "center", marginTop: 14, textDecoration: "none" }}
               >
-                5분 더 학습하기
+                5분 더 익히기
               </Link>
             ) : null
           ) : (
@@ -122,7 +122,7 @@ export function CurriculumPage({
         </p>
 
         <section>
-          <div className="eyebrow">개념을 연결해서 보기</div>
+          <div className="eyebrow">개념 흐름</div>
           <p className="caption" style={{ margin: "0 0 4px" }}>한 묶음에 3~5분이에요.</p>
           {LEARNING_MAP_GROUPS.map((group) => (
             <div key={group}>

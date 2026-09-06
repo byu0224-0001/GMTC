@@ -385,7 +385,11 @@ export function LearnPage({
                 */}
                 {wrongPickNote ? <p className="why">{wrongPickNote}</p> : null}
                 <p className="why">
-                  <strong>{displayTitle(step.term)}</strong> {drill.note}
+                  <strong>
+                    {displayTitle(step.term)}
+                    {alsoCalled(step.term.id)[0] ? `(${alsoCalled(step.term.id)[0]})` : ""}
+                  </strong>{" "}
+                  {drill.note}
                 </p>
                 {/*
                   추가 세션의 `다시 보기`에는 다음 복습 날짜를 적지 않는다. 일정이
@@ -394,14 +398,19 @@ export function LearnPage({
                   내부 동작을 설명하려고 화면에 줄을 하나 더 두지 않는다.
                 */}
                 {lastDue ? <div className="caption">{dueLabel(daysUntil(lastDue))}</div> : null}
+                {/*
+                  정답 뒤에는 해설 하나와 관계 하나만 남긴다. 새 용어 화면에서는
+                  화살표를 어떻게 읽는지 note가 필요하지만, 여기서는 바로 위 해설이
+                  이미 해석을 했다. note를 또 붙이면 같은 말을 세 번 읽게 된다.
+                */}
                 {flow ? (
                   <>
-                    <div className="caption">이렇게 이어서 볼 수 있어요</div>
-                    <ConceptFlowView steps={flow.steps} note={flow.note} terms={terms} />
+                    <div className="caption">같이 보면</div>
+                    <ConceptFlowView steps={flow.steps} terms={terms} />
                   </>
                 ) : step.term.chain.length > 0 ? (
                   <>
-                    <div className="caption">같이 보면 좋은 개념</div>
+                    <div className="caption">같이 보면</div>
                     <Chain items={step.term.chain} terms={terms} />
                   </>
                 ) : null}

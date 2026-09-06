@@ -234,8 +234,10 @@ def check_own_copy(core_ids: set, terms: set, report_ids: set) -> list[str]:
         if not 20 <= len(note) <= 90:
             errors.append(f"conceptFlows {tid}: note는 20~90자 ({len(note)}자)")
         r = overlap(why_by_id.get(tid, ""), note)
-        if why_by_id.get(tid) and r >= 0.3:
-            errors.append(f"conceptFlows {tid}: note가 해설과 같은 말을 한다 ({r:.2f})")
+        if why_by_id.get(tid) and r >= 0.5:
+            errors.append(f"conceptFlows {tid}: note가 해설을 거의 그대로 되풀이한다 ({r:.2f})")
+        elif why_by_id.get(tid) and r >= 0.3:
+            WARNINGS.append(f"conceptFlows {tid}: note가 해설과 겹친다 ({r:.2f}) — 사람이 판단")
 
     drills_src = (root / "drills.ts").read_text(encoding="utf-8")
     contrast = drills_src[
