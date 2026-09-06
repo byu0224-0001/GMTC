@@ -66,7 +66,7 @@ READING_SIGNALS: list[tuple[str, str]] = [
     ("변화", r"(올랐|내렸|늘었|줄었|커졌|낮아졌|높아졌|벌어졌|뛰었|무너졌|길어졌|빠져나갔|바뀌|앞당|불었)"),
     ("대조", r"(그런데|그러나|반면|다만|오히려|한편|-지만|았지만|었지만)"),
     ("원인", r"(때문|영향|탓|덕에|까닭|결과|로 인해|따라)"),
-    ("해석", r"(평가|해석|전망|분석|판단|봤습니다|보기 때문|말했습니다|적었습니다|나왔습니다)"),
+    ("해석", r"(평가|해석|전망|분석|판단|봤어요|보기 때문|말했어요|적었어요|나왔어요)"),
 ]
 
 # 숫자를 쓸 때 허용하는 형식. 단위 없는 맨숫자가 떠다니면 무엇의 값인지 알 수 없다.
@@ -81,6 +81,98 @@ POLICY_LOOKALIKE = re.compile(
     r"(상한이\s*[0-9]+%에서\s*[0-9]+%로|규제.{0,12}[0-9]+%에서\s*[0-9]+%로|"
     r"기준금리를?\s*[0-9]+(\.[0-9]+)?%(에서|로)|정책금리를?\s*[0-9]+(\.[0-9]+)?%(에서|로))"
 )
+
+
+def check_own_copy(core_ids: set, terms: set, report_ids: set) -> list[str]:
+    """우리가 직접 쓴 학습 문구의 규칙.
+
+    한국은행 원문은 검사하지 않는다. 원문은 public/data/terms.json에 있고
+    우리가 고치지 않는다. 여기서 보는 것은 우리 문장뿐이다.
+
+    지키려는 것 네 가지.
+
+    1. 문체는 해요체로 통일한다. 한 화면에 `나타냅니다`와 `나타내요`가 섞이면
+       두 사람이 쓴 글처럼 읽힌다.
+    2. whyItMatters가 oneLiner를 다시 말하지 않는다. 문항이 이미 정의를 말했는데
+       해설이 또 정의를 말하면 사용자가 얻는 게 없다. 두 번째 문장은
+       `그래서 어떻게 읽는지`여야 한다.
+    3. 화살표 흐름은 검수된 것만 쓴다. 관계를 밝히는 문장이 함께 있어야 한다.
+    4. 오답으로 지정한 용어는 실제로 존재해야 한다.
+    """
+    errors: list[str] = []
+    root = ROOT / "src/content"
+
+    own_files = [
+        "coreCopy.ts",
+        "reportLexicon.ts",
+        "drills.ts",
+        "readingCases.ts",
+        "learningMaps.ts",
+        "briefings.ts",
+        "reasoning.ts",
+        "claimCases.ts",
+        "conceptFlows.ts",
+    ]
+    for name in own_files:
+        src = (root / name).read_text(encoding="utf-8")
+        for lit in re.findall(r'"((?:[^"\\]|\\.)*)"', src):
+            for m in re.finditer(r"[가-힣]{1,8}니다(?=[.」\s]|$)", lit):
+                errors.append(f"{name}: 해요체가 아닌 어미 `{m.group(0)}`")
+
+    copy_src = (root / "coreCopy.ts").read_text(encoding="utf-8")
+    for head, block in re.findall(r'\n  "([^"]+)": \{(.*?)\n  \},', copy_src, re.S):
+        one = re.search(r'oneLiner: "((?:[^"\\]|\\.)*)"', block)
+        why = re.search(r'whyItMatters: "((?:[^"\\]|\\.)*)"', block)
+        if not (one and why):
+            continue
+        first = why.group(1).split(". ")[0]
+        a = set(re.findall(r"[가-힣A-Za-z]{2,}", one.group(1)))
+        b = set(re.findall(r"[가-힣A-Za-z]{2,}", first))
+        if a and b and len(a & b) / len(a | b) >= 0.34:
+            errors.append(f"coreCopy {head}: whyItMatters가 정의를 다시 말한다")
+        if len(why.group(1)) < 30:
+            errors.append(f"coreCopy {head}: whyItMatters가 해석을 담기에 짧다")
+
+    flow_src = (root / "conceptFlows.ts").read_text(encoding="utf-8")
+    flows = re.findall(
+        r'\n  "([^"]+)": \{\n    steps: \[([^\]]*)\],\n    note:\s*"((?:[^"\\]|\\.)*)"',
+        flow_src,
+    )
+    if len(flows) < 8:
+        errors.append(f"검수된 개념 흐름 {len(flows)}개 < 8")
+    for tid, steps, note in flows:
+        if tid not in terms and tid not in report_ids:
+            errors.append(f"conceptFlows 알 수 없는 용어: {tid}")
+        if len(re.findall(r'"([^"]+)"', steps)) < 3:
+            errors.append(f"conceptFlows {tid}: 칸이 3개 미만이면 흐름이 아니다")
+        # 화살표만 두면 사용자가 정의 관계도 인과로 읽는다. 관계를 글로 밝혀야 한다.
+        if len(note) < 40:
+            errors.append(f"conceptFlows {tid}: 관계 설명이 짧다")
+
+    drills_src = (root / "drills.ts").read_text(encoding="utf-8")
+    contrast = drills_src[
+        drills_src.index("export const CONTRAST") : drills_src.index("export const CLOZE")
+    ]
+    entries = re.findall(
+        r'\n  "([^"]+)": \{\n    question: "((?:[^"\\]|\\.)*)",\n    foilIds: \[([^\]]*)\]',
+        contrast,
+    )
+    missing_core = set(core_ids) - {t for t, _, _ in entries}
+    if missing_core:
+        errors.append(
+            f"오답을 직접 지정하지 않은 핵심 용어 {len(missing_core)}개: "
+            f"{', '.join(sorted(missing_core)[:5])}"
+        )
+    for tid, _q, foils in entries:
+        ids = re.findall(r'"([^"]+)"', foils)
+        if len(ids) != 3:
+            errors.append(f"CONTRAST {tid}: 오답이 3개가 아니다 ({len(ids)})")
+        for fid in ids:
+            if fid == tid:
+                errors.append(f"CONTRAST {tid}: 오답에 정답이 들어 있다")
+            if fid not in terms and fid not in report_ids:
+                errors.append(f"CONTRAST {tid}: 알 수 없는 오답 {fid}")
+    return errors
 
 
 def check_reading_body(cid: str, text: str) -> list[str]:
@@ -188,8 +280,10 @@ def main() -> int:
             if not 150 <= n <= 400:
                 errors.append(f"{cid} situation {n} chars, want 150-400")
             # 문장이 두세 개면 상황문이지 읽을 거리가 아니다.
-            if text.count("다.") < 4:
-                errors.append(f"{cid} situation has only {text.count('다.')} sentences, want >=4")
+            # 우리 원고는 해요체이므로 `다.`만 세면 한 문장도 못 센다.
+            n = len(re.findall(r"[다요]\.", text))
+            if n < 4:
+                errors.append(f"{cid} situation has only {n} sentences, want >=4")
             errors.extend(check_reading_body(cid, text))
         ans = re.search(r'answerTermId: "([^"]+)"', chunk)
         raw = re.search(r'choiceIds: \[([^\]]+)\]', chunk)
@@ -254,6 +348,8 @@ def main() -> int:
                 errors.append(f"MISCONCEPTIONS {tid} claim too short")
             if len(why) < 20:
                 errors.append(f"MISCONCEPTIONS {tid} why too short")
+
+    errors += check_own_copy(core_ids, terms, report_id_set)
 
     # BOK_REPORT_BRIDGE ids
     for bid in re.findall(r'^  "([^"]+)": \{', report_src, re.M):

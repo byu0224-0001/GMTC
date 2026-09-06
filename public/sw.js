@@ -1,4 +1,4 @@
-const CACHE = "voca-shell-v9";
+const CACHE = "voca-shell-v10";
 const PRECACHE = ["/", "/index.html", "/manifest.webmanifest", "/icon.svg", "/data/terms.json"];
 
 self.addEventListener("install", (event) => {

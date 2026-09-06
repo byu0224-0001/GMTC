@@ -7,7 +7,7 @@ import { labelFor } from "../lib/lookup";
 import { nudgeFor } from "../content/notifications";
 import { daysSinceStudy } from "../lib/learner";
 import { defaultDoneToday, extraSessionsToday, stats, storageWritable } from "../lib/progress";
-import { kstDateKey } from "../lib/srs";
+import { isFamiliar, kstDateKey } from "../lib/srs";
 import { extraQueue, planCounts } from "../lib/today";
 import type { TodayPlanFile } from "../lib/todayPlan";
 import type { ProgressState, Term } from "../types";
@@ -46,6 +46,13 @@ export function HomePage({
   const map = briefing ? mapForBriefing(briefing.id) : undefined;
   const newLabels = plan.newTerms.map((t) => labelFor(t.id, terms));
   const moreLeft = done ? extraQueue(terms, progress).length : 0;
+  /**
+   * 홈에 적는 진도는 Core100이 아니라 실제로 학습한 전체를 센다.
+   * 학습 후보는 221개인데 Core100만 세면 사용자가 본 것보다 적게 나온다.
+   */
+  const cards = Object.values(progress.cards);
+  const seenAll = cards.length;
+  const knownAll = cards.filter(isFamiliar).length;
 
   return (
     <>
@@ -66,8 +73,8 @@ export function HomePage({
               </div>
               <p className="muted" style={{ margin: "10px 0 0" }}>
                 {extras
-                  ? `권장 분량에 ${extras}번 더 얹었습니다. 내일 복습이 돌아옵니다.`
-                  : "내일 복습이 돌아옵니다. 더 하고 싶으면 이어서 해도 됩니다."}
+                  ? `권장 분량에 ${extras}번 더 얹었어요. 내일 복습이 돌아와요.`
+                  : "내일 복습이 돌아와요. 더 하고 싶으면 이어서 해도 돼요."}
               </p>
             </>
           ) : (
@@ -80,20 +87,36 @@ export function HomePage({
                   <p className="muted" style={{ margin: "8px 0 16px" }}>{nudge.body}</p>
                 </>
               ) : null}
-              <div className="caption">오늘 이만큼만 하면 충분합니다</div>
-              <p style={{ margin: "6px 0 0", fontWeight: 600, fontSize: 20 }}>{plan.minutes}분</p>
+              {/*
+                분량을 두 번 적지 않는다. 예전에는 `오늘 이만큼만 하면 충분합니다`라는
+                줄 아래에 `7분`을 따로 크게 적었다. 같은 말을 두 줄에 나눠 쓴 셈이라
+                카드만 길어지고, 정작 아래의 읽기 카드가 화면 밖으로 밀렸다.
+                한 문장에 넣고 구성은 한 줄로 요약한다.
+              */}
+              <div className="display" style={{ margin: 0, fontSize: 22, lineHeight: 1.35 }}>
+                오늘은 {plan.minutes}분이면 돼요
+              </div>
+              <p className="muted" style={{ margin: "8px 0 0" }}>
+                {[
+                  plan.newTerms.length ? `새 용어 ${plan.newTerms.length}개` : null,
+                  plan.review ? `복습 ${plan.review}개` : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || "복습은 내일부터 돌아와요"}
+              </p>
               {newLabels.length ? (
                 <>
-                  <div className="caption" style={{ marginTop: 16 }}>익힐 개념</div>
+                  {/*
+                    처음 보는 용어를 `익힐 개념`이라고 부르지 않는다.
+                    처음 봄 / 익힘 / 익숙함은 우리가 구분해서 세는 상태다.
+                    오늘 처음 만나는 것에 이미 익혔다는 이름을 붙이면 그 구분이 무너진다.
+                  */}
+                  <div className="caption" style={{ marginTop: 16 }}>새로 볼 용어</div>
                   <p style={{ margin: "4px 0 0", fontWeight: 600, lineHeight: 1.45 }}>
                     {newLabels.join(" · ")}
                   </p>
                 </>
               ) : null}
-              <div className="caption" style={{ marginTop: 14 }}>복습</div>
-              <p className="muted" style={{ margin: "4px 0 0" }}>
-                {plan.review ? `${plan.review}개` : "오늘은 없습니다"}
-              </p>
             </>
           )}
         </div>
@@ -139,16 +162,26 @@ export function HomePage({
           className="btn btn-ghost"
           style={{ display: "grid", placeItems: "center", textDecoration: "none" }}
         >
-          개념 연결해서 보기
+          개념 흐름 보기
         </Link>
 
-        <p className="caption" style={{ margin: 0 }}>
-          학습 가능한 용어 {plan.candidateTotal}개 · 아직 안 본 용어 {plan.remainingUnseen}개
-        </p>
+        {/*
+          `학습 가능한 용어 221개 · 아직 안 본 용어 215개`를 지웠다.
+          221은 우리가 문항을 만들 수 있는 범위이지 사용자가 알아야 할 수가 아니다.
+          `한국은행 용어가 787개라는데 왜 221개지`라는 의문만 새로 만들고,
+          `215개 남음`은 우리가 원하지 않는 완주 압박을 준다.
+          대신 지금까지 쌓인 것만 보여 준다.
+        */}
+        {seenAll ? (
+          <p className="caption" style={{ margin: 0 }}>
+            지금까지 본 용어 {seenAll}개
+            {knownAll ? ` · 익숙해진 용어 ${knownAll}개` : ""}
+          </p>
+        ) : null}
         {storageWritable() ? null : (
           <p className="notice">
-            이 브라우저에서는 학습 기록을 저장할 수 없습니다. 학습은 할 수 있지만 진도는 남지
-            않습니다. 시크릿 모드라면 일반 창에서 열어 주세요.
+            이 브라우저에서는 학습 기록을 저장할 수 없어요. 학습은 할 수 있지만 진도가 남지
+            않아요. 시크릿 모드라면 일반 창에서 열어 주세요.
           </p>
         )}
         <p className="notice">{SOURCE_DISCLAIMER}</p>

@@ -1,5 +1,6 @@
 import { REPORT_BOK_CANON, REPORT_ESSENTIALS, canonBokId, reportToTerm } from "../content/reportLexicon";
 import { briefingForPlan, type TodayPlanFile } from "./todayPlan";
+import { LEARNING_MAPS } from "../content/learningMaps";
 import { learningPool, topicOrder, type Pool } from "./pool";
 import type { LearningBriefing } from "../types";
 import type { ProgressState, Term } from "../types";
@@ -144,15 +145,34 @@ export function pickNewTerms(
   progress: ProgressState,
   n: number,
   dateKey: string,
+  readingId?: string,
 ): Term[] {
   if (n <= 0) return [];
   const { terms: candidates, pool } = candidatesOf(terms);
   const unseen = candidates.filter((t) => !progress.cards[t.id]);
   if (unseen.length === 0) return [];
 
+  /*
+   * 하루 신규 두 개가 서로 아무 관계도 없으면 사용자가 세션을 끝내고
+   * `오늘 뭘 배운 거지`라고 느낀다. 디스인플레이션과 지급준비제도가 같은 날
+   * 나오고 읽기는 물가 이야기였던 식이다.
+   *
+   * 그래서 한 개는 오늘 읽기에 걸린 개념에서 뽑고, 나머지는 아래의 분야 순환으로
+   * 뽑는다. 구조와 다양성 중 하나를 버리지 않는다.
+   */
+  const anchored: Term[] = [];
+  if (readingId) {
+    const map = LEARNING_MAPS.find((m) => m.readingId === readingId);
+    const wanted = new Set(map?.steps.map((s) => s.termId) ?? []);
+    const hit = unseen.find((t) => wanted.has(t.id));
+    if (hit) anchored.push(hit);
+  }
+  if (anchored.length >= n) return anchored.slice(0, n);
+
   const seed = dayIndex(dateKey);
   const buckets = new Map<string, Term[]>();
-  for (const t of unseen) {
+  const anchoredIds = new Set(anchored.map((t) => t.id));
+  for (const t of unseen.filter((x) => !anchoredIds.has(x.id))) {
     const key = topicKey(pool, t);
     const arr = buckets.get(key) ?? [];
     arr.push(t);
@@ -166,11 +186,11 @@ export function pickNewTerms(
 
   const order = topicOrder().filter((k) => buckets.has(k)) as string[];
   for (const k of buckets.keys()) if (!order.includes(k)) order.push(k);
-  if (order.length === 0) return [];
+  if (order.length === 0) return anchored.slice(0, n);
   const offset = ((seed % order.length) + order.length) % order.length;
   const rotated = [...order.slice(offset), ...order.slice(0, offset)];
 
-  const out: Term[] = [];
+  const out: Term[] = [...anchored];
   let reportUsed = 0;
   for (let round = 0; out.length < n && round < 60; round += 1) {
     let moved = false;
@@ -235,13 +255,16 @@ export function newPerDay(terms: Term[], progress: ProgressState): number {
 export function todayQueue(
   terms: Term[],
   progress: ProgressState,
-  _plan?: TodayPlanFile,
+  plan?: TodayPlanFile,
   now = new Date(),
 ): SessionStep[] {
-  void _plan;
   const dateKey = kstDateKey(now);
   const n = newPerDay(terms, progress);
-  const fresh = pickNewTerms(terms, progress, n, dateKey);
+  /*
+   * 오늘 읽기를 함께 넘긴다. 신규 한 개를 그 읽기에 걸린 개념에서 뽑기 때문이다.
+   * 홈과 학습 화면이 같은 읽기를 넘겨야 두 화면의 신규 용어가 어긋나지 않는다.
+   */
+  const fresh = pickNewTerms(terms, progress, n, dateKey, plan?.briefingId);
   const freshIds = new Set(fresh.map((t) => t.id));
   const review = pickReviewTerms(terms, progress, freshIds, reviewCap(fresh.length));
   return [
@@ -346,7 +369,7 @@ export function planCounts(
   progress: ProgressState,
   plan: TodayPlanFile,
 ): TodayPlanCounts {
-  const q = todayQueue(terms, progress);
+  const q = todayQueue(terms, progress, plan);
   const newTerms = q
     .filter((s): s is Extract<SessionStep, { kind: "new" }> => s.kind === "new")
     .map((s) => s.term);

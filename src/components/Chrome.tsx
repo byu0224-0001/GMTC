@@ -102,25 +102,71 @@ export function ProgressBar({ value, total }: { value: number; total: number }) 
   );
 }
 
+/**
+ * 검수된 흐름. 화살표를 쓴다.
+ *
+ * 화살표는 사용자가 `A가 B를 일으킨다`로 읽는다. 그래서 관계를 확인한 흐름에만
+ * 쓰고, 그 관계가 무엇인지 한 문장으로 함께 밝힌다. 화살표만 두면 정의 관계도
+ * 인과로 읽히기 때문이다.
+ */
+export function ConceptFlowView({
+  steps,
+  note,
+  terms,
+}: {
+  steps: string[];
+  note: string;
+  terms?: Term[];
+}) {
+  if (!steps.length) return null;
+  return (
+    <>
+      <p className="chain">
+        {steps.map((x, i) => {
+          const href = terms ? resolveChainHref(x, terms) : null;
+          return (
+            <span key={`${x}-${i}`}>
+              {i > 0 ? <span className="chain-arrow"> → </span> : null}
+              {href ? (
+                <Link to={href} className="chain-link">
+                  {x}
+                </Link>
+              ) : (
+                x
+              )}
+            </span>
+          );
+        })}
+      </p>
+      <p className="muted" style={{ margin: "6px 0 0", fontSize: 14, lineHeight: 1.6 }}>
+        {note}
+      </p>
+    </>
+  );
+}
+
+/**
+ * 느슨한 관계. 칩으로만 보여 준다.
+ *
+ * 관련 용어라는 것 말고는 확인한 게 없는 관계다. 여기에 화살표를 씌우면
+ * 우리가 검증하지 않은 인과를 가르치는 셈이 된다.
+ */
 export function Chain({ items, terms }: { items: string[]; terms?: Term[] }) {
   if (!items.length) return null;
   return (
-    <p className="chain">
+    <div className="chip-row">
       {items.map((x, i) => {
         const href = terms ? resolveChainHref(x, terms) : null;
-        return (
-          <span key={`${x}-${i}`}>
-            {i > 0 ? <span className="chain-arrow"> → </span> : null}
-            {href ? (
-              <Link to={href} className="chain-link">
-                {x}
-              </Link>
-            ) : (
-              x
-            )}
+        return href ? (
+          <Link key={`${x}-${i}`} to={href} className="chip chip-link">
+            {x}
+          </Link>
+        ) : (
+          <span key={`${x}-${i}`} className="chip">
+            {x}
           </span>
         );
       })}
-    </p>
+    </div>
   );
 }

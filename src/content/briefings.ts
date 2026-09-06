@@ -1,6 +1,6 @@
 import type { LearningBriefing } from "../types";
 
-const SRC = { label: "학습을 위해 재구성한 예시입니다." };
+const SRC = { label: "학습을 위해 재구성한 예시예요." };
 
 /** 학습용 브리핑. 실제 기사 문장을 옮기지 않음. reviewStatus published는 제품에 실렸다는 뜻이지, 사람 한국어·금융 검수 완료가 아니다. */
 export const LEARNING_BRIEFINGS: LearningBriefing[] = [
@@ -21,20 +21,20 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "소비자물가 상승률이 예상보다 높게 나오면, 물가 상승세가 예상보다 오래 이어질 가능성을 확인하게 됩니다.",
+        text: "소비자물가 상승률이 예상보다 높게 나오면, 물가 상승세가 예상보다 오래 이어질 가능성을 확인하게 돼요.",
       },
       {
         type: "p",
-        text: "물가 상승세가 쉽게 낮아지지 않으면 중앙은행이 기준금리를 빠르게 내리기 어렵습니다. 금리 인하 기대가 약해지면 시장금리는 오를 수 있습니다.",
+        text: "물가 상승세가 쉽게 낮아지지 않으면 중앙은행이 기준금리를 빠르게 내리기 어려워요. 금리 인하 기대가 약해지면 시장금리는 오를 수 있어요.",
       },
       {
         type: "p",
-        text: "시장금리가 오르면 기존 채권 가격은 내려갑니다. 같은 폭으로 금리가 올라도 만기가 긴 채권의 가격이 더 크게 움직일 수 있습니다.",
+        text: "시장금리가 오르면 기존 채권 가격은 내려가요. 같은 폭으로 금리가 올라도 만기가 긴 채권의 가격이 더 크게 움직일 수 있어요.",
       },
       {
         type: "choice",
         depth: "term",
-        question: "같은 폭으로 금리가 올랐는데 장기채 가격이 더 많이 떨어졌습니다. 이 차이를 설명하는 개념은 무엇일까요?",
+        question: "같은 폭으로 금리가 올랐는데 장기채 가격이 더 많이 떨어졌어요. 이 차이를 설명하는 개념은 무엇일까요?",
         answerId: "듀레이션",
         choices: [
           { id: "듀레이션", label: "듀레이션" },
@@ -42,7 +42,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "표면금리", label: "표면금리" },
           { id: "신용스프레드", label: "신용스프레드" },
         ],
-        note: "듀레이션은 금리 변화에 대한 채권 가격의 민감도를 나타냅니다. 일반적으로 듀레이션이 길수록 금리 변화에 가격이 더 크게 움직입니다.",
+        note: "듀레이션은 금리 변화에 대한 채권 가격의 민감도를 나타내요. 일반적으로 듀레이션이 길수록 금리 변화에 가격이 더 크게 움직여요.",
       },
       {
         type: "choice",
@@ -55,14 +55,14 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "div", label: "기업 배당이 늘면 국채 금리가 반드시 오르기 때문" },
           { id: "core", label: "근원물가가 내려 완화 기대로 이어지기 때문" },
         ],
-        note: "물가 상승세가 쉽게 낮아지지 않으면 중앙은행이 기준금리를 빠르게 내리기 어렵습니다. 그 기대가 약해지면 시장금리가 오를 수 있습니다.",
+        note: "물가 상승세가 쉽게 낮아지지 않으면 중앙은행이 기준금리를 빠르게 내리기 어려워요. 그 기대가 약해지면 시장금리가 오를 수 있어요.",
       },
       {
         type: "causal",
         title: "한 번에 연결하면",
         chain: ["물가 상승", "금리 인하 기대 약화", "시장금리 상승", "채권가격 하락"],
         extra:
-          "금리가 높아지면 미래 이익을 현재 가치로 환산할 때 쓰는 할인율도 커질 수 있습니다. 성장 기대를 많이 반영하던 기업 주가에는 부담이 됩니다.",
+          "금리가 높아지면 미래 이익을 현재 가치로 환산할 때 쓰는 할인율도 커질 수 있어요. 성장 기대를 많이 반영하던 기업 주가에는 부담이 돼요.",
       },
       {
         type: "choice",
@@ -75,7 +75,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "div", label: "배당성향이 물가 경로를 결정한다" },
           { id: "ignore", label: "예상과의 차이는 볼 필요가 없다" },
         ],
-        note: "헤드라인 물가 한 달은 에너지 같은 일시 충격이 섞일 수 있습니다. 근원물가가 같이 올랐는지를 봐야 합니다.",
+        note: "헤드라인 물가 한 달은 에너지 같은 일시 충격이 섞일 수 있어요. 근원물가가 같이 올랐는지를 봐야 해요.",
       },
       { type: "concepts", ids: ["소비자물가지수-cpi", "기준금리", "듀레이션"] },
     ],
@@ -85,7 +85,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     kicker: "실적·주가",
     minutes: 3,
     headline: "실적이 좋아졌는데 주가는 왜 내릴까요?",
-    subtitle: "실적은 예상치와 함께 봐야 합니다",
+    subtitle: "실적은 예상치와 함께 봐야 해요",
     primaryTermIds: ["주당순이익-eps", "주가수익비율-per", "rpt-consensus"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -96,7 +96,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "한 기업의 지난 분기 영업이익이 전년보다 늘었습니다. 그런데 실적 발표 당일 주가는 하락했습니다.",
+        text: "한 기업의 지난 분기 영업이익이 전년보다 늘었어요. 그런데 실적 발표 당일 주가는 하락했어요.",
       },
       {
         type: "choice",
@@ -109,16 +109,16 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "cheap", label: "지금 주가가 저평가돼 있다는 의견" },
           { id: "buy", label: "목표주가를 올리고 매수를 유지한다는 추천" },
         ],
-        note: "지난 실적 숫자는 확인된 내용입니다. 앞으로의 이익·목표가·매수는 아직 전망과 의견입니다.",
+        note: "지난 실적 숫자는 확인된 내용이에요. 앞으로의 이익·목표가·매수는 아직 전망과 의견이에요.",
       },
       {
         type: "p",
-        text: "실적이 전년보다 좋아졌더라도 시장의 예상에 못 미치면 주가는 하락할 수 있습니다. 금리가 오르면 같은 이익에도 투자자가 받아들이는 밸류에이션 수준이 낮아질 수 있습니다.",
+        text: "실적이 전년보다 좋아졌더라도 시장의 예상에 못 미치면 주가는 하락할 수 있어요. 금리가 오르면 같은 이익에도 투자자가 받아들이는 밸류에이션 수준이 낮아질 수 있어요.",
       },
       {
         type: "choice",
         depth: "next",
-        question: "실적이 늘었는데도 ‘기대보다 부진했다’는 평가가 나왔습니다. 가장 먼저 무엇과 비교해야 할까요?",
+        question: "실적이 늘었는데도 ‘기대보다 부진했다’는 평가가 나왔어요. 가장 먼저 무엇과 비교해야 할까요?",
         answerId: "cons",
         choices: [
           { id: "cons", label: "컨센서스와 실제 실적의 차이" },
@@ -126,7 +126,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "guide", label: "회사가 내년 가이던스를 안 내면 기대는 없는 것과 같다" },
           { id: "price", label: "당일 주가가 내렸으면 실적 숫자는 틀린 것이다" },
         ],
-        note: "주가는 과거 실적보다 앞으로 얼마를 벌 것으로 봤는지에 더 민감할 수 있습니다.",
+        note: "주가는 과거 실적보다 앞으로 얼마를 벌 것으로 봤는지에 더 민감할 수 있어요.",
       },
       {
         type: "causal",
@@ -141,7 +141,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     kicker: "숫자 읽기",
     minutes: 3,
     headline: "한 달은 +45%, 올해는 +18%",
-    subtitle: "전년 동월 대비와 연초 누적은 비교 기간이 다릅니다",
+    subtitle: "전년 동월 대비와 연초 누적은 비교 기간이 달라요",
     primaryTermIds: ["rpt-yoy", "rpt-ytd", "rpt-base"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -152,7 +152,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "한 기업의 월 수출액이 전년 같은 달보다 45% 늘었습니다. 반면 1월부터 현재까지의 누적 수출액은 전년 같은 기간보다 18% 늘었습니다.",
+        text: "한 기업의 월 수출액이 전년 같은 달보다 45% 늘었어요. 반면 1월부터 현재까지의 누적 수출액은 전년 같은 기간보다 18% 늘었어요.",
       },
       {
         type: "choice",
@@ -165,11 +165,11 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "fxonly", label: "환율만 보면 두 비율은 자동으로 같아진다" },
           { id: "ignore", label: "누적이 낮으면 한 달 숫자는 오류다" },
         ],
-        note: "YoY는 특정 기간을 전년 같은 기간과 비교하고, YTD는 연초부터 현재까지의 누적 실적을 비교합니다. 최근 한 달의 증가율이 높아도 앞선 달의 증가율이 낮았다면 YTD는 더 낮을 수 있습니다.",
+        note: "YoY는 특정 기간을 전년 같은 기간과 비교하고, YTD는 연초부터 현재까지의 누적 실적을 비교해요. 최근 한 달의 증가율이 높아도 앞선 달의 증가율이 낮았다면 YTD는 더 낮을 수 있어요.",
       },
       {
         type: "p",
-        text: "한 달의 +45%만 보고 올해 내내 그 속도로 성장했다고 말하면 과장입니다.",
+        text: "한 달의 +45%만 보고 올해 내내 그 속도로 성장했다고 말하면 과장이에요.",
       },
       {
         type: "choice",
@@ -182,7 +182,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "mom", label: "전월 대비만 보면 YoY는 필요 없다" },
           { id: "skip", label: "한 달 숫자가 크면 누적은 보지 않아도 된다" },
         ],
-        note: "비율만 보면 착시가 날 수 있습니다. 금액의 크기와 작년 같은 기간이 유난히 나빴는지도 같이 봅니다.",
+        note: "비율만 보면 착시가 날 수 있어요. 금액의 크기와 작년 같은 기간이 유난히 나빴는지도 같이 봐요.",
       },
       {
         type: "causal",
@@ -197,7 +197,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     kicker: "환율·수출",
     minutes: 3,
     headline: "원화가 약해지면 수출 기업에 항상 유리할까요?",
-    subtitle: "환율과 수출 물량, 수입 비용을 같이 봅니다",
+    subtitle: "환율과 수출 물량, 수입 비용을 같이 봐요",
     primaryTermIds: ["평가절상", "경상수지"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -208,7 +208,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "원화가 약해지면 같은 달러 수출이 원화로 환산될 때 더 커 보일 수 있습니다. 반대로 수입 원자재 비용도 커질 수 있습니다. 원화가 강해지는 것(평가절상)은 이와 반대입니다.",
+        text: "원화가 약해지면 같은 달러 수출이 원화로 환산될 때 더 커 보일 수 있어요. 반대로 수입 원자재 비용도 커질 수 있어요. 원화가 강해지는 것(평가절상)은 이와 반대예요.",
       },
       {
         type: "choice",
@@ -221,11 +221,11 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "경상수지", label: "경상수지" },
           { id: "외환보유액", label: "외환보유액" },
         ],
-        note: "평가절상은 자국 통화의 가치가 다른 통화보다 높아지는 것입니다. 수출 가격 경쟁력에는 부담이 되고, 수입 물가 부담은 줄어들 수 있습니다.",
+        note: "평가절상은 자국 통화의 가치가 다른 통화보다 높아지는 것이에요. 수출 가격 경쟁력에는 부담이 되고, 수입 물가 부담은 줄어들 수 있어요.",
       },
       {
         type: "p",
-        text: "수출 단가가 좋아 보여도, 해외 수요가 줄면 물량이 빠질 수 있습니다. 환율만으로 실적을 단정할 수 없습니다.",
+        text: "수출 단가가 좋아 보여도, 해외 수요가 줄면 물량이 빠질 수 있어요. 환율만으로 실적을 단정할 수 없어요.",
       },
       {
         type: "choice",
@@ -238,7 +238,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "always", label: "원화 약세면 수출 기업 실적은 항상 좋아진다" },
           { id: "ignore", label: "수입 원자재 비용은 환율과 무관하다" },
         ],
-        note: "경상수지와 수출 물량을 봐야 환율 효과가 실적으로 남는지 가늠할 수 있습니다.",
+        note: "경상수지와 수출 물량을 봐야 환율 효과가 실적으로 남는지 가늠할 수 있어요.",
       },
       {
         type: "causal",
@@ -253,7 +253,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     kicker: "고용·금리",
     minutes: 3,
     headline: "실업률이 오르면 금리 기대는 어떻게 달라질까요?",
-    subtitle: "실업률과 고용률은 다른 지표입니다",
+    subtitle: "실업률과 고용률은 다른 지표예요",
     primaryTermIds: ["실업률", "고용률", "기준금리"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -264,7 +264,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "실업률이 오르면 고용 여건이 약해지고 있다는 신호일 수 있습니다. 경기와 물가 압력이 함께 낮아질 것으로 예상되면 기준금리 인하 가능성이 커질 수 있습니다.",
+        text: "실업률이 오르면 고용 여건이 약해지고 있다는 신호일 수 있어요. 경기와 물가 압력이 함께 낮아질 것으로 예상되면 기준금리 인하 가능성이 커질 수 있어요.",
       },
       {
         type: "choice",
@@ -277,11 +277,11 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "경제성장률", label: "경제성장률" },
           { id: "소매판매", label: "소매판매" },
         ],
-        note: "실업률은 경제활동인구 가운데 실업자가 차지하는 비율입니다. 구직 활동을 하지 않는 사람은 실업률 계산에서 빠질 수 있으므로 고용률 등 다른 지표도 함께 봅니다.",
+        note: "실업률은 경제활동인구 가운데 실업자가 차지하는 비율이에요. 구직 활동을 하지 않는 사람은 실업률 계산에서 빠질 수 있으므로 고용률 등 다른 지표도 함께 봐요.",
       },
       {
         type: "p",
-        text: "실업률만 보면 구직을 포기한 사람은 빠집니다. 고용률을 같이 봐야 일자리 사정이 더 잘 보입니다.",
+        text: "실업률만 보면 구직을 포기한 사람은 빠져요. 고용률을 같이 봐야 일자리 사정이 더 잘 보여요.",
       },
       {
         type: "choice",
@@ -294,7 +294,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "same", label: "실업률과 고용률은 같은 지표이므로 하나만 보면 된다" },
           { id: "ignore", label: "구직 포기자는 고용 판단에 넣을 필요가 없다" },
         ],
-        note: "고용이 약해도 임금과 물가가 단단하면 중앙은행은 쉽게 금리를 내리지 않을 수 있습니다.",
+        note: "고용이 약해도 임금과 물가가 단단하면 중앙은행은 쉽게 금리를 내리지 않을 수 있어요.",
       },
       {
         type: "causal",
@@ -309,7 +309,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     kicker: "투자·생산",
     minutes: 4,
     headline: "설비투자를 늘리면 실적도 바로 좋아질까요?",
-    subtitle: "투자에서 생산까지는 시간이 걸립니다",
+    subtitle: "투자에서 생산까지는 시간이 걸려요",
     primaryTermIds: ["자본적지출", "rpt-capa", "rpt-util"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -320,7 +320,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "기업이 공장이나 장비에 대한 투자를 늘리면 먼저 현금이 나갑니다. 매출은 설비가 실제로 가동되고 수요가 뒷받침될 때 늘 수 있습니다.",
+        text: "기업이 공장이나 장비에 대한 투자를 늘리면 먼저 현금이 나가요. 매출은 설비가 실제로 가동되고 수요가 뒷받침될 때 늘 수 있어요.",
       },
       {
         type: "choice",
@@ -333,11 +333,11 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "rpt-capa", label: "생산능력 (CAPA)" },
           { id: "rpt-util", label: "가동률" },
         ],
-        note: "자본적지출(CAPEX)은 공장·서버·장비처럼 장기간 사용하는 자산에 쓰는 투자 지출입니다.",
+        note: "자본적지출(CAPEX)은 공장·서버·장비처럼 장기간 사용하는 자산에 쓰는 투자 지출이에요.",
       },
       {
         type: "p",
-        text: "투자가 낡은 설비를 바꾸는 것인지, 용량을 늘리는 것인지에 따라 장비 기업의 일감도 달라집니다.",
+        text: "투자가 낡은 설비를 바꾸는 것인지, 용량을 늘리는 것인지에 따라 장비 기업의 일감도 달라져요.",
       },
       {
         type: "choice",
@@ -350,11 +350,11 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "rpt-util", label: "가동률" },
           { id: "주당순이익-eps", label: "주당순이익 (EPS)" },
         ],
-        note: "생산능력(CAPA)은 설비가 최대로 만들 수 있는 양입니다. 투자가 늘어도 생산능력이 바로 늘지는 않을 수 있습니다.",
+        note: "생산능력(CAPA)은 설비가 최대로 만들 수 있는 양이에요. 투자가 늘어도 생산능력이 바로 늘지는 않을 수 있어요.",
       },
       {
         type: "p",
-        text: "설비가 늘어도 가동률이 낮으면 감가상각만 커질 수 있습니다.",
+        text: "설비가 늘어도 가동률이 낮으면 감가상각만 커질 수 있어요.",
       },
       {
         type: "choice",
@@ -367,7 +367,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "자본적지출", label: "자본적지출 (CAPEX)" },
           { id: "소매판매", label: "소매판매" },
         ],
-        note: "가동률은 가진 생산능력 가운데 실제로 얼마나 돌리고 있는지의 비율입니다. 설비가 늘어도 가동률이 낮으면 실적으로 바로 이어지지 않을 수 있습니다.",
+        note: "가동률은 가진 생산능력 가운데 실제로 얼마나 돌리고 있는지의 비율이에요. 설비가 늘어도 가동률이 낮으면 실적으로 바로 이어지지 않을 수 있어요.",
       },
       {
         type: "causal",
@@ -382,7 +382,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     kicker: "경기",
     minutes: 3,
     headline: "성장률은 좋아졌는데 왜 체감경기는 다를까요?",
-    subtitle: "국내총생산(GDP)과 소매판매는 속도가 다를 수 있습니다",
+    subtitle: "국내총생산(GDP)과 소매판매는 속도가 다를 수 있어요",
     primaryTermIds: ["국내총생산-gdp", "소매판매", "경기"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -393,7 +393,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "GDP 성장률이 높아져도 가계 소비가 함께 늘었다고 단정할 수는 없습니다. 수출이나 투자가 성장을 이끌었다면 가계가 느끼는 경기와 차이가 날 수 있습니다.",
+        text: "GDP 성장률이 높아져도 가계 소비가 함께 늘었다고 단정할 수는 없어요. 수출이나 투자가 성장을 이끌었다면 가계가 느끼는 경기와 차이가 날 수 있어요.",
       },
       {
         type: "choice",
@@ -406,11 +406,11 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "경상수지", label: "경상수지" },
           { id: "외환보유액", label: "외환보유액" },
         ],
-        note: "GDP는 국내에서 생산된 재화와 서비스의 가치를 합한 지표입니다. GNI는 그 나라 국민이 국내외에서 벌어들인 소득의 합에 가깝습니다.",
+        note: "GDP는 국내에서 생산된 재화와 서비스의 가치를 합한 지표예요. GNI는 그 나라 국민이 국내외에서 벌어들인 소득의 합에 가까워요.",
       },
       {
         type: "p",
-        text: "수출이 성장률을 끌어올리면 GDP는 괜찮은데, 내수 판매는 약할 수 있습니다.",
+        text: "수출이 성장률을 끌어올리면 GDP는 괜찮은데, 내수 판매는 약할 수 있어요.",
       },
       {
         type: "choice",
@@ -423,7 +423,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "same", label: "GDP와 소매판매는 항상 같은 속도를 가리킨다" },
           { id: "feel", label: "체감이 나쁘면 성장률 숫자는 틀린 것이다" },
         ],
-        note: "같은 성장률이라도 무엇이 성장을 이끌었는지에 따라 가계의 체감경기와 기업 실적은 다르게 나타날 수 있습니다.",
+        note: "같은 성장률이라도 무엇이 성장을 이끌었는지에 따라 가계의 체감경기와 기업 실적은 다르게 나타날 수 있어요.",
       },
       {
         type: "causal",
@@ -438,7 +438,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     kicker: "주주환원",
     minutes: 3,
     headline: "배당 확대 발표만으로 주주환원이 늘었다고 볼 수 있을까요?",
-    subtitle: "계획과 실제 집행은 구분해서 봅니다",
+    subtitle: "계획과 실제 집행은 구분해서 봐요",
     primaryTermIds: ["주주환원정책", "주당순이익-eps", "rpt-guidance"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -449,11 +449,11 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "회사가 배당 확대나 자사주 매입 계획을 발표했다고 해서 주주환원이 이미 이뤄진 것은 아닙니다. 실제 집행 규모와 시기를 확인해야 합니다.",
+        text: "회사가 배당 확대나 자사주 매입 계획을 발표했다고 해서 주주환원이 이미 이뤄진 것은 아니에요. 실제 집행 규모와 시기를 확인해야 해요.",
       },
       {
         type: "p",
-        text: "주주환원을 지속하려면 이익과 현금흐름도 뒷받침돼야 합니다. 이익이 줄어들면 같은 환원 규모를 장기간 유지하기 어려울 수 있습니다.",
+        text: "주주환원을 지속하려면 이익과 현금흐름도 뒷받침돼야 해요. 이익이 줄어들면 같은 환원 규모를 장기간 유지하기 어려울 수 있어요.",
       },
       {
         type: "choice",
@@ -466,7 +466,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "기업공개", label: "기업공개" },
           { id: "rpt-guidance", label: "가이던스" },
         ],
-        note: "주주환원은 배당과 자사주 매입 등으로 이익을 주주에게 돌리는 정책입니다. 발표와 실제 집행은 구분해서 봅니다.",
+        note: "주주환원은 배당과 자사주 매입 등으로 이익을 주주에게 돌리는 정책이에요. 발표와 실제 집행은 구분해서 봐요.",
       },
       {
         type: "choice",
@@ -479,7 +479,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "once", label: "환원 비율을 올리면 이익이 줄어도 지속된다" },
           { id: "price", label: "발표 당일 주가가 오르면 환원은 끝난 것이다" },
         ],
-        note: "계획이 발표돼도 실제 배당·자사주 집행과 이익·현금흐름을 확인해야 지속 여부를 판단할 수 있습니다.",
+        note: "계획이 발표돼도 실제 배당·자사주 집행과 이익·현금흐름을 확인해야 지속 여부를 판단할 수 있어요.",
       },
       {
         type: "causal",
@@ -494,7 +494,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     kicker: "국채·금리",
     minutes: 3,
     headline: "국채금리가 오르면 왜 채권 가격은 내릴까요?",
-    subtitle: "금리와 채권 가격은 반대로 움직입니다",
+    subtitle: "금리와 채권 가격은 반대로 움직여요",
     primaryTermIds: ["국채", "만기수익률", "신용스프레드"],
     supportTermIds: ["듀레이션"],
     sourceMode: "synthetic",
@@ -506,7 +506,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "이미 발행된 채권은 약속된 이자가 정해져 있습니다. 이후 시장금리가 오르면 더 높은 수익률을 제공하는 새 채권의 매력이 커집니다. 기존 채권은 가격이 내려가야 새로운 시장금리와 비슷한 수준의 수익률을 제공할 수 있습니다.",
+        text: "이미 발행된 채권은 약속된 이자가 정해져 있어요. 이후 시장금리가 오르면 더 높은 수익률을 제공하는 새 채권의 매력이 커져요. 기존 채권은 가격이 내려가야 새로운 시장금리와 비슷한 수준의 수익률을 제공할 수 있어요.",
       },
       {
         type: "choice",
@@ -519,11 +519,11 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "기준금리", label: "기준금리" },
           { id: "지급준비제도", label: "지급준비제도" },
         ],
-        note: "표면금리는 채권 발행 시 정해진 이자율입니다. 만기수익률은 현재 가격으로 매수해 만기까지 보유할 때 기대하는 수익률입니다.",
+        note: "표면금리는 채권 발행 시 정해진 이자율이에요. 만기수익률은 현재 가격으로 매수해 만기까지 보유할 때 기대하는 수익률이에요.",
       },
       {
         type: "p",
-        text: "국채금리는 크게 변하지 않았는데 회사채금리만 올랐다면, 회사채와 국채의 금리 차이가 커진 것입니다. 기업의 신용위험에 대해 더 높은 금리를 요구하고 있다는 신호일 수 있습니다.",
+        text: "국채금리는 크게 변하지 않았는데 회사채금리만 올랐다면, 회사채와 국채의 금리 차이가 커진 것이에요. 기업의 신용위험에 대해 더 높은 금리를 요구하고 있다는 신호일 수 있어요.",
       },
       {
         type: "choice",
@@ -536,7 +536,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "div", label: "배당을 늘리면 회사채 스프레드는 반드시 줄어든다" },
           { id: "fx", label: "환율만 보면 신용 스프레드는 결정된다" },
         ],
-        note: "국채금리는 비교적 신용위험이 낮은 금리에 가깝고, 회사채에는 기업의 신용위험이 더해집니다.",
+        note: "국채금리는 비교적 신용위험이 낮은 금리에 가깝고, 회사채에는 기업의 신용위험이 더해져요.",
       },
       {
         type: "causal",
@@ -551,7 +551,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     kicker: "공급·물가",
     minutes: 3,
     headline: "공급이 줄면 물가는 왜 오를까요?",
-    subtitle: "수요보다 공급이 먼저 움직일 수 있습니다",
+    subtitle: "수요보다 공급이 먼저 움직일 수 있어요",
     primaryTermIds: ["인플레이션", "생산자물가지수-ppi", "스태그플레이션"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -562,7 +562,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "수요가 그대로여도 원자재나 부품 공급이 줄면 가격이 오를 수 있습니다. 생산 단계의 비용 상승이 소비자 가격에 전가되면 소비자물가 상승 압력으로 이어질 수 있습니다.",
+        text: "수요가 그대로여도 원자재나 부품 공급이 줄면 가격이 오를 수 있어요. 생산 단계의 비용 상승이 소비자 가격에 전가되면 소비자물가 상승 압력으로 이어질 수 있어요.",
       },
       {
         type: "choice",
@@ -575,11 +575,11 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "소매판매", label: "소매판매" },
           { id: "실업률", label: "실업률" },
         ],
-        note: "생산자물가지수(PPI)는 생산자가 거래하는 상품과 서비스의 가격 변화를 보여줍니다. 생산 단계의 가격 상승이 소비자 가격에 얼마나 전가되는지는 별도로 확인해야 합니다.",
+        note: "생산자물가지수(PPI)는 생산자가 거래하는 상품과 서비스의 가격 변화를 보여줘요. 생산 단계의 가격 상승이 소비자 가격에 얼마나 전가되는지는 별도로 확인해야 해요.",
       },
       {
         type: "p",
-        text: "성장은 약한데 물가만 오르는 구간도 있습니다. 그때는 금리만 내려서 해결된다고 보기 어렵습니다.",
+        text: "성장은 약한데 물가만 오르는 구간도 있어요. 그때는 금리만 내려서 해결된다고 보기 어려워요.",
       },
       {
         type: "choice",
@@ -592,7 +592,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "cpi-only", label: "PPI는 볼 필요 없이 CPI 한 줄이면 충분하다" },
           { id: "ignore", label: "공급 제약은 물가와 무관하다" },
         ],
-        note: "수요가 줄어도 공급이 막혀 있으면 물가가 오를 수 있습니다. 성장과 물가를 한 방향으로만 묶지 않습니다.",
+        note: "수요가 줄어도 공급이 막혀 있으면 물가가 오를 수 있어요. 성장과 물가를 한 방향으로만 묶지 않아요.",
       },
       {
         type: "causal",

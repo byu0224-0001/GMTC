@@ -215,7 +215,25 @@ a { color: var(--color-primary-deep); text-decoration: none; }
   border-color: var(--color-wrong);
   border-left: 3px solid var(--color-wrong);
 }
-.choice.dim { opacity: 0.45; }
+/*
+  답을 고른 뒤에는 학습의 중심이 `선택`에서 `이해`로 넘어간다.
+  고른 답과 정답만 그대로 두고, 나머지 보기는 줄여서 해설을 화면 위로 끌어올린다.
+*/
+.choice.dim {
+  opacity: 0.4;
+  min-height: 0;
+  padding: 7px 16px;
+  font-size: 14px;
+}
+
+.verdict {
+  margin: 4px 0 0;
+  font-weight: 600;
+  font-size: 15px;
+}
+.verdict.ok { color: var(--color-primary); }
+.verdict.no { color: var(--color-wrong); }
+.verdict.ok::before { content: "✓ "; }
 
 .choice-row {
   display: flex;
@@ -255,6 +273,8 @@ a.chip {
   align-items: center;
   text-decoration: none;
 }
+/* 사전으로 넘어갈 수 있는 칩. 눌러도 되는 것과 아닌 것을 구분한다. */
+.chip-link { color: var(--color-primary); }
 
 .search {
   width: 100%;

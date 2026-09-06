@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Chain, ProgressBar } from "../components/Chrome";
+import { Chain, ConceptFlowView, ProgressBar } from "../components/Chrome";
 import { PushPrompt, shouldAskPush } from "../components/PushPrompt";
 import { TAXONOMY_LABEL, type Taxonomy } from "../content/literacy";
+import { CONCEPT_FLOWS } from "../content/conceptFlows";
 import { mapForBriefing } from "../content/learningMaps";
 import { beginTodaySession, endTodaySession, logEvent } from "../lib/events";
 import { displayTitle } from "../lib/hangul";
@@ -15,7 +16,7 @@ import {
   markExtraSession,
   saveProgress,
 } from "../lib/progress";
-import { makeDrill, makeFirstRecall } from "../lib/quiz";
+import { differenceNote, makeDrill, makeFirstRecall, withJosa } from "../lib/quiz";
 import { dueLabel, daysUntil, practice } from "../lib/srs";
 import { briefingForPlan, fallbackPlan, lockTodayLesson, type TodayPlanFile } from "../lib/todayPlan";
 import {
@@ -42,8 +43,11 @@ export function LearnPage({
   );
 
   const queue = useMemo<SessionStep[]>(
-    () => (source === "extra" ? extraQueue(terms, loadProgress()) : todayQueue(terms, loadProgress())),
-    [terms, source],
+    () =>
+      source === "extra"
+        ? extraQueue(terms, loadProgress())
+        : todayQueue(terms, loadProgress(), plan),
+    [terms, source, plan],
   );
 
   const [i, setI] = useState(0);
@@ -103,7 +107,7 @@ export function LearnPage({
       <div className="page session">
         <div className="empty">
           <div className="display">
-            {emptyExtra ? "지금은 더 볼 것이 없습니다" : "오늘 할 건 다 했어요"}
+            {emptyExtra ? "지금은 더 볼 것이 없어요" : "오늘 할 건 다 했어요"}
           </div>
           {emptyExtra ? (
             <p className="muted" style={{ marginTop: 12 }}>
@@ -150,6 +154,17 @@ export function LearnPage({
     );
   }
 
+  const sessionTitle = source === "extra" ? "5분 더" : "오늘 학습";
+  /** 관계를 확인해 둔 흐름만 화살표로 보여 준다. 나머지는 칩으로만 둔다. */
+  const flow = CONCEPT_FLOWS[step.term.id];
+  const wrongPickNote =
+    picked && drill && picked !== drill.answerId
+      ? (() => {
+          const pickedId = drill.choices.find((c) => c.id === picked)?.termId;
+          const pickedTerm = pickedId ? terms.find((t) => t.id === pickedId) : undefined;
+          return pickedTerm ? differenceNote(pickedTerm, step.term) : null;
+        })()
+      : null;
   const label =
     step.kind === "new"
       ? "새 용어"
@@ -188,7 +203,13 @@ export function LearnPage({
     <>
       <header className="topbar">
         <button className="icon-btn" onClick={() => nav("/")} aria-label="닫기">✕</button>
-        <h1>{label} {i + 1}/{queue.length}</h1>
+        {/*
+          제목의 기준을 세션 중간에 바꾸지 않는다. 예전에는 3번 문제에서
+          `방금 본 용어 3/8`, 5번에서 `복습 5/8`로 바뀌었다. 사용자는 세션 하나를
+          진행하는 중인데 진행률의 기준이 달라진 것처럼 읽힌다.
+          한 세션 = 한 기준으로 두고, 이 문항이 무엇인지는 카드 안에서 밝힌다.
+        */}
+        <h1>{sessionTitle} {i + 1}/{queue.length}</h1>
         <span />
       </header>
       <div style={{ padding: "0 20px 8px" }}>
@@ -212,9 +233,14 @@ export function LearnPage({
                   {step.term.whyItMatters ? (
                     <p className="why"><strong>알아두면 좋은 이유</strong> {step.term.whyItMatters}</p>
                   ) : null}
-                  {step.term.chain.length > 0 ? (
+                  {flow ? (
                     <>
-                      <div className="caption">연결되는 개념</div>
+                      <div className="caption">이렇게 이어서 볼 수 있어요</div>
+                      <ConceptFlowView steps={flow.steps} note={flow.note} terms={terms} />
+                    </>
+                  ) : step.term.chain.length > 0 ? (
+                    <>
+                      <div className="caption">같이 보면 좋은 개념</div>
                       <Chain items={step.term.chain} terms={terms} />
                     </>
                   ) : null}
@@ -312,6 +338,24 @@ export function LearnPage({
             </div>
             {picked ? (
               <>
+                {/*
+                  맞았는지 틀렸는지를 초록·빨강 테두리로만 알리지 않는다. 색을 구분하기
+                  어려운 사람도 있고, 색만으로는 `그래서 정답이 뭐였지`가 남는다.
+                  글로 한 번 적어 준다.
+                */}
+                <p
+                  className={picked === drill.answerId ? "verdict ok" : "verdict no"}
+                  role="status"
+                >
+                  {picked === drill.answerId
+                    ? "맞았어요"
+                    : `정답은 ${withJosa(displayTitle(step.term), "이에요")}`}
+                </p>
+                {/*
+                  틀렸을 때는 정답 설명보다 내가 고른 것과의 차이가 먼저다.
+                  두 개념을 맞바꿔 알고 있는 상태를 그대로 두면 다음에 또 바꿔 고른다.
+                */}
+                {wrongPickNote ? <p className="why">{wrongPickNote}</p> : null}
                 <p className="why">
                   <strong>{displayTitle(step.term)}</strong> {drill.note}
                 </p>
@@ -322,9 +366,14 @@ export function LearnPage({
                   내부 동작을 설명하려고 화면에 줄을 하나 더 두지 않는다.
                 */}
                 {lastDue ? <div className="caption">{dueLabel(daysUntil(lastDue))}</div> : null}
-                {step.term.chain.length > 0 ? (
+                {flow ? (
                   <>
-                    <div className="caption">연결되는 개념</div>
+                    <div className="caption">이렇게 이어서 볼 수 있어요</div>
+                    <ConceptFlowView steps={flow.steps} note={flow.note} terms={terms} />
+                  </>
+                ) : step.term.chain.length > 0 ? (
+                  <>
+                    <div className="caption">같이 보면 좋은 개념</div>
                     <Chain items={step.term.chain} terms={terms} />
                   </>
                 ) : null}

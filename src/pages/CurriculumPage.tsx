@@ -67,8 +67,8 @@ export function CurriculumPage({
           {done ? (
             <p className="muted" style={{ margin: "8px 0 0", lineHeight: 1.5 }}>
               {extra.length
-                ? "오늘 권장 분량은 마쳤습니다. 여기서부터는 원하는 만큼만 하면 됩니다."
-                : "지금은 더 볼 것이 없습니다. 복습은 날짜가 되면 돌아옵니다."}
+                ? "오늘 권장 분량은 마쳤어요. 여기서부터는 원하는 만큼만 하면 돼요."
+                : "지금은 더 볼 것이 없어요. 복습은 날짜가 되면 돌아와요."}
             </p>
           ) : (
             <p style={{ margin: "8px 0 0", fontWeight: 600, lineHeight: 1.45 }}>

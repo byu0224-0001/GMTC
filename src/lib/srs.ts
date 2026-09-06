@@ -190,10 +190,16 @@ export function practice(
   return { ...card, successDates, successForms, updatedAt: now.toISOString() };
 }
 
+/**
+ * 다음에 언제 다시 나오는지.
+ *
+ * `다음 복습은 2일 뒤입니다`는 우리 일정표를 읽어 준 문장이다. 사용자가 알고 싶은
+ * 것은 일정의 이름이 아니라 이 용어를 언제 또 만나는지다. 만나는 쪽으로 적는다.
+ */
 export function dueLabel(days: number): string {
-  if (days <= 0) return "다음 복습은 오늘입니다";
-  if (days === 1) return "다음 복습은 내일입니다";
-  return `다음 복습은 ${days}일 뒤입니다`;
+  if (days <= 0) return "오늘 다시 나와요";
+  if (days === 1) return "내일 다시 나와요";
+  return `${days}일 뒤에 다시 나와요`;
 }
 
 /** 예전 SM-2로 수개월까지 밀린 카드를 현재 사다리 안으로 당긴다. */

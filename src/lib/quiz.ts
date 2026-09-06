@@ -25,13 +25,80 @@ export function seededShuffle<T>(arr: T[], seed: number): T[] {
 }
 
 /** 같은 분야에서 먼저 고른다. 분야가 다르면 정답을 몰라도 지워낼 수 있어 문제가 쉬워진다. */
+/**
+ * 개념의 종류. 표제어 끝에 붙는 말로 가른다.
+ *
+ * 같은 분야라는 것만으로는 오답이 그럴듯해지지 않는다. `경기·성장` 분야에는
+ * 잠재GDP성장률과 청년실업률, 연구개발이 함께 들어 있다. 이 셋을 한 문항에 놓으면
+ * 사용자는 개념을 몰라도 `성장률을 묻는데 연구개발은 아니겠지`로 지워 낸다.
+ * 그건 학습이 아니라 소거법이다.
+ *
+ * 우리 사용자는 완전히 모르는 게 아니라 `이거였나 저거였나` 상태다. 그래서 오답은
+ * 같은 종류여야 한다. 성장률에는 다른 성장률을, 제도에는 다른 제도를 놓는다.
+ */
+const KIND_PATTERNS: RegExp[] = [
+  /(성장률|증가율)$/,
+  /(실업률|고용률|참가율|취업률)$/,
+  /(물가|물가지수|인플레이션|인플레이션율)$/,
+  /(제도|제)$/,
+  /(정책|운영|기능|정책수단)$/,
+  /(금리|이자율|수익률)$/,
+  /(지수)$/,
+  /(비율|배율|배수|율)$/,
+  /(채|채권)$/,
+  /(시장)$/,
+  /(수지|잔액|총량|통화)$/,
+  /(옵션|선물|스왑|파생상품)$/,
+  /(인구|가구)$/,
+  /(소득|임금|보수)$/,
+  /(자산|부채|자본)$/,
+  /(세|조세|부담금)$/,
+  /(환율|환율제도)$/,
+  /(펀드|신탁)$/,
+  /(은행|기관|기구)$/,
+];
+
+function kindOf(t: Term): string | null {
+  for (const re of KIND_PATTERNS) {
+    if (re.test(t.headword)) return re.source;
+  }
+  return null;
+}
+
+/**
+ * 표제어가 공유하는 말토막.
+ *
+ * `이거였나 저거였나` 하는 짝은 대개 이름 일부를 나눠 쓴다. 광의통화와 협의통화,
+ * 고정환율제도와 변동환율제도, 경제성장률과 잠재GDP성장률처럼. 이름이 겹치면
+ * 사용자는 이름만으로 지워 낼 수 없고 뜻을 따져야 한다. 그게 우리가 원하는 상태다.
+ *
+ * 두 글자로 본다. 한 글자는 `금`이나 `자`처럼 아무 데나 걸려 소용이 없다.
+ */
+function sharesMorpheme(a: string, b: string): boolean {
+  for (let i = 0; i + 2 <= a.length; i += 1) {
+    const piece = a.slice(i, i + 2);
+    if (!/^[가-힣]{2}$/.test(piece)) continue;
+    if (b.includes(piece)) return true;
+  }
+  return false;
+}
+
 export function pickDistractors(answer: Term, pool: Term[], n: number, seed: number): Term[] {
   const topicOf = (t: Term) => learningPool(pool).byId.get(t.id)?.topic ?? t.taxonomy ?? t.category;
   const want = topicOf(answer);
+  const wantKind = kindOf(answer);
   const same = pool.filter((t) => t.id !== answer.id && topicOf(t) === want);
   const rest = pool.filter((t) => t.id !== answer.id);
+  /**
+   * 헷갈릴 만한 것을 먼저 쓰고, 모자라면 같은 분야, 그다음 전체로 넓힌다.
+   * 넓히는 순서를 두지 않으면 후보가 적은 분야에서 문항이 아예 안 만들어진다.
+   */
+  const confusable = same.filter(
+    (t) =>
+      (wantKind && kindOf(t) === wantKind) || sharesMorpheme(answer.headword, t.headword),
+  );
   const picked: Term[] = [];
-  for (const src of [same, rest]) {
+  for (const src of [confusable, same, rest]) {
     for (const t of seededShuffle(src, seed)) {
       if (picked.length >= n) break;
       if (picked.some((p) => p.id === t.id)) continue;
@@ -79,18 +146,97 @@ function tooSimilar(a: string, b: string): boolean {
   return n >= 12 && x.slice(0, n) === y.slice(0, n);
 }
 
-/** 문제 문장과 겹치지 않는 해설. 정의 반복을 피한다. */
+/**
+ * 두 문장이 결국 같은 말인지.
+ *
+ * 앞부분만 비교하면 `커졌다고 가계가 모두 넉넉해졌다는 뜻은 아니에요`와
+ * `GDP가 늘었다고 가계가 모두 부유해진 것은 아니에요`가 서로 다른 문장으로
+ * 통과한다. 둘을 나란히 붙이면 사용자는 같은 말을 두 번 읽는다.
+ * 그래서 낱말이 얼마나 겹치는지로 본다.
+ */
+function saysSame(a: string, b: string): boolean {
+  const words = (s: string) => new Set(s.match(/[가-힣A-Za-z]{2,}/g) ?? []);
+  const x = words(a);
+  const y = words(b);
+  if (x.size === 0 || y.size === 0) return false;
+  let shared = 0;
+  for (const w of x) if (y.has(w)) shared += 1;
+  return shared / new Set([...x, ...y]).size >= 0.3;
+}
+
+/**
+ * 정답을 고른 뒤 보여 줄 해설.
+ *
+ * 우리 사용자는 이 개념을 처음 듣는 사람이 아니다. `들어본 말인데 막상 설명하거나
+ * 기사에서 해석하려면 막히는 사람`이다. 그래서 정답을 맞힌 뒤에 필요한 것은
+ * 정의를 한 번 더 듣는 것도, 헷갈리지 말라는 경고도 아니라
+ * **그래서 이걸 어떻게 읽으면 되는지**다.
+ *
+ * 예전에는 `commonConfusions`를 1순위로 썼다. 그래서 디스인플레이션을 맞힌 뒤에
+ * `디플레이션과 바꿔 쓰지 않습니다`만 나왔다. 틀린 말은 아니지만 얻는 게 없다.
+ * 순서를 바꿔 해석 문장을 먼저 쓰고, 혼동 경고는 뒤에 덧붙인다.
+ *
+ * 문항이 이미 정의를 말했으므로 그 문장과 겹치는 후보는 버린다.
+ */
 function explanationNote(term: Term, prompt: string): string {
-  const candidates = [
-    term.commonConfusions[0],
-    term.whyItMatters,
-    term.easyExplanation,
-    term.keyPoints[0],
-  ].filter((s): s is string => Boolean(s));
-  for (const s of candidates) {
-    if (!tooSimilar(s, prompt)) return s;
-  }
-  return term.commonConfusions[0] || term.whyItMatters || term.easyExplanation || "";
+  // 그래서 어떻게 읽는지. 이게 이 사용자에게 가장 값어치 있는 문장이다.
+  const reading = [term.whyItMatters, term.keyPoints[0], term.easyExplanation].find(
+    (s) => s && !tooSimilar(s, prompt),
+  );
+  /*
+   * 해설은 두 문장까지다.
+   *
+   *   첫째, 이게 정확히 무엇인지 — 문항이 이미 말했으므로 생략한다
+   *   둘째, 그래서 어떻게 읽는지
+   *   셋째, 혼동 가능성이 높을 때만 차이
+   *
+   * 그래서 해석이 이미 두 문장이면 혼동 경고를 붙이지 않는다. 5분짜리 세션에서
+   * 한 문항의 해설이 세 문장을 넘으면 그냥 안 읽는다. 붙일 때도 해석의 어느
+   * 문장과도 같은 말이 아닐 때만 붙인다.
+   */
+  const confusion = term.commonConfusions[0];
+  const readingSentences = reading ? reading.split(/(?<=[다요]\.)\s+/).filter(Boolean) : [];
+  const worthAdding =
+    reading &&
+    confusion &&
+    readingSentences.length < 2 &&
+    !tooSimilar(confusion, prompt) &&
+    !readingSentences.some((s) => saysSame(confusion, s));
+  if (worthAdding) return `${reading} ${confusion}`;
+  if (reading) return reading;
+  if (confusion && !tooSimilar(confusion, prompt)) return confusion;
+  return term.whyItMatters || term.easyExplanation || confusion || "";
+}
+
+/** 앞말의 끝소리에 따라 조사를 고른다. `듀레이션은` / `국채는`. */
+export function withJosa(word: string, pair: "은는" | "이가" | "이에요"): string {
+  const last = word.at(-1) ?? "";
+  const code = last.codePointAt(0) ?? 0;
+  const hangul = code >= 0xac00 && code <= 0xd7a3;
+  // 한글이 아니면(PER, ETF 같은 약어) 받침을 알 수 없으니 안전한 쪽을 쓴다.
+  const hasFinal = hangul ? (code - 0xac00) % 28 !== 0 : true;
+  if (pair === "은는") return `${word}${hasFinal ? "은" : "는"}`;
+  if (pair === "이가") return `${word}${hasFinal ? "이" : "가"}`;
+  return `${word}${hasFinal ? "이에요" : "예요"}`;
+}
+
+/**
+ * 오답을 골랐을 때 보여 줄, 고른 것과 정답의 차이.
+ *
+ * `틀렸어요`만 보여 주면 사용자는 왜 아닌지를 모른 채 넘어간다. 정답 설명만
+ * 보여 줘도 자기가 왜 그걸 골랐는지는 그대로 남는다. 우리 사용자는 완전히
+ * 모르는 게 아니라 두 개념을 맞바꿔 알고 있는 상태이므로, 필요한 것은
+ * **내가 고른 것이 실제로 무엇인지**다.
+ *
+ *     기대인플레이션 문항에서 `인플레이션`을 골랐다면
+ *     → 인플레이션은 물건 값이 실제로 오르는 현상이에요.
+ *       앞으로 얼마나 오를 것으로 예상하는지는 기대인플레이션이에요.
+ */
+export function differenceNote(pickedTerm: Term, answerTerm: Term): string | null {
+  if (pickedTerm.id === answerTerm.id) return null;
+  const what = pickedTerm.oneLiner || pickedTerm.shortDef;
+  if (!what) return null;
+  return `${withJosa(displayTitle(pickedTerm), "은는")} ${what} 여기서 물어본 것은 ${withJosa(displayTitle(answerTerm), "이에요")}.`;
 }
 
 /**
@@ -163,12 +309,19 @@ export function formFor(term: Term, pool: Term[], card: SrsCard | undefined): Re
   return "recall";
 }
 
+/**
+ * 문제 유형 이름.
+ *
+ * 사용자가 화면에서 실제로 하는 일로 적는다. `용어 떠올리기`는 우리가 안에서 쓰는
+ * 이름(recall)을 그대로 옮긴 것이었는데, 화면에서 사용자는 떠올리는 게 아니라
+ * 설명을 읽고 넷 중 하나를 고른다. 내부 이름과 화면 이름이 같아야 할 이유는 없다.
+ */
 const CAPTION: Record<RetrievalForm, string> = {
-  recognition: "뜻 고르기",
-  recall: "용어 떠올리기",
-  contrast: "비슷한 개념 구분",
-  judgment: "맞는 설명인지 판단",
-  context: "짧은 상황에 적용",
+  recognition: "뜻 맞히기",
+  recall: "설명 보고 맞히기",
+  contrast: "헷갈리는 개념 구분하기",
+  judgment: "맞을까?",
+  context: "문장에서 찾기",
 };
 
 function shorten(s: string, max: number): string {
