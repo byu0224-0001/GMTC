@@ -182,6 +182,11 @@ export function taxonomyOf(id: string): Taxonomy | undefined {
 
 export function learningFor(term: { id: string; headword: string }): LearningLayer {
   const hand = CORE_COPY[term.id];
+  /**
+   * 자체 원고가 있다는 것과 검수 완료는 다른 플래그다.
+   * 손으로 쓴 문장도 한국어·금융 검수가 끝나기 전에는 false로 둔다.
+   * 파일럿 용어인지도 여기서 판단하지 않는다. 그건 `pilotCore.ts`의 일이다.
+   */
   if (hand) return { ...hand, reviewed: false };
   return {
     oneLiner: "",

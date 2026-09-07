@@ -214,5 +214,11 @@ export interface LearningBriefing {
   evergreen?: boolean;
   learningObjectives?: string[];
   difficulty?: "intro" | "core" | "advanced";
+  /**
+   * 제품에 실렸는지. `published`는 사람이 한국어·금융을 검수했다는 뜻이 아니다.
+   * 검수 완료는 `copyReviewed`로만 표시한다.
+   */
   reviewStatus?: "draft" | "reviewed" | "published";
+  /** 사람이 한국어와 금융 논리를 검수한 뒤에만 true. 출고와 별개다. */
+  copyReviewed?: boolean;
 }

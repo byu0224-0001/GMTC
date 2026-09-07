@@ -2,7 +2,10 @@ import type { LearningBriefing } from "../types";
 
 const SRC = { label: "학습을 위해 재구성한 예시예요." };
 
-/** 학습용 브리핑. 실제 기사 문장을 옮기지 않음. reviewStatus published는 제품에 실렸다는 뜻이지, 사람 한국어·금융 검수 완료가 아니다. */
+/** 학습용 브리핑. 실제 기사 문장을 옮기지 않음.
+ * `reviewStatus: published`는 제품에 실렸다는 뜻이다. 사람 한국어·금융 검수 완료는 `copyReviewed`다.
+ * 둘을 같은 값으로 쓰면 출고한 초안을 검수한 글로 착각한다.
+ */
 export const LEARNING_BRIEFINGS: LearningBriefing[] = [
   {
     id: "bf-cpi-rates",

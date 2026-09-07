@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { InstallNudge, shouldShowInstallNudge } from "../components/InstallNudge";
 import { TopBar } from "../components/Chrome";
 import { APP_SHORT_NAME, SOURCE_DISCLAIMER } from "../content/brand";
 import { CORE100 } from "../content/literacy";
@@ -6,7 +7,7 @@ import { mapForBriefing } from "../content/learningMaps";
 import { labelFor } from "../lib/lookup";
 import { nudgeFor } from "../content/notifications";
 import { daysSinceStudy } from "../lib/learner";
-import { defaultDoneToday, extraSessionsToday, stats, storageWritable } from "../lib/progress";
+import { briefingCompletedOn, defaultDoneToday, extraSessionsToday, stats, storageWritable } from "../lib/progress";
 import { isFamiliar, kstDateKey } from "../lib/srs";
 import { extraQueue, planCounts } from "../lib/today";
 import type { TodayPlanFile } from "../lib/todayPlan";
@@ -27,14 +28,18 @@ export function HomePage({
    * 완료 판단은 `남은 큐가 비었는가`가 아니라 권장 분량을 마쳤는지로 한다.
    * 추가로 공부하면 큐가 다시 차기 때문에, 큐 길이로 판단하면 완료가 취소된다.
    */
-  const done = defaultDoneToday(progress) || plan.total === 0;
+  const termsDone = defaultDoneToday(progress) || plan.total === 0;
+  const briefing = plan.briefing;
+  const readingDone = !briefing || briefingCompletedOn(progress, kstDateKey(), briefing.id);
+  /** 권장 학습을 마쳤다는 것과 하루를 다 했다는 말은 다르다. 읽기가 남았으면 완료로 말하지 않는다. */
+  const done = termsDone && readingDone;
   const extras = extraSessionsToday(progress);
   /**
    * 브랜드 문구는 여기서만 쓴다.
    * 온보딩과 문제 화면에서는 쓰지 않는다. 처음 온 사람에게 자조적 문구를 먼저 보이면
    * 그건 농담이 아니라 평가가 된다. 이미 며칠 해 본 사람에게만 말을 건다.
    */
-  const nudge = done
+  const nudge = termsDone
     ? null
     : nudgeFor({
         daysSinceStudy: daysSinceStudy(progress),
@@ -42,10 +47,9 @@ export function HomePage({
         streakDays: progress.streakDays,
         seed: kstDateKey(),
       });
-  const briefing = plan.briefing;
   const map = briefing ? mapForBriefing(briefing.id) : undefined;
   const newLabels = plan.newTerms.map((t) => labelFor(t.id, terms));
-  const moreLeft = done ? extraQueue(terms, progress).length : 0;
+  const moreLeft = termsDone ? extraQueue(terms, progress).length : 0;
   /**
    * 홈에 적는 진도는 Core100이 아니라 실제로 학습한 전체를 센다.
    * 학습 후보는 221개인데 Core100만 세면 사용자가 본 것보다 적게 나온다.
@@ -82,6 +86,15 @@ export function HomePage({
                   : "내일 다시 볼 용어가 있어요. 더 하고 싶으면 이어서 해도 돼요."}
               </p>
             </>
+          ) : termsDone ? (
+            <>
+              <div className="display" style={{ margin: 0, fontSize: 22, lineHeight: 1.35 }}>
+                학습은 마쳤어요
+              </div>
+              <p className="muted" style={{ margin: "10px 0 0" }}>
+                읽기가 남아 있어요. 배운 말을 다른 문장에서 한 번 더 만나 보세요.
+              </p>
+            </>
           ) : (
             <>
               {nudge && nudge.kind !== "today_pending" ? (
@@ -96,7 +109,7 @@ export function HomePage({
                 한 문장에 넣고 구성은 한 줄로 요약한다.
               */}
               <div className="display" style={{ margin: 0, fontSize: 22, lineHeight: 1.35 }}>
-                오늘은 {plan.minutes}분이면 돼요
+                오늘은 학습 {plan.minutes}분이면 돼요
               </div>
               <p className="muted" style={{ margin: "8px 0 0" }}>
                 {[
@@ -129,7 +142,7 @@ export function HomePage({
           끝내도 괜찮다는 감각을 실제로 줘야 한다. 그래서 완료 상태에서는 primary를
           두지 않는다. 아직 남은 상태에서만 `시작하기`가 primary다.
         */}
-        {done ? null : (
+        {termsDone ? null : (
           <Link
             to="/learn/session"
             className="btn btn-primary"
@@ -140,12 +153,18 @@ export function HomePage({
         )}
 
         {briefing ? (
-          <Link to={`/briefing/${briefing.id}`} className="card" style={{ color: "inherit", display: "block" }}>
-            <div className="caption">읽기 · {briefing.minutes}분</div>
+          <Link
+            to={`/briefing/${briefing.id}`}
+            className={termsDone && !readingDone ? "card featured" : "card"}
+            style={{ color: "inherit", display: "block" }}
+          >
+            <div className="caption">{termsDone && !readingDone ? "남은 읽기" : "읽기"} · {briefing.minutes}분</div>
             <strong style={{ display: "block", marginTop: 6, lineHeight: 1.45 }}>{briefing.headline}</strong>
             <span className="muted">{map ? map.kicker : briefing.subtitle}</span>
           </Link>
         ) : null}
+
+        {shouldShowInstallNudge(progress.doneSessions) ? <InstallNudge /> : null}
 
         {done && moreLeft ? (
           <Link

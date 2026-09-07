@@ -339,7 +339,16 @@ export function extraQueue(
 }
 
 export function estimateMinutes(neu: number, review: number, firstRecall = 0): number {
-  const raw = neu * 1.15 + firstRecall * 0.7 + review * 0.8;
+  return estimateQueueMinutes([
+    ...Array.from({ length: neu }, () => ({ kind: "new" as const })),
+    ...Array.from({ length: firstRecall }, () => ({ kind: "first_recall" as const })),
+    ...Array.from({ length: review }, () => ({ kind: "recall" as const })),
+  ]);
+}
+
+/** 실제 큐의 단계 비용으로 센다. first_recall을 빠뜨리면 홈의 분량이 짧아 보인다. */
+export function estimateQueueMinutes(steps: { kind: SessionStep["kind"] }[]): number {
+  const raw = steps.reduce((sum, step) => sum + STEP_COST[step.kind], 0);
   if (raw <= 0) return 0;
   return Math.min(12, Math.max(1, Math.round(raw)));
 }
@@ -396,7 +405,7 @@ export function planCounts(
     reviewTerms,
     briefing: briefingForPlan(plan, progress.seenContextIds),
     total: q.length,
-    minutes: estimateMinutes(newTerms.length, reviewTerms.length, newTerms.length),
+    minutes: estimateQueueMinutes(q),
     remainingUnseen: candidates.filter((t) => !progress.cards[t.id]).length,
     candidateTotal: candidates.length,
     graduated: familiarFull + familiarFallback,

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ProgressBar, RelatedConcepts } from "../components/Chrome";
 import { DeepDive } from "../components/DeepDive";
 import { PushPrompt, shouldAskPush } from "../components/PushPrompt";
+import { InstallNudge, shouldShowInstallNudge } from "../components/InstallNudge";
 import { TAXONOMY_LABEL, type Taxonomy } from "../content/literacy";
 import { alsoCalled } from "../content/alsoCalled";
 import { inTheNews } from "../content/inTheNews";
@@ -57,6 +58,7 @@ export function LearnPage({
   const [done, setDone] = useState(false);
   const [lastDue, setLastDue] = useState<string | null>(null);
   const [askPush, setAskPush] = useState(false);
+  const [hideInstall, setHideInstall] = useState(false);
   const askedAt = useRef(Date.now());
   const viewedNew = useRef(new Set<string>());
   const gradedKeys = useRef(new Set<string>());
@@ -122,7 +124,7 @@ export function LearnPage({
       <div className="page session">
         <div className="empty">
           <div className="display">
-            {emptyExtra ? "지금은 더 볼 것이 없어요" : "오늘 할 건 다 했어요"}
+            {emptyExtra ? "지금은 더 볼 것이 없어요" : "오늘의 학습은 마쳤어요"}
           </div>
           {emptyExtra ? (
             <p className="muted" style={{ marginTop: 12 }}>
@@ -145,6 +147,11 @@ export function LearnPage({
             <p className="muted" style={{ marginTop: 8 }}>오늘도 조금 덜 낯설어졌어요.</p>
             </>
           )}
+          {!emptyExtra && !hideInstall && shouldShowInstallNudge(Math.max(loadProgress().doneSessions, 1)) ? (
+            <div style={{ marginTop: 20, textAlign: "left" }}>
+              <InstallNudge onDismiss={() => setHideInstall(true)} />
+            </div>
+          ) : null}
           {askPush ? (
             <div style={{ marginTop: 20, textAlign: "left" }}>
               <PushPrompt onClose={() => setAskPush(false)} />

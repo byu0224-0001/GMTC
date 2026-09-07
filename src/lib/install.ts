@@ -1,9 +1,9 @@
 /**
  * PWA 설치 환경 판단.
  *
- * 학습 기록이 localStorage에 있다. iOS는 Safari와 홈 화면 웹 앱의 저장소가
- * 갈라지므로, 파일럿에서는 공부보다 설치를 먼저 권한다. 카카오 인앱에서
- * 브라우저를 강제로 띄우는 우회는 OS·앱 버전마다 깨지므로 쓰지 않는다.
+ * 학습 기록은 이 브라우저의 localStorage에 남는다. iOS는 Safari와 홈 화면
+ * 웹 앱의 저장소가 갈라질 수 있다. 그래서 설치를 권하되, 첫 학습의 전제로
+ * 두지는 않는다. 카카오 인앱에서 브라우저를 강제로 띄우는 우회는 쓰지 않는다.
  */
 
 interface BeforeInstallPromptEvent extends Event {
@@ -93,12 +93,51 @@ export async function promptNativeInstall(): Promise<"accepted" | "dismissed" | 
   return outcome;
 }
 
+export function appUrl(): string {
+  if (typeof window === "undefined") return "";
+  return window.location.origin + "/";
+}
+
 export async function copyAppUrl(): Promise<boolean> {
-  const href = typeof window === "undefined" ? "" : window.location.origin + "/";
+  const href = appUrl();
   try {
     await navigator.clipboard.writeText(href);
     return true;
   } catch {
     return false;
   }
+}
+
+export function installGuide(surface: InstallSurface): { title: string; steps: string[]; note: string } {
+  if (surface === "inapp") {
+    return {
+      title: "브라우저에서 열어 주세요",
+      steps: [
+        "아래 주소를 복사하거나, 화면 오른쪽 위 메뉴를 열어 주세요.",
+        "Safari로 열기 또는 Chrome으로 열기를 고르세요.",
+        "열린 브라우저에서 홈 화면에 추가하면 앱처럼 쓸 수 있어요.",
+      ],
+      note: "카카오톡 안에서는 설치 기능이 제한될 수 있어요.",
+    };
+  }
+  if (surface === "ios") {
+    return {
+      title: "아이폰에 설치하기",
+      steps: [
+        "Safari에서 공유 버튼을 눌러 주세요.",
+        "홈 화면에 추가를 선택하세요.",
+        "웹 앱으로 열기가 보이면 켠 뒤 추가하세요.",
+      ],
+      note: "설치가 끝나면 홈 화면의 ‘금맹탈출’을 열어 주세요. 나중에 설치하면 지금 브라우저의 기록이 옮겨지지 않을 수 있어요.",
+    };
+  }
+  return {
+    title: "앱으로 설치하기",
+    steps: [
+      "Chrome 오른쪽 위의 메뉴(⋮)를 눌러 주세요.",
+      "앱 설치 또는 홈 화면에 추가를 선택하세요.",
+      "설치가 끝나면 홈 화면의 ‘금맹탈출’을 열어 주세요.",
+    ],
+    note: "나중에 설치하면 지금 브라우저의 학습 기록이 자동으로 옮겨지지 않을 수 있어요.",
+  };
 }

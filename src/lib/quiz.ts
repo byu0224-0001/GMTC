@@ -389,8 +389,13 @@ function makeRecall(term: Term, pool: Term[], seed: number, variant = 0): DrillI
   };
 }
 
+/**
+ * 방금 설명을 읽은 뒤의 첫 확인.
+ * 같은 설명을 다시 고르게 하면(recognition) 방금 본 화면을 고르는 셈이라 너무 쉽다.
+ * 뜻을 보고 용어를 고르게 해서, 읽기와 인출을 한 번은 뒤집는다.
+ */
 export function makeFirstRecall(term: Term, pool: Term[], seed: number): DrillItem {
-  return makeRecognition(term, pool, seed) ?? makeRecall(term, pool, seed);
+  return makeRecall(term, pool, seed);
 }
 
 function makeContrast(term: Term, pool: Term[], seed: number): DrillItem {
