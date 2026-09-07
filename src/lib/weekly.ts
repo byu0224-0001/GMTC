@@ -95,7 +95,7 @@ export function weeklyStats(state: ProgressState, terms: Term[], now = new Date(
     days,
     studyDays,
     familiarThisWeek,
-    recentFamiliar: recentFamiliar.slice(0, 5),
+    recentFamiliar: recentFamiliar.slice(0, 4),
     readingsThisWeek: readings.size,
   };
 }

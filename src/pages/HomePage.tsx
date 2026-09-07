@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { InstallNudge, shouldShowInstallNudge } from "../components/InstallNudge";
 import { TopBar } from "../components/Chrome";
-import { APP_SHORT_NAME, SOURCE_DISCLAIMER } from "../content/brand";
+import { APP_SHORT_NAME, READING_EXAMPLE_LABEL, READING_KIND_LONG, SOURCE_DISCLAIMER } from "../content/brand";
 import { CORE100 } from "../content/literacy";
 import { mapForBriefing } from "../content/learningMaps";
 import { labelFor } from "../lib/lookup";
@@ -165,10 +165,9 @@ export function HomePage({
             className={termsDone && !readingDone ? "card featured" : "card"}
             style={{ color: "inherit", display: "block" }}
           >
-            <div className="caption">
-              {termsDone && !readingDone ? "남은 읽기" : "학습용 기사형 예시"}
-              {" · "}
-              {briefing.kicker} · {briefing.minutes}분
+            <div className="caption">{termsDone && !readingDone ? "남은 읽기" : READING_KIND_LONG}</div>
+            <div className="caption" style={{ marginTop: 4 }}>
+              {READING_EXAMPLE_LABEL} · {briefing.kicker} · {briefing.minutes}분
             </div>
             <strong style={{ display: "block", marginTop: 6, lineHeight: 1.45 }}>{briefing.headline}</strong>
             <span className="muted">{briefing.subtitle}</span>
@@ -207,7 +206,12 @@ export function HomePage({
             <div className="caption">이번 주 기록</div>
             <div className="week-dots" role="list" aria-label="이번 주 학습한 날">
               {week.days.map((d) => (
-                <div key={d.date} className={d.done ? "week-dot on" : "week-dot"} role="listitem">
+                <div
+                  key={d.date}
+                  className={d.done ? "week-dot on" : "week-dot"}
+                  role="listitem"
+                  aria-label={d.done ? `${d.label}요일, 학습함` : `${d.label}요일`}
+                >
                   <span>{d.label}</span>
                   <i aria-hidden />
                 </div>
@@ -229,7 +233,11 @@ export function HomePage({
                   ))}
                 </div>
               </>
-            ) : null}
+            ) : (
+              <p className="caption" style={{ margin: "12px 0 0" }}>
+                아직 익히는 중이에요. 며칠 뒤 다시 만나면서 익숙한 용어가 생겨요.
+              </p>
+            )}
           </div>
         ) : null}
 

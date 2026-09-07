@@ -99,7 +99,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "한 기업의 지난 분기 영업이익이 전년보다 늘었어요. 그런데 실적 발표 당일 주가는 하락했어요.",
+        text: "한 기업의 지난 분기 영업이익이 전년보다 18% 늘었어요. 그런데 시장 예상치는 그보다 높았고, 실적 발표 당일 주가는 하락했어요.",
       },
       {
         type: "p",
@@ -269,7 +269,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-jobs",
     kicker: "고용·금리",
     minutes: 3,
-    headline: "실업률이 오르자 금리 인하 기대가 커졌어요. 고용률은 따로 봐야 해요",
+    headline: "실업률 오르자 금리 인하 기대가 커졌어요",
     subtitle: "일자리가 약해지면 성장과 물가 압력도 낮아질 수 있다는 해석이 나왔어요.",
     primaryTermIds: ["실업률", "고용률", "기준금리"],
     sourceMode: "synthetic",
@@ -347,7 +347,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
       },
       {
         type: "p",
-        text: "투자가 낡은 설비를 바꾸는 것인지, 생산능력을 늘리는 것인지에 따라 장비 기업의 일감도 달라져요. 설비가 늘어도 가동률이 낮으면 감가상각만 커질 수 있어요.",
+        text: "장비 업체 쪽에서는 일감이 늘어날 것이라는 기대가 나왔어요. 다만 투자가 낡은 설비를 바꾸는 것인지, 생산능력을 늘리는 것인지에 따라 결과가 달라요. 설비가 늘어도 가동률이 낮으면 감가상각만 커질 수 있어요.",
       },
       {
         type: "p",
@@ -482,7 +482,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
       },
       {
         type: "p",
-        text: "주주환원정책은 이익을 주주에게 돌리겠다는 방향이에요. 다만 발표 문장만으로는 환원이 이미 이뤄졌다고 볼 수 없어요.",
+        text: "발표 직후 시장은 환원 확대로 읽었어요. 하지만 아직 실제 배당이나 자사주 매입이 나간 것은 아니고, 회사가 앞으로 하겠다는 가이던스에 가까워요.",
       },
       {
         type: "p",

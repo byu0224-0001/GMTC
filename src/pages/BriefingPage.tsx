@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ConceptFlowView } from "../components/Chrome";
 import { briefingById } from "../content/briefings";
+import { READING_DISCLAIMER, READING_EXAMPLE_LABEL, READING_KIND_LONG } from "../content/brand";
 import { mapForBriefing } from "../content/learningMaps";
 import { REPORT_BOK_CANON, canonBokId } from "../content/reportLexicon";
 import { logEvent } from "../lib/events";
@@ -109,14 +110,14 @@ export function BriefingReader({
   return (
     <div className="page stack briefing editorial">
       <div>
-        <span className="pill-badge">학습용 기사형 예시</span>
-        <span className="caption" style={{ marginLeft: 8 }}>
-          {briefing.kicker}
+        <div className="eyebrow">{READING_KIND_LONG}</div>
+        <span className="caption">
+          {READING_EXAMPLE_LABEL} · {briefing.kicker}
           {briefing.asOf ? ` · ${briefing.asOf}` : ""}
           {` · ${briefing.minutes}분`}
         </span>
       </div>
-      <h2 className="term-title" style={{ margin: "4px 0 8px", fontSize: 24, lineHeight: 1.35 }}>
+      <h2 className="term-title" style={{ margin: "8px 0 8px", fontSize: 24, lineHeight: 1.35 }}>
         {briefing.headline}
       </h2>
       {briefing.subtitle ? <p className="muted" style={{ margin: 0 }}>{briefing.subtitle}</p> : null}
@@ -145,6 +146,10 @@ export function BriefingReader({
           />
         ) : null,
       )}
+
+      {briefing.sourceMode === "synthetic" ? (
+        <p className="caption" style={{ margin: 0 }}>{READING_DISCLAIMER}</p>
+      ) : null}
 
       <hr className="editorial-rule" />
 
@@ -175,12 +180,6 @@ export function BriefingReader({
           />
         ) : null,
       )}
-
-      {briefing.sourceMode === "synthetic" ? (
-        <p className="notice" style={{ margin: 0 }}>
-          학습을 위해 재구성한 예시이며, 수치는 설명을 위해 설정했어요.
-        </p>
-      ) : null}
 
       {allDone && relatedMap ? (
         <Link

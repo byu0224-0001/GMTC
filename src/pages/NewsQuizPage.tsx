@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ConceptFlowView } from "../components/Chrome";
+import { READING_DISCLAIMER, READING_EXAMPLE_LABEL, READING_KIND_SHORT } from "../content/brand";
 import { CONTEXT_CASES, type ContextCase } from "../content/literacy";
 import { canonBokId } from "../content/reportLexicon";
 import { beginTodaySession, endTodaySession, logEvent } from "../lib/events";
@@ -74,19 +75,21 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
         <h1>읽기</h1>
         <span />
       </header>
-      <div className="page session stack">
+      <div className="page session stack briefing editorial">
         <div>
-          <span className="pill-badge">학습용 예시</span>
-          <span className="caption" style={{ marginLeft: 8 }}>{cse.era}</span>
+          <div className="eyebrow">{READING_KIND_SHORT}</div>
+          <span className="caption">
+            {READING_EXAMPLE_LABEL} · {cse.era}
+          </span>
         </div>
 
         <div>
-          <h2 className="term-title" style={{ fontSize: 22, margin: "0 0 10px", lineHeight: 1.35 }}>{cse.title}</h2>
+          <h2 className="term-title" style={{ fontSize: 22, margin: "8px 0 10px", lineHeight: 1.35 }}>{cse.title}</h2>
           {bodyParagraphs(cse.situation).map((p) => (
             <p key={p.slice(0, 24)} className="briefing-p" style={{ margin: "0 0 14px" }}>{p}</p>
           ))}
           <p className="caption" style={{ margin: "0 0 8px" }}>
-            학습을 위해 재구성한 예시이며, 수치는 설명을 위해 설정했어요.
+            {READING_DISCLAIMER}
           </p>
           <hr className="editorial-rule" />
         </div>

@@ -331,6 +331,27 @@ a.chip {
 }
 .term-row strong { display: block; font-size: 16px; font-weight: 600; color: var(--color-ink-strong); }
 .term-row span { display: block; font-size: 14px; color: var(--color-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.read-clip {
+  display: block;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-hairline);
+  color: inherit;
+}
+.read-clip strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-ink-strong);
+}
+.read-clip span {
+  display: block;
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-body);
+}
 
 .tabbar {
   position: fixed;

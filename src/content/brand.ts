@@ -11,3 +11,11 @@ export const APP_TAGLINE = "경제·투자 정보를 읽는 데 막힘이 없도
 
 export const SOURCE_DISCLAIMER =
   "한국은행 경제금융용어를 학습 자료로 활용하며, 투자 권유나 추천은 하지 않습니다.";
+
+/** 긴 읽기. 뉴스 서비스가 아니라 기사처럼 읽는 연습임을 먼저 말한다. */
+export const READING_KIND_LONG = "기사처럼 읽어보기";
+/** 짧은 읽기. 긴 글과 길이를 다르게 두되, 같은 읽기 문법으로 보이게 한다. */
+export const READING_KIND_SHORT = "짧게 읽어보기";
+export const READING_EXAMPLE_LABEL = "학습용 예시";
+export const READING_DISCLAIMER =
+  "실제 기사가 아니라 금융 개념을 익히기 위해 재구성한 예시예요.";

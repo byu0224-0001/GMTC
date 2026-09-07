@@ -436,7 +436,7 @@ export function LearnPage({
                       {displayTitle(step.term)}, 이제 좀 익숙해졌어요
                     </strong>
                     <p className="muted" style={{ margin: "6px 0 0" }}>
-                      다른 방식으로 여러 번 맞혔어요.
+                      다른 날, 다른 방식으로 여러 번 맞혔어요.
                     </p>
                   </div>
                 ) : null}

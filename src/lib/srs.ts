@@ -2,19 +2,24 @@ import type { GradeLabel, RetrievalForm, SrsCard } from "../types";
 
 const KST = 9 * 60 * 60 * 1000;
 
-export function startOfKst(d: Date): Date {
-  const utc = d.getTime() + d.getTimezoneOffset() * 60_000;
-  const kst = new Date(utc + KST);
-  kst.setHours(0, 0, 0, 0);
-  return kst;
+/**
+ * 한국 달력 날짜.
+ *
+ * 기기 로컬 `setHours(0)`에 의존하면 UTC 폰에서 하루가 밀린다.
+ * 주간 점은 학습한 그 한국 요일에만 켜져야 하므로 Asia/Seoul로 고정한다.
+ */
+export function kstDateKey(d = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(d);
 }
 
-export function kstDateKey(d = new Date()): string {
-  const s = startOfKst(d);
-  const y = s.getFullYear();
-  const m = String(s.getMonth() + 1).padStart(2, "0");
-  const day = String(s.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+export function startOfKst(d: Date): Date {
+  const [y, m, day] = kstDateKey(d).split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, day) - KST);
 }
 
 export function addDays(key: string, days: number): string {
@@ -217,8 +222,8 @@ export function clampCardSchedule(card: SrsCard, now = new Date()): SrsCard {
 }
 
 export function daysUntil(dueAt: string, now = new Date()): number {
-  const a = startOfKst(now).getTime();
-  const [y, m, d] = dueAt.split("-").map(Number);
-  const b = Date.UTC(y, m - 1, d);
+  const today = kstDateKey(now);
+  const a = Date.parse(`${today}T00:00:00Z`);
+  const b = Date.parse(`${dueAt}T00:00:00Z`);
   return Math.round((b - a) / 86_400_000);
 }

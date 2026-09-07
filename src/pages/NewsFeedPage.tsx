@@ -1,14 +1,13 @@
 import { Link } from "react-router-dom";
 import { TopBar } from "../components/Chrome";
+import { READING_DISCLAIMER, READING_EXAMPLE_LABEL, READING_KIND_LONG, READING_KIND_SHORT } from "../content/brand";
 import { allBriefings, briefingById } from "../content/briefings";
 import { CONTEXT_CASES } from "../content/literacy";
-import { mapForBriefing } from "../content/learningMaps";
 import { briefingForPlan, type TodayPlanFile } from "../lib/todayPlan";
 import type { ProgressState, Term } from "../types";
 
 /**
- * 사용자에게 내부 콘텐츠 구분을 보여 주지 않는다.
- * 길이로만 나눈다. 짧게 읽기 32편, 이어서 읽기 10편.
+ * 길이로만 나눈다. 짧게 읽어보기 32편, 기사처럼 읽어보기 10편.
  */
 export function ContextFeedPage({
   progress,
@@ -20,7 +19,6 @@ export function ContextFeedPage({
 }) {
   const today = briefingForPlan(todayPlan, progress.seenContextIds);
   const featured = briefingById(today.id) ?? today;
-  const featuredMap = mapForBriefing(featured.id);
   const longer = allBriefings().filter((b) => b.id !== featured.id);
   const seen = (id: string) => (progress.contextStats[id]?.seen ?? 0) > 0;
 
@@ -33,52 +31,50 @@ export function ContextFeedPage({
         </p>
 
         <Link to={`/briefing/${featured.id}`} className="card pad-lg featured" style={{ color: "inherit" }}>
-          <div className="eyebrow">학습용 기사형 예시 · {featured.kicker}</div>
+          <div className="eyebrow">{READING_KIND_LONG}</div>
+          <div className="caption" style={{ marginTop: 6 }}>
+            {READING_EXAMPLE_LABEL} · {featured.kicker} · {featured.minutes}분
+          </div>
           <strong style={{ display: "block", margin: "8px 0 6px", fontSize: 18, lineHeight: 1.4 }}>
             {featured.headline}
           </strong>
           <span className="muted">{featured.subtitle}</span>
-          <div className="caption" style={{ marginTop: 10 }}>
-            {featured.minutes}분{featuredMap ? ` · ${featuredMap.kicker}` : ""}
-          </div>
         </Link>
 
         <section>
-          <div className="eyebrow">짧게 읽기</div>
+          <div className="eyebrow">{READING_KIND_SHORT}</div>
           <p className="caption" style={{ margin: "0 0 8px" }}>
-            한 편에 1~2분. {CONTEXT_CASES.length}편
+            한 편에 1~2분. 상황만 짧게 보고 판단해요.
           </p>
           {CONTEXT_CASES.map((c) => (
-            <Link key={c.id} to={`/context/${c.id}`} className="term-row">
-              <strong>{c.title}</strong>
-              <span>
-                {c.era}
+            <Link key={c.id} to={`/context/${c.id}`} className="read-clip">
+              <div className="caption">
+                {READING_EXAMPLE_LABEL} · {c.era}
                 {seen(c.id) ? " · 다시 보기" : ""}
-              </span>
+              </div>
+              <strong>{c.title}</strong>
             </Link>
           ))}
         </section>
 
         <section>
-          <div className="eyebrow">이어서 읽기</div>
+          <div className="eyebrow">{READING_KIND_LONG}</div>
           <p className="caption" style={{ margin: "0 0 8px" }}>
-            개념이 서로 어떻게 이어지는지까지 봐요.
+            한 편에 3~4분. 사건과 해석이 어떻게 이어지는지 봐요.
           </p>
-          {longer.map((b) => {
-            const map = mapForBriefing(b.id);
-            return (
-              <Link key={b.id} to={`/briefing/${b.id}`} className="term-row">
-                <strong>{b.headline}</strong>
-                <span>
-                  {b.minutes}분 · {map?.kicker ?? b.kicker}
-                  {progress.seenContextIds.includes(b.id) ? " · 다시 보기" : ""}
-                </span>
-              </Link>
-            );
-          })}
+          {longer.map((b) => (
+            <Link key={b.id} to={`/briefing/${b.id}`} className="read-clip">
+              <div className="caption">
+                {READING_EXAMPLE_LABEL} · {b.kicker} · {b.minutes}분
+                {progress.seenContextIds.includes(b.id) ? " · 다시 보기" : ""}
+              </div>
+              <strong>{b.headline}</strong>
+              {b.subtitle ? <span>{b.subtitle}</span> : null}
+            </Link>
+          ))}
         </section>
 
-        <p className="notice">학습을 위해 재구성한 예시이며, 수치는 설명을 위해 설정했어요.</p>
+        <p className="notice">{READING_DISCLAIMER}</p>
       </div>
     </>
   );
