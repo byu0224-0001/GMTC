@@ -87,6 +87,13 @@ export function LearnMapPage({
             <span className="muted">{briefing.minutes}분 · {briefing.kicker}</span>
           </Link>
         ) : null}
+        <Link
+          to="/learn"
+          className="btn btn-ghost"
+          style={{ display: "grid", placeItems: "center", textDecoration: "none" }}
+        >
+          다른 개념 흐름 보기
+        </Link>
       </div>
     </>
   );

@@ -168,7 +168,7 @@ export function HomePage({
             className="btn btn-ghost"
             style={{ display: "grid", placeItems: "center", textDecoration: "none" }}
           >
-            개념 흐름 보기
+            오늘의 개념 흐름
           </Link>
         ) : null}
 

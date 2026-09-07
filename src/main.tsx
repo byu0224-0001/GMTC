@@ -9,7 +9,7 @@ import "./styles.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <Analytics />
+      <Analytics mode={import.meta.env.PROD ? "production" : "development"} />
       <App />
     </BrowserRouter>
   </StrictMode>,

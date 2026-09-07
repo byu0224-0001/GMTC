@@ -1,4 +1,4 @@
-const CACHE = "voca-shell-v11";
+const CACHE = "voca-shell-v12";
 const PRECACHE = ["/", "/index.html", "/manifest.webmanifest", "/icon.svg", "/data/terms.json"];
 
 self.addEventListener("install", (event) => {
@@ -54,8 +54,29 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
-  // API 요청은 캐시하지 않는다. 캐시된 응답을 돌려주면 전송 성공으로 오해한다.
+  // API와 Vercel 수집 경로는 캐시하지 않는다. 특히 `/_vercel/insights`를
+  // 가로채면 Web Analytics가 설치돼 있어도 대시보드가 계속 비어 있다.
   if (url.pathname.startsWith("/api/")) return;
+  if (url.pathname.startsWith("/_vercel/")) return;
+  const isDoc =
+    req.mode === "navigate" ||
+    req.destination === "document" ||
+    url.pathname === "/" ||
+    url.pathname === "/index.html";
+  if (isDoc) {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE).then((cache) => cache.put(req, copy));
+          }
+          return res;
+        })
+        .catch(() => caches.match(req).then((cached) => cached || fetch(req))),
+    );
+    return;
+  }
   event.respondWith(
     caches.match(req).then((cached) => {
       if (url.pathname === "/content/today.json") {

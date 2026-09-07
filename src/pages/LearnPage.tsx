@@ -172,7 +172,7 @@ export function LearnPage({
               to={`/learn/map/${map.id}`}
               style={{ display: "grid", placeItems: "center", marginTop: 8, textDecoration: "none" }}
             >
-              개념 흐름 보기
+              오늘의 개념 흐름
             </Link>
           ) : null}
           <button className="btn btn-soft" onClick={() => nav("/")} style={{ marginTop: 8 }}>
