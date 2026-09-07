@@ -4,13 +4,13 @@ import { LEARNING_MAPS, LEARNING_MAP_GROUPS } from "../content/learningMaps";
 import { TAXONOMY_LABEL, type Taxonomy } from "../content/literacy";
 import { canonBokId } from "../content/reportLexicon";
 import { labelFor } from "../lib/lookup";
-import { formsFor } from "../lib/quiz";
+import { formFor } from "../lib/quiz";
 import { topicOf } from "../lib/pool";
 import { defaultDoneToday } from "../lib/progress";
 import { extraQueue, lessonPool, planCounts, studyCandidates } from "../lib/today";
 import type { TodayPlanFile } from "../lib/todayPlan";
 import { GRADUATE_REPETITIONS } from "../lib/srs";
-import type { ProgressState, RetrievalForm, Term } from "../types";
+import type { ProgressState, RetrievalForm, SrsCard, Term } from "../types";
 
 const FORM_LABEL: Record<RetrievalForm, string> = {
   recognition: "뜻 고르기",
@@ -20,21 +20,8 @@ const FORM_LABEL: Record<RetrievalForm, string> = {
   context: "짧은 상황에 적용",
 };
 
-/** 다음 복습에서 어떤 형태로 나올지. lib/quiz.ts의 사다리와 같은 순서다. */
 function nextFormLabel(term: Term, pool: Term[], repetitions: number): string {
-  const available = formsFor(term, pool);
-  const ladder: RetrievalForm[][] = [
-    ["recognition"],
-    ["recall"],
-    ["contrast", "recall"],
-    ["judgment", "context", "contrast", "recall"],
-  ];
-  const step = Math.min(repetitions, ladder.length - 1);
-  for (let i = step; i >= 0; i -= 1) {
-    const hit = ladder[i].find((f) => available.includes(f));
-    if (hit) return FORM_LABEL[hit];
-  }
-  return FORM_LABEL.recall;
+  return FORM_LABEL[formFor(term, pool, { repetitions } as SrsCard)];
 }
 
 export function CurriculumPage({

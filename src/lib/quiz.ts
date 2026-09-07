@@ -294,9 +294,9 @@ export function formsFor(term: Term, pool: Term[]): RetrievalForm[] {
  */
 const FORM_LADDER: RetrievalForm[][] = [
   ["recognition"],
-  ["recall"],
-  ["contrast", "recall"],
-  ["judgment", "context", "contrast", "recall"],
+  ["contrast", "judgment", "recall"],
+  ["judgment", "context", "contrast"],
+  ["context", "judgment", "contrast", "recall"],
 ];
 
 export function formFor(term: Term, pool: Term[], card: SrsCard | undefined): RetrievalForm {
@@ -320,8 +320,8 @@ const CAPTION: Record<RetrievalForm, string> = {
   recognition: "뜻 맞히기",
   recall: "설명 보고 맞히기",
   contrast: "헷갈리는 개념 구분하기",
-  judgment: "맞을까?",
-  context: "문장에서 찾기",
+  judgment: "한 단계 더 생각하기",
+  context: "기사처럼 읽기",
 };
 
 function shorten(s: string, max: number): string {

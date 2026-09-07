@@ -5,9 +5,11 @@ import { PushPrompt, shouldAskPush } from "../components/PushPrompt";
 import { TAXONOMY_LABEL, type Taxonomy } from "../content/literacy";
 import { alsoCalled } from "../content/alsoCalled";
 import { CONCEPT_FLOWS } from "../content/conceptFlows";
+import { inTheNews } from "../content/inTheNews";
 import { mapForBriefing } from "../content/learningMaps";
 import { beginTodaySession, endTodaySession, logEvent } from "../lib/events";
 import { displayTitle } from "../lib/hangul";
+import { relatedLabels } from "../lib/lookup";
 import { flushEvents, syncDailyStatus } from "../lib/learner";
 import { topicOf } from "../lib/pool";
 import {
@@ -261,15 +263,18 @@ export function LearnPage({
                   {step.term.whyItMatters ? (
                     <p className="why"><strong>알아두면 좋은 이유</strong> {step.term.whyItMatters}</p>
                   ) : null}
+                  {inTheNews(step.term.id) ? (
+                    <p className="why"><strong>기사에서는</strong> {inTheNews(step.term.id)}</p>
+                  ) : null}
                   {flow ? (
                     <>
-                      <div className="caption">이렇게 이어서 볼 수 있어요</div>
+                      <div className="caption">이렇게 이어져요</div>
                       <ConceptFlowView steps={flow.steps} note={flow.note} terms={terms} />
                     </>
-                  ) : step.term.chain.length > 0 ? (
+                  ) : relatedLabels(step.term, step.term.chain).length > 0 ? (
                     <>
-                      <div className="caption">같이 보면 좋은 개념</div>
-                      <Chain items={step.term.chain} terms={terms} />
+                      <div className="caption">같이 보면</div>
+                      <Chain items={relatedLabels(step.term, step.term.chain)} terms={terms} />
                     </>
                   ) : null}
                 </>
@@ -405,13 +410,13 @@ export function LearnPage({
                 */}
                 {flow ? (
                   <>
-                    <div className="caption">같이 보면</div>
+                    <div className="caption">이렇게 이어져요</div>
                     <ConceptFlowView steps={flow.steps} terms={terms} />
                   </>
-                ) : step.term.chain.length > 0 ? (
+                ) : relatedLabels(step.term, step.term.chain).length > 0 ? (
                   <>
                     <div className="caption">같이 보면</div>
-                    <Chain items={step.term.chain} terms={terms} />
+                    <Chain items={relatedLabels(step.term, step.term.chain)} terms={terms} />
                   </>
                 ) : null}
                 <button className="btn btn-primary" onClick={goNext}>다음</button>

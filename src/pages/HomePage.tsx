@@ -85,12 +85,9 @@ export function HomePage({
           ) : (
             <>
               {nudge && nudge.kind !== "today_pending" ? (
-                <>
-                  <div className="display" style={{ margin: 0, fontSize: 20, lineHeight: 1.35 }}>
-                    {nudge.title}
-                  </div>
-                  <p className="muted" style={{ margin: "8px 0 16px" }}>{nudge.body}</p>
-                </>
+                <div className="display" style={{ margin: "0 0 12px", fontSize: 20, lineHeight: 1.35 }}>
+                  {nudge.title}
+                </div>
               ) : null}
               {/*
                 분량을 두 번 적지 않는다. 예전에는 `오늘 이만큼만 하면 충분합니다`라는
@@ -107,7 +104,7 @@ export function HomePage({
                   plan.review ? `복습 ${plan.review}개` : null,
                 ]
                   .filter(Boolean)
-                  .join(" · ") || "복습은 내일부터 돌아와요"}
+                  .join(" · ") || "내일부터 복습할 용어가 나와요"}
               </p>
               {newLabels.length ? (
                 <>

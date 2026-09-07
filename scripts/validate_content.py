@@ -151,6 +151,7 @@ def check_own_copy(core_ids: set, terms: set, report_ids: set) -> list[str]:
         "reasoning.ts",
         "claimCases.ts",
         "conceptFlows.ts",
+        "inTheNews.ts",
     ]
     for name in own_files:
         src = (root / name).read_text(encoding="utf-8")

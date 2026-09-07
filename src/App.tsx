@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { TabBar } from "./components/Chrome";
-import { CORE100 } from "./content/literacy";
 import { loadTerms } from "./lib/data";
 import { fallbackPlan, loadExtraBriefings, loadTodayPlan, resolveDisplayPlan, type TodayPlanFile } from "./lib/todayPlan";
-import { loadProgress, stats, storageWritable } from "./lib/progress";
+import { loadProgress, storageWritable } from "./lib/progress";
 import type { Term } from "./types";
 import { HomePage } from "./pages/HomePage";
 import { OnboardingPage } from "./pages/OnboardingPage";
@@ -66,7 +65,6 @@ export default function App() {
 
   const progress = loadProgress();
   void tick;
-  const s = stats(progress, CORE100.map((c) => c.id));
   const displayPlan = resolveDisplayPlan(todayPlan);
 
   /**
@@ -107,7 +105,7 @@ export default function App() {
         <Route path="/report" element={<ReportPage terms={terms} progress={progress} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      {session ? null : <TabBar learnBadge={Math.min(99, s.due)} />}
+      {session ? null : <TabBar />}
     </div>
   );
 }

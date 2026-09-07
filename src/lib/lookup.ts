@@ -15,6 +15,21 @@ function compact(s: string): string {
   return normalizeQuery(s).replace(/\s+/g, "");
 }
 
+/**
+ * 지금 보는 용어와 같은 말, 또는 그 말의 짧은 이름은 관련 칩에서 뺀다.
+ * `제로금리정책` 옆에 `제로금리`가 있으면 다른 용어인지 의문이 생긴다.
+ */
+export function relatedLabels(term: Term, items: string[]): string[] {
+  const self = compact(term.headword);
+  return items.filter((x) => {
+    const n = compact(x);
+    if (!n || n === self) return false;
+    if (n.length >= 4 && self.startsWith(n)) return false;
+    if (self.length >= 4 && n.startsWith(self)) return false;
+    return true;
+  });
+}
+
 /** chain 라벨을 사전/리포트 표현 상세로 연결. 못 찾으면 null. */
 export function resolveChainHref(label: string, terms: Term[]): string | null {
   const n = compact(label);

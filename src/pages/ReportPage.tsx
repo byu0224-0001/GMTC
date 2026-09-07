@@ -135,7 +135,8 @@ export function ReportPage({ terms, progress }: { terms: Term[]; progress: Progr
           {optOut ? "파일럿 기록 보내기 켜기" : "파일럿 기록 보내지 않기"}
         </button>
         <p className="notice">
-          학습 진도는 이 기기에만 저장돼요. 파일럿 기간에는 어떤 문제에서 얼마나 걸렸는지 같은
+          학습 진도는 이 기기에만 저장돼요. 브라우저 데이터를 지우거나 기기를 바꾸면
+          기록도 함께 사라질 수 있어요. 파일럿 기간에는 어떤 문제에서 얼마나 걸렸는지 같은
           익명 기록만 서버로 보내요. 용어별 진도는 보내지 않아요.
         </p>
       </div>

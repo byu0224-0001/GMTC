@@ -280,9 +280,9 @@ a.chip {
   display: inline-flex;
   align-items: center;
   text-decoration: none;
+  color: var(--color-ink);
 }
-/* 사전으로 넘어갈 수 있는 칩. 눌러도 되는 것과 아닌 것을 구분한다. */
-.chip-link { color: var(--color-primary); }
+/* 눌러도 되는 칩과 아닌 칩을 색으로 가르지 않는다. 초록은 정답·진행에만 쓴다. */
 
 .search {
   width: 100%;

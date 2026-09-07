@@ -50,11 +50,11 @@ const LAPSE_LONG_MIN_DAYS = 7;
  * 전부 `얼마 남았다`가 아니라 `같이 해보자`로 쓴다.
  */
 const TODAY_VARIANTS: { title: string; body: string }[] = [
-  { title: "오늘도 금맹 탈출을 위해 파이팅!", body: "딱 5분이면 오늘 몫은 끝나요." },
-  { title: "5분이면 어제보다 하나 더 알아요", body: "오늘 몫 준비해 뒀어요." },
-  { title: "퇴근길에 딱 5분", body: "오늘 익힐 개념 몇 개만 보고 가요." },
-  { title: "오늘 5분, 같이 해볼까요?", body: "짧게 끝나고 기록도 이어져요." },
-  { title: "금맹 탈출 한 칸 더", body: "5분이면 오늘 것까지 채워져요." },
+  { title: "오늘도 금맹 탈출을 위해 파이팅!", body: "오늘 몫 준비해 뒀어요." },
+  { title: "어제보다 하나 더 알아요", body: "오늘 몫 준비해 뒀어요." },
+  { title: "퇴근길에 잠깐", body: "오늘 익힐 개념 몇 개만 보고 가요." },
+  { title: "오늘 몫, 같이 해볼까요?", body: "짧게 끝나고 기록도 이어져요." },
+  { title: "금맹 탈출 한 칸 더", body: "오늘 것까지 채워져요." },
 ];
 
 /** 문구를 고르는 데 쓰는 값. 같은 날에는 같은 문구가 나와야 한다. */
@@ -86,28 +86,28 @@ export function nudgeFor(input: {
     return {
       kind: "lapse_long",
       title: "오랜만이에요.",
-      body: "오늘 5분만 다시 시작해볼까요?",
+      body: "오늘 몫, 다시 시작해볼까요?",
     };
   }
   if (daysSinceStudy >= LAPSE_MID_MIN_DAYS) {
     return {
       kind: "lapse_mid",
       title: "슬슬 다시 해볼까요?",
-      body: "오늘도 5분이면 충분해요.",
+      body: "오늘 몫도 짧게 끝나요.",
     };
   }
   if (daysSinceStudy >= LAPSE_SHORT_MIN_DAYS) {
     return {
       kind: "lapse_short",
       title: "금융문맹 되어가는 중…",
-      body: "오늘 5분만 다시 해볼까요?",
+      body: "오늘 몫, 다시 해볼까요?",
     };
   }
   if (streakDays >= 3) {
     return {
       kind: "streak",
       title: `🔥 ${streakDays}일 연속. 이 정도면 금맹탈출할 듯.`,
-      body: "오늘 것도 5분이면 끝나요.",
+      body: "오늘 몫도 준비해 뒀어요.",
     };
   }
   const v = TODAY_VARIANTS[variantIndex(seed, TODAY_VARIANTS.length)];

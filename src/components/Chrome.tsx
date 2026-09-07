@@ -70,7 +70,7 @@ export function TopBar({
   );
 }
 
-export function TabBar({ learnBadge }: { learnBadge?: number }) {
+export function TabBar() {
   return (
     <nav className="tabbar">
       {TABS.map((t) => (
@@ -84,7 +84,6 @@ export function TabBar({ learnBadge }: { learnBadge?: number }) {
             <>
               <TabIcon name={t.icon} active={isActive} />
               {t.label}
-              {t.to === "/" && learnBadge ? <span className="badge">{learnBadge}</span> : null}
             </>
           )}
         </NavLink>
