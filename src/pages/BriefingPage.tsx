@@ -22,6 +22,14 @@ function isCompactQuestion(block: BriefingBlock): boolean {
   return block.type === "choice" && block.depth === "term";
 }
 
+const QUESTION_LABEL: Record<string, string> = {
+  term: "내용 확인",
+  number: "내용 확인",
+  cause: "한 번 더 생각해보기",
+  next: "다음으로 확인할 것",
+  cloze: "내용 확인",
+};
+
 export function BriefingReader({
   briefing,
   terms,
@@ -99,14 +107,10 @@ export function BriefingReader({
   }
 
   return (
-    <div className="page stack briefing">
-      {/*
-        `학습용 브리핑` 배지를 뺐다. 상단 제목이 이미 브리핑이라 종류를 두 번 적는
-        셈이었고, 정작 필요한 고지는 없었다. 종류보다 사용자 목적을 앞에 두고,
-        지어낸 글이라는 사실은 본문에 들어가기 전에 한 줄로 밝힌다.
-      */}
+    <div className="page stack briefing editorial">
       <div>
-        <span className="caption">
+        <span className="pill-badge">학습용 기사형 예시</span>
+        <span className="caption" style={{ marginLeft: 8 }}>
           {briefing.kicker}
           {briefing.asOf ? ` · ${briefing.asOf}` : ""}
           {` · ${briefing.minutes}분`}
@@ -116,21 +120,67 @@ export function BriefingReader({
         {briefing.headline}
       </h2>
       {briefing.subtitle ? <p className="muted" style={{ margin: 0 }}>{briefing.subtitle}</p> : null}
+      <hr className="editorial-rule" />
+
+      {briefing.blocks.map((block, i) =>
+        block.type === "p" ? (
+          <BriefingBlockView
+            key={i}
+            block={block}
+            terms={terms}
+            picked={picked[i] ?? null}
+            onPick={(id) => gradeBlock(i, id)}
+          />
+        ) : null,
+      )}
+
+      {briefing.blocks.map((block, i) =>
+        block.type === "causal" ? (
+          <BriefingBlockView
+            key={i}
+            block={{ ...block, title: "핵심 문장" }}
+            terms={terms}
+            picked={picked[i] ?? null}
+            onPick={(id) => gradeBlock(i, id)}
+          />
+        ) : null,
+      )}
+
+      <hr className="editorial-rule" />
+
+      {briefing.blocks.map((block, i) => {
+        if (block.type !== "choice" && block.type !== "cloze") return null;
+        const label = block.type === "cloze" ? QUESTION_LABEL.cloze : QUESTION_LABEL[block.depth] ?? "내용 확인";
+        return (
+          <div key={i}>
+            <div className="caption">{label}</div>
+            <BriefingBlockView
+              block={block}
+              terms={terms}
+              picked={picked[i] ?? null}
+              onPick={(id) => gradeBlock(i, id)}
+            />
+          </div>
+        );
+      })}
+
+      {briefing.blocks.map((block, i) =>
+        block.type === "concepts" ? (
+          <BriefingBlockView
+            key={i}
+            block={block}
+            terms={terms}
+            picked={picked[i] ?? null}
+            onPick={(id) => gradeBlock(i, id)}
+          />
+        ) : null,
+      )}
+
       {briefing.sourceMode === "synthetic" ? (
         <p className="notice" style={{ margin: 0 }}>
-          실제 기사가 아니라 학습을 위해 재구성한 예시예요.
+          학습을 위해 재구성한 예시이며, 수치는 설명을 위해 설정했어요.
         </p>
       ) : null}
-
-      {briefing.blocks.map((block, i) => (
-        <BriefingBlockView
-          key={i}
-          block={block}
-          terms={terms}
-          picked={picked[i] ?? null}
-          onPick={(id) => gradeBlock(i, id)}
-        />
-      ))}
 
       {allDone && relatedMap ? (
         <Link
@@ -279,7 +329,7 @@ export function BriefingPage({ terms }: { terms: Term[] }) {
   if (!briefing) {
     return (
       <div className="page">
-        <p>브리핑을 찾지 못했어요.</p>
+        <p>글을 찾지 못했어요.</p>
         <button className="btn btn-primary" onClick={() => nav("/context")}>읽기 목록으로</button>
       </div>
     );
@@ -291,7 +341,7 @@ export function BriefingPage({ terms }: { terms: Term[] }) {
         <button className="icon-btn" onClick={() => nav("/context")} aria-label="닫기">
           ✕
         </button>
-        <h1>브리핑</h1>
+        <h1>읽기</h1>
         <span />
       </header>
       <BriefingReader

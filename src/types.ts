@@ -61,6 +61,8 @@ export interface SrsCard {
   successDates: string[];
   /** 맞힌 문제 형태. 한 형태만 반복해서 맞힌 것을 익숙함으로 세지 않기 위해 쓴다. */
   successForms: RetrievalForm[];
+  /** 익숙해진 날(KST). 기준을 처음 통과한 뒤에만 채운다. */
+  familiarAt?: string;
 }
 
 export interface ContextStat {
@@ -90,6 +92,10 @@ export interface ProgressState {
   pushAskedAt: string | null;
   /** 권장 분량을 마친 날의 수. 알림을 물어볼 시점을 정하는 데 쓴다. */
   doneSessions: number;
+  /** 학습한 날(KST). 주간 점을 그릴 때 쓴다. 최근 21일만 둔다. */
+  studyDates?: string[];
+  /** 익숙해짐 안내를 이미 보여 준 용어. 같은 안내를 반복하지 않는다. */
+  celebratedFamiliarIds?: string[];
 }
 
 export interface BriefingAttempt {
@@ -117,6 +123,9 @@ export type ClaimType =
   | "valuation_opinion";
 
 export type Freshness = "evergreen" | "semi" | "dated";
+
+/** 읽기 글의 기사 골격. 같은 뼈대를 32편에 반복하지 않으려고 네 갈래로 나눈다. */
+export type ReadingFormat = "market" | "earnings" | "policy" | "industry";
 
 export interface ReportTerm {
   id: string;
@@ -209,6 +218,7 @@ export interface LearningBriefing {
   relatedTermIds?: string[];
   sourceMode: "official" | "synthetic";
   contentMode?: "synthetic" | "real_event";
+  readingFormat?: ReadingFormat;
   sourceRefs: { label: string; url?: string }[];
   eventDate?: string | null;
   evergreen?: boolean;

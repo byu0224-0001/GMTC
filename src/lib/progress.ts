@@ -5,7 +5,7 @@ import { addDays, clampCardSchedule, grade, isFamiliar, kstDateKey, newCard } fr
 
 export const STORAGE_KEY = "voca:progress:v2";
 const LEGACY_KEY = "voca:progress:v1";
-export const SCHEMA_VERSION = 5;
+export const SCHEMA_VERSION = 6;
 
 function empty(): ProgressState {
   return {
@@ -23,6 +23,8 @@ function empty(): ProgressState {
     onboardedAt: null,
     pushAskedAt: null,
     doneSessions: 0,
+    studyDates: [],
+    celebratedFamiliarIds: [],
   };
 }
 
@@ -32,7 +34,13 @@ function empty(): ProgressState {
  * 그래서 졸업 조건을 이미 넘긴 카드만 최소값으로 채워 상태를 유지시킨다.
  */
 function backfillSuccessLog(card: SrsCard): SrsCard {
-  if (Array.isArray(card.successDates) && Array.isArray(card.successForms)) return card;
+  if (Array.isArray(card.successDates) && Array.isArray(card.successForms)) {
+    if (isFamiliar(card) && !card.familiarAt) {
+      const last = card.successDates[card.successDates.length - 1];
+      return { ...card, familiarAt: last };
+    }
+    return card;
+  }
   const last = card.updatedAt ? kstDateKey(new Date(card.updatedAt)) : kstDateKey();
   const earned = card.repetitions >= 4;
   return {
@@ -51,6 +59,7 @@ function backfillSuccessLog(card: SrsCard): SrsCard {
         : card.repetitions >= 1
           ? ["recognition"]
           : [],
+    familiarAt: card.familiarAt ?? (earned ? last : undefined),
   };
 }
 
@@ -91,7 +100,22 @@ export function loadProgress(): ProgressState {
       onboardedAt: parsed.onboardedAt ?? null,
       pushAskedAt: parsed.pushAskedAt ?? null,
       doneSessions: parsed.doneSessions ?? 0,
+      studyDates: parsed.studyDates ?? [],
+      celebratedFamiliarIds: parsed.celebratedFamiliarIds,
     };
+    if (!parsed.studyDates) {
+      next.studyDates = [...new Set([
+        ...Object.values(migrated).flatMap((c) => c.successDates),
+        next.lastStudyDate,
+        next.defaultDoneDate,
+        ...Object.keys(next.extraSessions),
+      ].filter((d): d is string => Boolean(d)))].sort().slice(-21);
+    }
+    if (!parsed.celebratedFamiliarIds) {
+      next.celebratedFamiliarIds = Object.values(migrated)
+        .filter(isFamiliar)
+        .map((c) => c.termId);
+    }
     if (parsed.version !== SCHEMA_VERSION) saveProgress(next);
     return next;
   } catch {
@@ -124,10 +148,17 @@ export function storageWritable(): boolean {
   }
 }
 
-function bumpStreak(state: ProgressState, now: Date): Pick<ProgressState, "streakDays" | "lastStudyDate"> {
+function rememberStudyDay(state: ProgressState, today: string): string[] {
+  const prev = state.studyDates ?? [];
+  if (prev.includes(today)) return prev;
+  return [...prev, today].slice(-21);
+}
+
+function bumpStreak(state: ProgressState, now: Date): Pick<ProgressState, "streakDays" | "lastStudyDate" | "studyDates"> {
   const today = kstDateKey(now);
+  const studyDates = rememberStudyDay(state, today);
   if (state.lastStudyDate === today) {
-    return { streakDays: state.streakDays, lastStudyDate: today };
+    return { streakDays: state.streakDays, lastStudyDate: today, studyDates };
   }
   const [yy, mm, dd] = today.split("-").map(Number);
   const dt = new Date(Date.UTC(yy, mm - 1, dd));
@@ -136,6 +167,7 @@ function bumpStreak(state: ProgressState, now: Date): Pick<ProgressState, "strea
   return {
     streakDays: state.lastStudyDate === yesterday ? state.streakDays + 1 : 1,
     lastStudyDate: today,
+    studyDates,
   };
 }
 
@@ -189,6 +221,13 @@ export function markExtraSession(state: ProgressState, now = new Date()): Progre
 
 export function extraSessionsToday(state: ProgressState, now = new Date()): number {
   return state.extraSessions[kstDateKey(now)] ?? 0;
+}
+
+/** 익숙해짐 안내를 한 번만 보여 주기 위해 기록한다. */
+export function celebrateFamiliar(state: ProgressState, termId: string): ProgressState {
+  const ids = state.celebratedFamiliarIds ?? [];
+  if (ids.includes(termId)) return state;
+  return { ...state, celebratedFamiliarIds: [...ids, termId] };
 }
 
 export function markOnboarded(state: ProgressState, now = new Date()): ProgressState {

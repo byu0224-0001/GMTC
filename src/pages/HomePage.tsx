@@ -10,6 +10,7 @@ import { daysSinceStudy } from "../lib/learner";
 import { briefingCompletedOn, defaultDoneToday, extraSessionsToday, stats, storageWritable } from "../lib/progress";
 import { isFamiliar, kstDateKey } from "../lib/srs";
 import { extraQueue, planCounts } from "../lib/today";
+import { todayStudyCounts, weeklyStats } from "../lib/weekly";
 import type { TodayPlanFile } from "../lib/todayPlan";
 import type { ProgressState, Term } from "../types";
 
@@ -57,6 +58,9 @@ export function HomePage({
   const cards = Object.values(progress.cards);
   const seenAll = cards.length;
   const knownAll = cards.filter(isFamiliar).length;
+  const todayCounts = todayStudyCounts(progress, terms);
+  const week = weeklyStats(progress, terms);
+  const showWeek = Boolean(progress.lastStudyDate || seenAll || week.studyDays);
 
   return (
     <>
@@ -73,18 +77,21 @@ export function HomePage({
           {done ? (
             <>
               <div className="display" style={{ margin: 0, fontSize: 22, lineHeight: 1.35 }}>
-                오늘 할 건 다 했어요
+                오늘 학습 완료
               </div>
-              {/*
-                `권장 분량에 1번 더 얹었어요`, `복습이 돌아와요`는 우리 내부 개념을
-                한국어로 옮긴 말이다. 사용자는 분량을 얹지 않고 그냥 더 했을 뿐이고,
-                돌아오는 것은 복습이라는 일정이 아니라 다시 볼 용어다.
-              */}
               <p className="muted" style={{ margin: "10px 0 0" }}>
-                {extras
-                  ? `오늘은 ${extras}번 더 익혔어요. 내일 다시 볼 용어가 있어요.`
-                  : "내일 다시 볼 용어가 있어요. 더 하고 싶으면 이어서 해도 돼요."}
+                {[
+                  todayCounts.neu ? `새로 본 용어 ${todayCounts.neu}개` : null,
+                  todayCounts.review ? `다시 본 용어 ${todayCounts.review}개` : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || (extras ? `오늘은 ${extras}번 더 익혔어요.` : "내일 다시 볼 용어가 있어요.")}
               </p>
+              {extras ? (
+                <p className="caption" style={{ margin: "8px 0 0" }}>
+                  오늘은 {extras}번 더 익혔어요.
+                </p>
+              ) : null}
             </>
           ) : termsDone ? (
             <>
@@ -158,9 +165,13 @@ export function HomePage({
             className={termsDone && !readingDone ? "card featured" : "card"}
             style={{ color: "inherit", display: "block" }}
           >
-            <div className="caption">{termsDone && !readingDone ? "남은 읽기" : "읽기"} · {briefing.minutes}분</div>
+            <div className="caption">
+              {termsDone && !readingDone ? "남은 읽기" : "학습용 기사형 예시"}
+              {" · "}
+              {briefing.kicker} · {briefing.minutes}분
+            </div>
             <strong style={{ display: "block", marginTop: 6, lineHeight: 1.45 }}>{briefing.headline}</strong>
-            <span className="muted">{map ? map.kicker : briefing.subtitle}</span>
+            <span className="muted">{briefing.subtitle}</span>
           </Link>
         ) : null}
 
@@ -191,14 +202,45 @@ export function HomePage({
           </Link>
         ) : null}
 
+        {showWeek ? (
+          <div className="card">
+            <div className="caption">이번 주 기록</div>
+            <div className="week-dots" role="list" aria-label="이번 주 학습한 날">
+              {week.days.map((d) => (
+                <div key={d.date} className={d.done ? "week-dot on" : "week-dot"} role="listitem">
+                  <span>{d.label}</span>
+                  <i aria-hidden />
+                </div>
+              ))}
+            </div>
+            <p style={{ margin: "12px 0 0", fontWeight: 600, lineHeight: 1.45 }}>
+              {week.studyDays}일 학습
+              {week.familiarThisWeek ? ` · 익숙해진 용어 ${week.familiarThisWeek}개` : ""}
+              {week.readingsThisWeek ? ` · 읽기 ${week.readingsThisWeek}편` : ""}
+            </p>
+            {week.recentFamiliar.length ? (
+              <>
+                <div className="caption" style={{ marginTop: 16 }}>최근 익숙해진 용어</div>
+                <div className="chip-row" style={{ marginTop: 8 }}>
+                  {week.recentFamiliar.map((t) => (
+                    <Link key={t.id} to={`/terms/${encodeURIComponent(t.id)}`} className="chip known">
+                      {t.label}
+                    </Link>
+                  ))}
+                </div>
+              </>
+            ) : null}
+          </div>
+        ) : null}
+
         {/*
           `학습 가능한 용어 221개 · 아직 안 본 용어 215개`를 지웠다.
           221은 우리가 문항을 만들 수 있는 범위이지 사용자가 알아야 할 수가 아니다.
           `한국은행 용어가 787개라는데 왜 221개지`라는 의문만 새로 만들고,
           `215개 남음`은 우리가 원하지 않는 완주 압박을 준다.
-          대신 지금까지 쌓인 것만 보여 준다.
+          대신 지금까지 쌓인 것만 보여 준다. 이번 주 카드가 있으면 그 숫자로 충분하다.
         */}
-        {seenAll ? (
+        {!showWeek && seenAll ? (
           <p className="caption" style={{ margin: 0 }}>
             지금까지 본 용어 {seenAll}개
             {knownAll ? ` · 익숙해진 용어 ${knownAll}개` : ""}

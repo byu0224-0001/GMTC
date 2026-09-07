@@ -1,4 +1,4 @@
-import type { Term } from "../types";
+import type { ReadingFormat, Term } from "../types";
 import { CORE_COPY } from "./coreCopy";
 
 export type Taxonomy =
@@ -251,6 +251,7 @@ export interface ContextCase {
   freshness?: "evergreen" | "dated";
   kind?: "recognize" | "interpret" | "number";
   nextToCheck?: string[];
+  readingFormat?: ReadingFormat;
 }
 
 /**

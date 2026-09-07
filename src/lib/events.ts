@@ -17,7 +17,8 @@ export type EventName =
   | "push_prompt_result"
   | "deep_dive_opened"
   | "install_choice"
-  | "session_complete";
+  | "session_complete"
+  | "familiarity_achieved";
 
 /**
  * 세션의 출처.

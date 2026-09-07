@@ -647,7 +647,7 @@ export const READING_CASES: ContextCase[] = [
   },
   {
     id: "cx-defi-cbdc",
-    title: "중앙은행이 직접 발행하는 디지털 화폐",
+    title: "중앙은행이 직접 발행하는 디지털 화폐 실험이 늘었어요",
     era: "디지털 화폐 논의",
     situation:
       "현금 사용이 줄고 계좌이체와 간편결제가 늘었어요. 민간이 발행하는 코인 가운데 특정 통화에 가치를 연동한 것도 결제에 쓰이기 시작했어요. 이런 흐름 속에서 100곳이 넘는 나라의 중앙은행이 자국 통화 단위로 직접 발행하는 디지털 형태의 돈을 실험하고 있어요. 민간 발행물과 달리 중앙은행의 부채로 잡히므로 발행 주체의 신용 문제가 생기지 않는 점이 달라요. 다만 현금을 곧바로 대체하려는 것은 아니라는 분석이 많아요.",
@@ -729,7 +729,7 @@ export const READING_CASES: ContextCase[] = [
   },
   {
     id: "cx-put-option",
-    title: "투자자가 조기 상환을 요구할 수 있는 권리",
+    title: "투자자가 조기 상환을 요구할 수 있는 조항이 관심을 끌었어요",
     era: "투자 계약",
     situation:
       "한 기업이 발행한 채권 계약에, 발행 3년 뒤 투자자가 원금에 연 2%를 더한 가격으로 되팔 수 있는 권리가 들어 있었어요. 회사 입장에서는 투자자가 이 권리를 쓰면 예상보다 이른 시점에 돈을 내줘야 해요. 그래서 이 권리는 회계상 부채로 잡히고, 조건에 따라 평가액이 달라져요. 재무 담당자는 언제 돈이 나갈지 확정하기 어려운 점이 자금 계획에서 가장 부담이라고 말했어요.",
@@ -756,7 +756,7 @@ export const READING_CASES: ContextCase[] = [
   },
   {
     id: "cx-eps-valuation",
-    title: "목표주가가 왜 올랐을까요",
+    title: "목표주가가 실적보다 먼저 올랐어요",
     era: "기업 리포트 읽기",
     kind: "interpret",
     situation:
@@ -784,7 +784,7 @@ export const READING_CASES: ContextCase[] = [
   },
   {
     id: "cx-ktb-securities",
-    title: "국고채 금리가 오르면 증권사는",
+    title: "국고채 금리가 오르자 증권사 평가가 갈렸어요",
     era: "증권업 리포트",
     kind: "interpret",
     situation:

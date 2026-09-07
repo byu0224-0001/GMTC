@@ -15,10 +15,15 @@ type Stage = "fact" | "concept" | "done";
 
 /** 두 번째 문제가 어떤 읽기를 요구하는지 화면에 적는다. */
 const LENS_LABEL: Record<ContextCase["lens"], string> = {
-  name: "이 개념의 이름",
-  cause: "왜 이렇게 됐을까",
+  name: "내용 확인",
+  cause: "한 번 더 생각해보기",
   next: "다음으로 확인할 것",
 };
+
+function bodyParagraphs(text: string): string[] {
+  const parts = text.split(/(?<=요\.)\s+/).map((p) => p.trim()).filter(Boolean);
+  return parts.length ? parts : [text];
+}
 
 export function ContextQuizPage({ terms }: { terms: Term[] }) {
   const { caseId } = useParams();
@@ -66,7 +71,7 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
     <>
       <header className="topbar">
         <button className="icon-btn" onClick={() => nav("/context")} aria-label="닫기">✕</button>
-        <h1>짧게 읽기</h1>
+        <h1>읽기</h1>
         <span />
       </header>
       <div className="page session stack">
@@ -75,23 +80,21 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
           <span className="caption" style={{ marginLeft: 8 }}>{cse.era}</span>
         </div>
 
-        <div className="card pad-lg">
-          <h2 className="term-title" style={{ fontSize: 20, margin: "0 0 12px" }}>{cse.title}</h2>
-          <p style={{ lineHeight: 1.8, margin: 0 }}>{cse.situation}</p>
-          {/*
-            본문에 수치가 들어간 뒤로는 `학습용 예시`만으로는 부족하다. 읽는 사람이
-            이걸 현행 규제나 실제 발표로 받아들이면 안 되므로 숫자까지 지어낸 것임을
-            본문 바로 아래에 적는다.
-          */}
-          <p className="caption" style={{ margin: "14px 0 0" }}>
-            실제 기사가 아니라 학습을 위해 지어낸 상황이고, 숫자도 설명을 위해 만든 값이에요.
+        <div>
+          <h2 className="term-title" style={{ fontSize: 22, margin: "0 0 10px", lineHeight: 1.35 }}>{cse.title}</h2>
+          {bodyParagraphs(cse.situation).map((p) => (
+            <p key={p.slice(0, 24)} className="briefing-p" style={{ margin: "0 0 14px" }}>{p}</p>
+          ))}
+          <p className="caption" style={{ margin: "0 0 8px" }}>
+            학습을 위해 재구성한 예시이며, 수치는 설명을 위해 설정했어요.
           </p>
+          <hr className="editorial-rule" />
         </div>
 
         {cse.fact && stage === "fact" ? (
           <>
             <div className="card">
-              <div className="caption">읽은 내용 확인</div>
+              <div className="caption">내용 확인</div>
               <p style={{ margin: "8px 0 0", lineHeight: 1.6 }}>{cse.fact.question}</p>
             </div>
             <div className="stack-8">

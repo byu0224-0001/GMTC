@@ -14,13 +14,14 @@ import { flushEvents, syncDailyStatus } from "../lib/learner";
 import { topicOf } from "../lib/pool";
 import {
   applyGrade,
+  celebrateFamiliar,
   loadProgress,
   markDefaultDone,
   markExtraSession,
   saveProgress,
 } from "../lib/progress";
 import { differenceNote, formsFor, makeDrill, makeFirstRecall, withJosa } from "../lib/quiz";
-import { dueLabel, daysUntil, practice } from "../lib/srs";
+import { dueLabel, daysUntil, isFamiliar, practice } from "../lib/srs";
 import { briefingForPlan, fallbackPlan, lockTodayLesson, type TodayPlanFile } from "../lib/todayPlan";
 import {
   extraQueue,
@@ -57,6 +58,7 @@ export function LearnPage({
   const [picked, setPicked] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [lastDue, setLastDue] = useState<string | null>(null);
+  const [familiarId, setFamiliarId] = useState<string | null>(null);
   const [askPush, setAskPush] = useState(false);
   const [hideInstall, setHideInstall] = useState(false);
   const askedAt = useRef(Date.now());
@@ -218,6 +220,7 @@ export function LearnPage({
   function goNext() {
     setPicked(null);
     setLastDue(null);
+    setFamiliarId(null);
     if (i + 1 >= queue.length) setDone(true);
     else setI(i + 1);
   }
@@ -233,6 +236,7 @@ export function LearnPage({
     if (prevNewIndex < 0) return;
     setPicked(null);
     setLastDue(null);
+    setFamiliarId(null);
     setI(prevNewIndex);
   }
 
@@ -359,7 +363,18 @@ export function LearnPage({
                       } else {
                         const g: GradeLabel = ok ? "good" : "again";
                         const next = applyGrade(before, step.term.id, g, new Date(), drill.kind);
-                        saveProgress(next);
+                        const wasFamiliar = before.cards[step.term.id]
+                          ? isFamiliar(before.cards[step.term.id])
+                          : false;
+                        const became = !wasFamiliar && isFamiliar(next.cards[step.term.id]);
+                        const already = (next.celebratedFamiliarIds ?? []).includes(step.term.id);
+                        if (became && !already) {
+                          saveProgress(celebrateFamiliar(next, step.term.id));
+                          setFamiliarId(step.term.id);
+                          logEvent("familiarity_achieved", { termId: step.term.id });
+                        } else {
+                          saveProgress(next);
+                        }
                         setLastDue(next.cards[step.term.id].dueAt);
                       }
                       logEvent(
@@ -415,6 +430,16 @@ export function LearnPage({
                   내부 동작을 설명하려고 화면에 줄을 하나 더 두지 않는다.
                 */}
                 {lastDue ? <div className="caption">{dueLabel(daysUntil(lastDue))}</div> : null}
+                {familiarId === step.term.id ? (
+                  <div className="card familiar-note" role="status">
+                    <strong>
+                      {displayTitle(step.term)}, 이제 좀 익숙해졌어요
+                    </strong>
+                    <p className="muted" style={{ margin: "6px 0 0" }}>
+                      다른 방식으로 여러 번 맞혔어요.
+                    </p>
+                  </div>
+                ) : null}
                 {/*
                   정답 뒤에는 해설 하나와 관계 하나만 남긴다. 새 용어 화면에서는
                   화살표를 어떻게 읽는지 note가 필요하지만, 여기서는 바로 위 해설이

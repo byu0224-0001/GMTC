@@ -275,6 +275,10 @@ a { color: var(--color-primary-deep); text-decoration: none; }
   color: var(--color-primary);
 }
 .chip.correct { border-color: var(--color-primary); color: var(--color-primary); }
+.chip.known {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
 .chip.wrong { border-color: var(--color-wrong); color: var(--color-wrong); }
 a.chip {
   display: inline-flex;
@@ -634,4 +638,46 @@ a.chip {
   font-size: 14px;
   line-height: 20px;
   margin: 2px 0;
+}
+.week-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+.week-dot {
+  flex: 1;
+  text-align: center;
+  color: var(--color-mute);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.week-dot i {
+  display: block;
+  width: 8px;
+  height: 8px;
+  margin: 6px auto 0;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-hairline);
+  background: transparent;
+}
+.week-dot.on {
+  color: var(--color-primary);
+}
+.week-dot.on i {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+}
+.familiar-note {
+  border-color: var(--color-primary);
+}
+.editorial-rule {
+  height: 0;
+  border: 0;
+  border-top: 1px solid var(--color-hairline);
+  margin: 4px 0;
+}
+.briefing.editorial .briefing-p {
+  color: var(--color-ink);
+  line-height: 1.8;
 }

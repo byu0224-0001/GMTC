@@ -153,7 +153,7 @@ export function grade(
   ease = ease + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02));
   ease = Math.max(1.3, ease);
   const dueAt = addDays(kstDateKey(now), interval);
-  return {
+  const next: SrsCard = {
     ...card,
     ease,
     interval,
@@ -165,6 +165,10 @@ export function grade(
     successDates: successDates.slice(-8),
     successForms,
   };
+  if (!isFamiliar(card) && isFamiliar(next) && !next.familiarAt) {
+    next.familiarAt = kstDateKey(now);
+  }
+  return next;
 }
 
 /**

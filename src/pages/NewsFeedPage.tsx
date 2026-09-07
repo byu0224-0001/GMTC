@@ -33,7 +33,7 @@ export function ContextFeedPage({
         </p>
 
         <Link to={`/briefing/${featured.id}`} className="card pad-lg featured" style={{ color: "inherit" }}>
-          <div className="eyebrow">오늘 · {featured.kicker}</div>
+          <div className="eyebrow">학습용 기사형 예시 · {featured.kicker}</div>
           <strong style={{ display: "block", margin: "8px 0 6px", fontSize: 18, lineHeight: 1.4 }}>
             {featured.headline}
           </strong>
@@ -78,7 +78,7 @@ export function ContextFeedPage({
           })}
         </section>
 
-        <p className="notice">실제 기사가 아니라 학습을 위해 지어낸 예시예요.</p>
+        <p className="notice">학습을 위해 재구성한 예시이며, 수치는 설명을 위해 설정했어요.</p>
       </div>
     </>
   );
