@@ -517,6 +517,24 @@ a.chip {
 }
 .official-fold summary::-webkit-details-marker { display: none; }
 .official-fold[open] summary { margin-bottom: 12px; }
+.related-block {
+  margin-top: 12px;
+}
+.deep-dive {
+  margin-top: 12px;
+}
+.deep-dive-toggle {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--color-mute);
+  font-size: 14px;
+  font-weight: 600;
+  min-height: var(--touch-min);
+}
+.deep-dive-body {
+  margin-top: 8px;
+}
 .point-list {
   margin: 8px 0 0;
   padding-left: 18px;

@@ -1,5 +1,6 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { resolveChainHref } from "../lib/lookup";
+import { CONCEPT_FLOWS } from "../content/conceptFlows";
+import { relatedLabels, resolveChainHref } from "../lib/lookup";
 import type { Term } from "../types";
 
 const TABS: { to: string; label: string; end?: boolean; icon: string }[] = [
@@ -168,6 +169,38 @@ export function Chain({ items, terms }: { items: string[]; terms?: Term[] }) {
           </span>
         );
       })}
+    </div>
+  );
+}
+
+/**
+ * 인과로 검수한 흐름과 관련 칩을 섞지 않는다.
+ * 흐름이 있으면 화살표, 없으면 `같이 보면` 칩만 둔다.
+ */
+export function RelatedConcepts({
+  term,
+  terms,
+  note = true,
+}: {
+  term: Term;
+  terms: Term[];
+  note?: boolean;
+}) {
+  const flow = CONCEPT_FLOWS[term.id];
+  if (flow) {
+    return (
+      <div className="related-block">
+        <div className="caption">이렇게 이어져요</div>
+        <ConceptFlowView steps={flow.steps} note={note ? flow.note : undefined} terms={terms} />
+      </div>
+    );
+  }
+  const chips = relatedLabels(term, term.chain);
+  if (!chips.length) return null;
+  return (
+    <div className="related-block">
+      <div className="caption">같이 보면</div>
+      <Chain items={chips} terms={terms} />
     </div>
   );
 }

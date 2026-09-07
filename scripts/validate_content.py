@@ -152,6 +152,7 @@ def check_own_copy(core_ids: set, terms: set, report_ids: set) -> list[str]:
         "claimCases.ts",
         "conceptFlows.ts",
         "inTheNews.ts",
+        "deepDive.ts",
     ]
     for name in own_files:
         src = (root / name).read_text(encoding="utf-8")
@@ -327,6 +328,33 @@ def main() -> int:
     extra_copy = [i for i in copy_ids if i not in core_ids]
     if extra_copy:
         errors.append(f"CORE_COPY extra keys: {extra_copy}")
+
+    related_src = (ROOT / "src/content/related.ts").read_text(encoding="utf-8")
+    related_ids = re.findall(r'^  "([^"]+)": \{', related_src, re.M)
+    missing_related = [i for i in core_ids if i not in related_ids]
+    if missing_related:
+        errors.append(f"Core100 missing RELATED: {missing_related}")
+    extra_related = [i for i in related_ids if i not in core_ids]
+    if extra_related:
+        errors.append(f"RELATED extra keys: {extra_related}")
+    for m in re.finditer(r'^  "([^"]+)": \{\n    chips: \[([^\]]*)\]', related_src, re.M):
+        tid, chips_raw = m.group(1), m.group(2)
+        chips = re.findall(r'"([^"]+)"', chips_raw)
+        if not 2 <= len(chips) <= 4:
+            errors.append(f"{tid} related chips {len(chips)} not in 2-4")
+        stem = tid.split("-")[0]
+        for c in chips:
+            if c == tid or c.replace(" ", "") == stem:
+                errors.append(f"{tid} related chip is self: {c}")
+
+    dive_src = (ROOT / "src/content/deepDive.ts").read_text(encoding="utf-8")
+    dive_ids = re.findall(r'^  "?([A-Za-z가-힣0-9_-]+)"?: \{', dive_src, re.M)
+    dive_ids = [i for i in dive_ids if i not in ("DeepDiveSpec",)]
+    for did in dive_ids:
+        if did not in core_ids and did not in terms:
+            errors.append(f"deepDive 알 수 없는 용어: {did}")
+    if len(dive_ids) > 20:
+        errors.append(f"deepDive {len(dive_ids)}개 — 모든 문제에 붙인 것과 같다")
 
     # relatedIds
     for t in terms_file["terms"]:

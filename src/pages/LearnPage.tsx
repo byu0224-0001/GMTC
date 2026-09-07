@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Chain, ConceptFlowView, ProgressBar } from "../components/Chrome";
+import { ProgressBar, RelatedConcepts } from "../components/Chrome";
+import { DeepDive } from "../components/DeepDive";
 import { PushPrompt, shouldAskPush } from "../components/PushPrompt";
 import { TAXONOMY_LABEL, type Taxonomy } from "../content/literacy";
 import { alsoCalled } from "../content/alsoCalled";
-import { CONCEPT_FLOWS } from "../content/conceptFlows";
 import { inTheNews } from "../content/inTheNews";
 import { mapForBriefing } from "../content/learningMaps";
 import { beginTodaySession, endTodaySession, logEvent } from "../lib/events";
 import { displayTitle } from "../lib/hangul";
-import { relatedLabels } from "../lib/lookup";
 import { flushEvents, syncDailyStatus } from "../lib/learner";
 import { topicOf } from "../lib/pool";
 import {
@@ -19,7 +18,7 @@ import {
   markExtraSession,
   saveProgress,
 } from "../lib/progress";
-import { differenceNote, makeDrill, makeFirstRecall, withJosa } from "../lib/quiz";
+import { differenceNote, formsFor, makeDrill, makeFirstRecall, withJosa } from "../lib/quiz";
 import { dueLabel, daysUntil, practice } from "../lib/srs";
 import { briefingForPlan, fallbackPlan, lockTodayLesson, type TodayPlanFile } from "../lib/todayPlan";
 import {
@@ -90,12 +89,25 @@ export function LearnPage({
     askedAt.current = Date.now();
   }, [i, step?.kind]);
   const pool = useMemo(() => lessonPool(terms), [terms]);
+  const deepIdx = useMemo(() => {
+    let idx = -1;
+    for (let n = 0; n < queue.length; n += 1) {
+      const s = queue[n];
+      if (s.kind !== "recall" && s.kind !== "practice") continue;
+      if (formsFor(s.term, pool).some((f) => f === "context" || f === "judgment" || f === "contrast")) {
+        idx = n;
+      }
+    }
+    return idx;
+  }, [queue, pool]);
   const drill = useMemo(() => {
     if (!step || step.kind === "new") return null;
     const source2 = pool.length ? pool : terms;
     if (step.kind === "first_recall") return makeFirstRecall(step.term, source2, i + 17);
-    return makeDrill(step.term, source2, loadProgress().cards[step.term.id], i + 17);
-  }, [step, pool, terms, i]);
+    return makeDrill(step.term, source2, loadProgress().cards[step.term.id], i + 17, {
+      forceDeep: i === deepIdx,
+    });
+  }, [step, pool, terms, i, deepIdx]);
 
   const summary = {
     neu: queue.filter((s) => s.kind === "new").length,
@@ -172,8 +184,6 @@ export function LearnPage({
   }
 
   const sessionTitle = source === "extra" ? "5분 더" : "오늘 학습";
-  /** 관계를 확인해 둔 흐름만 화살표로 보여 준다. 나머지는 칩으로만 둔다. */
-  const flow = CONCEPT_FLOWS[step.term.id];
   const wrongPickNote =
     picked && drill && picked !== drill.answerId
       ? (() => {
@@ -266,17 +276,8 @@ export function LearnPage({
                   {inTheNews(step.term.id) ? (
                     <p className="why"><strong>기사에서는</strong> {inTheNews(step.term.id)}</p>
                   ) : null}
-                  {flow ? (
-                    <>
-                      <div className="caption">이렇게 이어져요</div>
-                      <ConceptFlowView steps={flow.steps} note={flow.note} terms={terms} />
-                    </>
-                  ) : relatedLabels(step.term, step.term.chain).length > 0 ? (
-                    <>
-                      <div className="caption">같이 보면</div>
-                      <Chain items={relatedLabels(step.term, step.term.chain)} terms={terms} />
-                    </>
-                  ) : null}
+                  <DeepDive key={step.term.id} termId={step.term.id} />
+                  <RelatedConcepts term={step.term} terms={terms} />
                 </>
               ) : (
                 <>
@@ -396,6 +397,7 @@ export function LearnPage({
                   </strong>{" "}
                   {drill.note}
                 </p>
+                <DeepDive key={`${step.term.id}-after`} termId={step.term.id} />
                 {/*
                   추가 세션의 `다시 보기`에는 다음 복습 날짜를 적지 않는다. 일정이
                   바뀌지 않았으므로 적을 날짜가 없다. 예전에는 그걸 문장으로 설명했지만,
@@ -408,17 +410,7 @@ export function LearnPage({
                   화살표를 어떻게 읽는지 note가 필요하지만, 여기서는 바로 위 해설이
                   이미 해석을 했다. note를 또 붙이면 같은 말을 세 번 읽게 된다.
                 */}
-                {flow ? (
-                  <>
-                    <div className="caption">이렇게 이어져요</div>
-                    <ConceptFlowView steps={flow.steps} terms={terms} />
-                  </>
-                ) : relatedLabels(step.term, step.term.chain).length > 0 ? (
-                  <>
-                    <div className="caption">같이 보면</div>
-                    <Chain items={relatedLabels(step.term, step.term.chain)} terms={terms} />
-                  </>
-                ) : null}
+                <RelatedConcepts term={step.term} terms={terms} note={false} />
                 <button className="btn btn-primary" onClick={goNext}>다음</button>
               </>
             ) : null}

@@ -299,8 +299,23 @@ const FORM_LADDER: RetrievalForm[][] = [
   ["context", "judgment", "contrast", "recall"],
 ];
 
-export function formFor(term: Term, pool: Term[], card: SrsCard | undefined): RetrievalForm {
+const DEEP_FORMS: RetrievalForm[] = ["context", "judgment", "contrast"];
+
+export function formFor(
+  term: Term,
+  pool: Term[],
+  card: SrsCard | undefined,
+  opts?: { forceDeep?: boolean },
+): RetrievalForm {
   const available = new Set(formsFor(term, pool));
+  /**
+   * 세션 안에 깊이의 피크를 하나 만들 때 쓴다. 모든 문항을 깊게 만들지 않고,
+   * 해석·판단·구분이 가능한 복습 문항 하나에만 올린다.
+   */
+  if (opts?.forceDeep) {
+    const deep = DEEP_FORMS.find((f) => available.has(f));
+    if (deep) return deep;
+  }
   const step = Math.min(card?.repetitions ?? 0, FORM_LADDER.length - 1);
   for (let i = step; i >= 0; i -= 1) {
     const hit = FORM_LADDER[i].find((f) => available.has(f));
@@ -320,7 +335,7 @@ const CAPTION: Record<RetrievalForm, string> = {
   recognition: "뜻 맞히기",
   recall: "설명 보고 맞히기",
   contrast: "헷갈리는 개념 구분하기",
-  judgment: "한 단계 더 생각하기",
+  judgment: "맞는 설명인지 판단하기",
   context: "기사처럼 읽기",
 };
 
@@ -457,8 +472,14 @@ export function makeMcq(term: Term, pool: Term[], seed: number) {
   return makeRecall(term, pool, seed);
 }
 
-export function makeDrill(term: Term, pool: Term[], card: SrsCard | undefined, seed: number): DrillItem {
-  switch (formFor(term, pool, card)) {
+export function makeDrill(
+  term: Term,
+  pool: Term[],
+  card: SrsCard | undefined,
+  seed: number,
+  opts?: { forceDeep?: boolean },
+): DrillItem {
+  switch (formFor(term, pool, card, opts)) {
     case "recognition":
       return makeRecognition(term, pool, seed) ?? makeRecall(term, pool, seed);
     case "contrast":

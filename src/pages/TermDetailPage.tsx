@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Chain, TopBar } from "../components/Chrome";
+import { RelatedConcepts, TopBar } from "../components/Chrome";
 import { displayTitle } from "../lib/hangul";
 import { SOURCE_DISCLAIMER } from "../content/brand";
 import { BOK_REPORT_BRIDGE, reportTermById } from "../content/reportLexicon";
@@ -59,12 +59,7 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
                   </ul>
                 </>
               ) : null}
-              {term.chain.length > 0 ? (
-                <>
-                  <div className="caption" style={{ marginTop: 12 }}>연결되는 개념</div>
-                  <Chain items={term.chain} terms={terms} />
-                </>
-              ) : null}
+              <RelatedConcepts term={term} terms={terms} />
             </>
           ) : (
             <>

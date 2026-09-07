@@ -1,5 +1,6 @@
 import type { Term, TermsFile } from "../types";
 import { isCore, learningFor, taxonomyOf } from "../content/literacy";
+import { relatedOf } from "../content/related";
 import { mergeReportOntoBok } from "../content/reportLexicon";
 
 let rawFile: TermsFile | null = null;
@@ -17,7 +18,7 @@ function enrich(data: TermsFile): Term[] {
         oneLiner: learn?.oneLiner ?? "",
         easyExplanation: learn?.easyExplanation ?? "",
         whyItMatters: learn?.whyItMatters ?? "",
-        chain: learn?.chain ?? [],
+        chain: relatedOf(raw.id)?.chips ?? learn?.chain ?? [],
         keyPoints: learn?.keyPoints ?? [],
         commonConfusions: learn?.commonConfusions ?? [],
         learningReviewed: learn?.reviewed ?? false,

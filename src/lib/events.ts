@@ -15,6 +15,7 @@ export type EventName =
   | "briefing_complete"
   | "reading_answer"
   | "push_prompt_result"
+  | "deep_dive_opened"
   | "session_complete";
 
 /**
