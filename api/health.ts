@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { adminAuthorized } from "./_guard.js";
 import { eventCount, storeReady } from "./_store.js";
 
 /**
@@ -13,9 +14,13 @@ import { eventCount, storeReady } from "./_store.js";
  * 하나라도 빠져 있으면 503을 돌려준다. 파일럿 시작 전에 이 응답이 200인지 확인한다.
  * 비밀값 자체는 절대 돌려주지 않고, 설정됐는지만 알려 준다.
  */
-export default async function handler(_req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("X-Robots-Tag", "noindex, nofollow");
+  if (!adminAuthorized(req, "EXPORT_TOKEN")) {
+    res.status(404).json({ ok: false });
+    return;
+  }
 
   const set = (v: string | undefined, min = 16) => Boolean(v && v.length >= min);
   const checks = {

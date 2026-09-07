@@ -68,7 +68,7 @@ export function GlossaryPage({ terms }: { terms: Term[] }) {
               key={c}
               className={cho === c ? "cho-key active" : "cho-key"}
               onClick={() => {
-                setCho(c);
+                setCho((prev) => (prev === c ? null : c));
                 setQ("");
               }}
             >
@@ -77,7 +77,9 @@ export function GlossaryPage({ terms }: { terms: Term[] }) {
           ))}
         </div>
         <div className="caption">
-          {q.trim() || cho || filter !== "all" ? `${list.length}개${mode ? ` · ${mode}` : ""}` : "경제·금융 용어 · 리포트 표현"}
+          {`${list.length}개 · ${
+            filter === "bok" ? "경제·금융 용어" : filter === "report" ? "리포트 표현" : "경제·금융 용어 · 리포트 표현"
+          }${mode ? ` · ${mode}` : ""}`}
         </div>
         <div>
           {list.map((t) => {

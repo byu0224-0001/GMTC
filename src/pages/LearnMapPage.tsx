@@ -43,7 +43,7 @@ export function LearnMapPage({
           <div className="eyebrow">{map.group}</div>
           <h2 className="term-title" style={{ margin: "8px 0 6px" }}>{map.title}</h2>
           <p className="muted" style={{ margin: 0 }}>
-            {map.minutes}분 · 용어를 하나씩 외우는 대신, 같이 나오는 이유를 봐요.
+            {map.minutes}분 · 이 용어들이 왜 한 흐름으로 이어지는지 봐요.
           </p>
           {seen > 0 ? (
             <div className="caption" style={{ marginTop: 8 }}>본 적 있는 용어 {seen}개</div>

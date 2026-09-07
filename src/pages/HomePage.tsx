@@ -99,7 +99,7 @@ export function HomePage({
                 학습은 마쳤어요
               </div>
               <p className="muted" style={{ margin: "10px 0 0" }}>
-                읽기가 남아 있어요. 배운 말을 다른 문장에서 한 번 더 만나 보세요.
+                읽기가 남아 있어요. 용어를 다른 문장에서 한 번 더 만나 보세요.
               </p>
             </>
           ) : (

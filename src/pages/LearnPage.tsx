@@ -135,12 +135,12 @@ export function LearnPage({
           ) : (
             /*
               0을 적지 않는다. 추가 세션은 복습만 하므로 신규는 늘 0인데,
-              `새로 익힌 용어 0개`는 3일을 지킨 사람에게 성과가 없다고 말한다.
+              `새로 본 용어 0개`는 3일을 지킨 사람에게 성과가 없다고 말한다.
             */
             <>
             <p className="muted" style={{ marginTop: 12 }}>
               {[
-                summary.neu ? `새로 익힌 용어 ${summary.neu}개` : null,
+                summary.neu ? `새로 본 용어 ${summary.neu}개` : null,
                 summary.review ? `다시 본 용어 ${summary.review}개` : null,
               ]
                 .filter(Boolean)

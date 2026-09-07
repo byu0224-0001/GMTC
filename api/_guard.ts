@@ -1,4 +1,4 @@
-import type { VercelRequest } from "@vercel/node";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 /**
  * 관리·운영 엔드포인트 접근 통제.
@@ -61,4 +61,28 @@ const ID_SHAPE = /^[A-Za-z0-9_-]{8,64}$/;
 
 export function validLearnerId(v: unknown): v is string {
   return typeof v === "string" && ID_SHAPE.test(v);
+}
+
+/**
+ * 브라우저가 보낸 요청이면 Origin이 이 배포와 같아야 한다.
+ * 다른 사이트에서 /api/events를 호출해 저장소를 더럽히는 것을 막는다.
+ * Origin이 없는 요청(같은 출처, curl, 크론)은 통과한다.
+ */
+export function originAllowed(req: VercelRequest): boolean {
+  const origin = req.headers.origin;
+  if (!origin || typeof origin !== "string") return true;
+  const host = req.headers.host;
+  if (typeof host !== "string" || !host) return false;
+  try {
+    return new URL(origin).host === host;
+  } catch {
+    return false;
+  }
+}
+
+/** API 응답에 공통으로 붙이는 최소 헤더. */
+export function applyApiHeaders(res: VercelResponse): void {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("X-Robots-Tag", "noindex, nofollow");
 }

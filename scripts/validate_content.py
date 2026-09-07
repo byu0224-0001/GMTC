@@ -160,6 +160,12 @@ def check_own_copy(core_ids: set, terms: set, report_ids: set) -> list[str]:
             for m in re.finditer(r"[가-힣]{1,8}니다(?=[.」\s]|$)", lit):
                 errors.append(f"{name}: 해요체가 아닌 어미 `{m.group(0)}`")
 
+    # `한 달 충격`은 one-month shock 직역. 한국어로는 일시적 충격.
+    for name in [*own_files, "related.ts"]:
+        src = (root / name).read_text(encoding="utf-8")
+        if "한 달 충격" in src:
+            errors.append(f"{name}: `한 달 충격`은 `일시적 충격`으로 쓴다")
+
     # 화면에 뜨는 UI 문구도 같이 본다.
     #
     # 예전에는 src/content만 스캔했다. 그래서 `verify`가 통과했는데도 화면에는

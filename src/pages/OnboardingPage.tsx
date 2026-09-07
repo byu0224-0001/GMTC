@@ -75,7 +75,7 @@ export function OnboardingPage({ onDone }: { onDone: () => void }) {
               </p>
               <div className="caption" style={{ marginTop: 18 }}>새로운 문장에서 알아보기</div>
               <p style={{ margin: "6px 0 0", lineHeight: 1.6 }}>
-                배운 말을 처음 보는 문장에서도 알아볼 수 있는지 확인해요.
+                처음 보는 문장에서도 그 용어를 알아보게 돼요.
               </p>
             </div>
 

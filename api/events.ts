@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { clientKey, rateLimited, validLearnerId } from "./_guard.js";
+import { clientKey, originAllowed, rateLimited, validLearnerId } from "./_guard.js";
 import { pushEvents, storeReady } from "./_store.js";
 
 /**
@@ -24,6 +24,10 @@ const NAME_SHAPE = /^[a-z_]{3,40}$/;
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     res.status(405).json({ ok: false, error: "method" });
+    return;
+  }
+  if (!originAllowed(req)) {
+    res.status(403).json({ ok: false, error: "origin" });
     return;
   }
   if (rateLimited(`events:${clientKey(req)}`, RATE_LIMIT)) {
@@ -57,7 +61,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await pushEvents(rows);
     res.status(200).json({ ok: true, stored: rows.length, rejected: raw.length - events.length });
   } catch (e) {
-    res.status(500).json({ ok: false, error: String(e) });
+    res.status(500).json({ ok: false, error: "server" });
   }
 }
 

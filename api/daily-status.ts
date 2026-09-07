@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { clientKey, rateLimited, validLearnerId } from "./_guard.js";
+import { clientKey, originAllowed, rateLimited, validLearnerId } from "./_guard.js";
 import { getLearner, putLearner, deleteLearner, storeReady, type LearnerRecord } from "./_store.js";
 
 /**
@@ -17,6 +17,10 @@ const DATE = /^\d{4}-\d{2}-\d{2}$/;
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!storeReady()) {
     res.status(200).json({ ok: true, note: "store not configured" });
+    return;
+  }
+  if (!originAllowed(req)) {
+    res.status(403).json({ ok: false, error: "origin" });
     return;
   }
   if (rateLimited(`status:${clientKey(req)}`, 30)) {
@@ -69,7 +73,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await putLearner(next);
     res.status(200).json({ ok: true, push: Boolean(next.pushSubscription) });
   } catch (e) {
-    res.status(500).json({ ok: false, error: String(e) });
+    res.status(500).json({ ok: false, error: "server" });
   }
 }
 

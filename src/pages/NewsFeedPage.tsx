@@ -33,7 +33,7 @@ export function ContextFeedPage({
       <TopBar title="읽기" />
       <div className="page stack">
         <p className="muted" style={{ margin: 0 }}>
-          익힌 말이 실제 문장에서 어떻게 쓰이는지 확인해요.
+          용어가 문장에서 어떻게 쓰이는지 봐요.
         </p>
 
         <div className="read-switch" role="tablist" aria-label="읽기 종류">

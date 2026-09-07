@@ -1,4 +1,4 @@
-const CACHE = "voca-shell-v18";
+const CACHE = "voca-shell-v19";
 const PRECACHE = [
   "/",
   "/index.html",
@@ -89,7 +89,7 @@ self.addEventListener("fetch", (event) => {
   }
   event.respondWith(
     caches.match(req).then((cached) => {
-      if (url.pathname === "/content/today.json") {
+      if (url.pathname === "/content/today.json" || url.pathname === "/data/terms.json") {
         return fetch(req)
           .then((res) => {
             if (res.ok) {
@@ -102,7 +102,7 @@ self.addEventListener("fetch", (event) => {
       }
       const fresh = fetch(req)
         .then((res) => {
-          if (res.ok && (url.pathname.startsWith("/assets/") || url.pathname === "/data/terms.json" || url.pathname === "/")) {
+          if (res.ok && (url.pathname.startsWith("/assets/") || url.pathname === "/")) {
             const copy = res.clone();
             caches.open(CACHE).then((cache) => cache.put(req, copy));
           }
