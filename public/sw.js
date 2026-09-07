@@ -1,4 +1,4 @@
-const CACHE = "voca-shell-v17";
+const CACHE = "voca-shell-v18";
 const PRECACHE = [
   "/",
   "/index.html",
