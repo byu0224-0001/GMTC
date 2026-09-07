@@ -1,5 +1,14 @@
-const CACHE = "voca-shell-v12";
-const PRECACHE = ["/", "/index.html", "/manifest.webmanifest", "/icon.svg", "/data/terms.json"];
+const CACHE = "voca-shell-v13";
+const PRECACHE = [
+  "/",
+  "/index.html",
+  "/manifest.webmanifest",
+  "/icon.svg",
+  "/apple-touch-icon.png",
+  "/icon-192.png",
+  "/icon-512.png",
+  "/data/terms.json",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -26,8 +35,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(title, {
       body: data.body || "오늘 공부할 게 남아 있어요.",
-      icon: "/icon.svg",
-      badge: "/icon.svg",
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
       // 같은 tag를 쓰면 읽지 않은 알림이 쌓이지 않고 최신 것만 남는다.
       tag: "voca-daily",
       renotify: false,

@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { RelatedConcepts, TopBar } from "../components/Chrome";
 import { displayTitle } from "../lib/hangul";
 import { SOURCE_DISCLAIMER } from "../content/brand";
+import { readingsForTerm } from "../content/termReadings";
 import { BOK_REPORT_BRIDGE, reportTermById } from "../content/reportLexicon";
 import type { Term } from "../types";
 
@@ -10,6 +11,7 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
   const nav = useNavigate();
   const term = terms.find((t) => t.id === termId);
   const related = term ? terms.filter((t) => term.relatedIds.includes(t.id)).slice(0, 5) : [];
+  const readings = term ? readingsForTerm(term.id) : [];
   const core = term?.priority === "core";
   const showLearn = Boolean(term && (core || term.easyExplanation));
   const bridge = term ? BOK_REPORT_BRIDGE[term.id] : undefined;
@@ -89,6 +91,17 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
             <summary>한국은행 원문 보기</summary>
             <p className="muted" style={{ margin: 0 }}>{term.definition}</p>
           </details>
+        ) : null}
+        {readings.length > 0 ? (
+          <div>
+            <div className="caption">이 개념이 나오는 읽기</div>
+            {readings.map((item) => (
+              <Link key={item.id} to={`/context/${encodeURIComponent(item.id)}`} className="term-row">
+                <strong>{item.title}</strong>
+                <span>{item.primary ? "이 용어가 핵심인 글" : "이 용어가 같이 나오는 글"}</span>
+              </Link>
+            ))}
+          </div>
         ) : null}
         {related.length > 0 ? (
           <div>

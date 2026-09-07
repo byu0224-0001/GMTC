@@ -16,6 +16,7 @@ export type EventName =
   | "reading_answer"
   | "push_prompt_result"
   | "deep_dive_opened"
+  | "install_choice"
   | "session_complete";
 
 /**

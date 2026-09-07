@@ -1,3 +1,4 @@
+import { isIOS, isStandalone } from "./install";
 import { syncDailyStatus } from "./learner";
 import type { ProgressState } from "../types";
 
@@ -29,13 +30,7 @@ export function pushSupported(): boolean {
  * 설치 전에 권한을 물으면 거절만 쌓이므로, 먼저 설치를 안내해야 하는지 판단한다.
  */
 export function needsInstallFirst(): boolean {
-  if (typeof navigator === "undefined") return false;
-  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  if (!ios) return false;
-  const standalone =
-    window.matchMedia?.("(display-mode: standalone)").matches ||
-    (navigator as unknown as { standalone?: boolean }).standalone === true;
-  return !standalone;
+  return isIOS() && !isStandalone();
 }
 
 export function permission(): NotificationPermission | "unsupported" {

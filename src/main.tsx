@@ -3,8 +3,11 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import App from "./App";
+import { armInstallPrompt } from "./lib/install";
 import { flushEvents, flushStatusOutbox } from "./lib/learner";
 import "./styles.css";
+
+armInstallPrompt();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
