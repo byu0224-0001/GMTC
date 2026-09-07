@@ -1,4 +1,4 @@
-const CACHE = "voca-shell-v13";
+const CACHE = "voca-shell-v14";
 const PRECACHE = [
   "/",
   "/index.html",
@@ -7,6 +7,7 @@ const PRECACHE = [
   "/apple-touch-icon.png",
   "/icon-192.png",
   "/icon-512.png",
+  "/icon-maskable-512.png",
   "/data/terms.json",
 ];
 
