@@ -15,6 +15,7 @@ export function GlossaryPage({ terms }: { terms: Term[] }) {
   const [q, setQ] = useState("");
   const [cho, setCho] = useState<ChoBucket | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
+  const [choOpen, setChoOpen] = useState(false);
 
   const reportTerms = useMemo(
     () =>
@@ -47,7 +48,6 @@ export function GlossaryPage({ terms }: { terms: Term[] }) {
     <>
       <TopBar title="사전" />
       <div className="page stack">
-        <p className="muted" style={{ margin: 0 }}>모르는 용어를 바로 찾아요.</p>
         <input
           className="search"
           placeholder="듀레이션, CPI, CAPEX"
@@ -59,28 +59,38 @@ export function GlossaryPage({ terms }: { terms: Term[] }) {
         />
         <div className="chip-row">
           <button className={filter === "all" ? "chip picked" : "chip"} onClick={() => setFilter("all")}>전체</button>
-          <button className={filter === "bok" ? "chip picked" : "chip"} onClick={() => setFilter("bok")}>경제·금융 용어</button>
-          <button className={filter === "report" ? "chip picked" : "chip"} onClick={() => setFilter("report")}>리포트 표현</button>
+          <button className={filter === "bok" ? "chip picked" : "chip"} onClick={() => setFilter("bok")}>경제·금융</button>
+          <button className={filter === "report" ? "chip picked" : "chip"} onClick={() => setFilter("report")}>리포트</button>
         </div>
-        <div className="cho-grid">
-          {CHO_RAIL.map((c) => (
-            <button
-              key={c}
-              className={cho === c ? "cho-key active" : "cho-key"}
-              onClick={() => {
-                setCho((prev) => (prev === c ? null : c));
-                setQ("");
-              }}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-        <div className="caption">
-          {`${list.length}개 · ${
-            filter === "bok" ? "경제·금융 용어" : filter === "report" ? "리포트 표현" : "경제·금융 용어 · 리포트 표현"
-          }${mode ? ` · ${mode}` : ""}`}
-        </div>
+        <button
+          type="button"
+          className="cho-toggle"
+          aria-expanded={choOpen}
+          onClick={() => setChoOpen((open) => !open)}
+        >
+          초성으로 찾기{cho ? ` · ${cho}` : ""} {choOpen ? "▴" : "▾"}
+        </button>
+        {choOpen ? (
+          <div className="cho-grid">
+            {CHO_RAIL.map((c) => (
+              <button
+                key={c}
+                className={cho === c ? "cho-key active" : "cho-key"}
+                onClick={() => {
+                  setCho((prev) => (prev === c ? null : c));
+                  setQ("");
+                }}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        {q.trim() || cho || filter !== "all" ? (
+          <div className="caption">
+            {list.length}개{mode ? ` · ${mode}` : ""}
+          </div>
+        ) : null}
         <div>
           {list.map((t) => {
             const report = t.id.startsWith("rpt-");

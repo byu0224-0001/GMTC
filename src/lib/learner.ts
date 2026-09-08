@@ -128,8 +128,8 @@ function trim(e: StudyEvent) {
 export async function syncDailyStatus(
   progress: ProgressState,
   extra?: { pushSubscription: unknown | null },
-): Promise<void> {
-  if (analyticsOptedOut() && !extra) return;
+): Promise<boolean> {
+  if (analyticsOptedOut() && !extra) return true;
   const body = {
     learnerId: learnerId(),
     timezone: timezone(),
@@ -140,6 +140,7 @@ export async function syncDailyStatus(
   };
   const ok = await postStatus(body);
   if (!ok) write(OUTBOX_KEY, JSON.stringify(body));
+  return ok;
 }
 
 async function postStatus(body: Record<string, unknown>): Promise<boolean> {

@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import App from "./App";
+import { markOpenedFromPush } from "./lib/events";
 import { armInstallPrompt } from "./lib/install";
 import { flushEvents, flushStatusOutbox } from "./lib/learner";
 import "./styles.css";
@@ -21,6 +22,9 @@ createRoot(document.getElementById("root")!).render(
 if ("serviceWorker" in navigator && import.meta.env.PROD) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+  navigator.serviceWorker.addEventListener("message", (event) => {
+    if (event.data?.type === "notification_open") markOpenedFromPush();
   });
 }
 

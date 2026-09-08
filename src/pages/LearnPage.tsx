@@ -4,6 +4,7 @@ import { ProgressBar, RelatedConcepts } from "../components/Chrome";
 import { DeepDive } from "../components/DeepDive";
 import { PushPrompt, shouldAskPush } from "../components/PushPrompt";
 import { InstallNudge, shouldShowInstallNudge } from "../components/InstallNudge";
+import { needsInstallFirst } from "../lib/push";
 import { TAXONOMY_LABEL, type Taxonomy } from "../content/literacy";
 import { alsoCalled } from "../content/alsoCalled";
 import { inTheNews } from "../content/inTheNews";
@@ -82,7 +83,7 @@ export function LearnPage({
     const next = source === "extra" ? markExtraSession(state) : markDefaultDone(state);
     saveProgress(next);
     endTodaySession();
-    setAskPush(shouldAskPush(next.doneSessions, Boolean(next.pushAskedAt)));
+    setAskPush(shouldAskPush(next, source));
     // 서버 전송은 학습을 막지 않는다. 실패하면 다음 세션에서 다시 보낸다.
     void flushEvents();
     void syncDailyStatus(next);
@@ -149,9 +150,9 @@ export function LearnPage({
             <p className="muted" style={{ marginTop: 8 }}>오늘도 조금 덜 낯설어졌어요.</p>
             </>
           )}
-          {!emptyExtra && !hideInstall && shouldShowInstallNudge(Math.max(loadProgress().doneSessions, 1)) ? (
+          {!emptyExtra && !askPush && !hideInstall && needsInstallFirst() && shouldShowInstallNudge(Math.max(loadProgress().doneSessions, 1)) ? (
             <div style={{ marginTop: 20, textAlign: "left" }}>
-              <InstallNudge onDismiss={() => setHideInstall(true)} />
+              <InstallNudge afterSession onDismiss={() => setHideInstall(true)} />
             </div>
           ) : null}
           {askPush ? (

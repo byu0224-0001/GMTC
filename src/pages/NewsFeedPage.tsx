@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { TopBar } from "../components/Chrome";
-import { READING_DISCLAIMER, READING_EXAMPLE_LABEL, READING_KIND_LONG, READING_KIND_SHORT } from "../content/brand";
+import { LearningVisual } from "../components/LearningVisual";
+import { READING_DISCLAIMER, READING_KIND_LONG, READING_KIND_SHORT } from "../content/brand";
 import { allBriefings, briefingById } from "../content/briefings";
 import { CONTEXT_CASES } from "../content/literacy";
 import { briefingForPlan, type TodayPlanFile } from "../lib/todayPlan";
@@ -32,8 +33,11 @@ export function ContextFeedPage({
     <>
       <TopBar title="읽기" />
       <div className="page stack">
-        <p className="muted" style={{ margin: 0 }}>
-          용어가 문장에서 어떻게 쓰이는지 봐요.
+        <p className="muted" style={{ margin: 0, display: "flex", alignItems: "center", gap: 10 }}>
+          <LearningVisual type="context" />
+          <strong style={{ fontWeight: 600, color: "var(--color-ink-strong)" }}>
+            배운 용어를 문장에서 다시 만나보세요.
+          </strong>
         </p>
 
         <div className="read-switch" role="tablist" aria-label="읽기 종류">
@@ -44,8 +48,7 @@ export function ContextFeedPage({
             className={shelf === "short" ? "on" : undefined}
             onClick={() => setShelf("short")}
           >
-            {READING_KIND_SHORT}
-            <small>1~2분 · {CONTEXT_CASES.length}편</small>
+            {READING_KIND_SHORT} {CONTEXT_CASES.length}
           </button>
           <button
             type="button"
@@ -54,52 +57,42 @@ export function ContextFeedPage({
             className={shelf === "long" ? "on" : undefined}
             onClick={() => setShelf("long")}
           >
-            {READING_KIND_LONG}
-            <small>3~4분 · {longTotal}편</small>
+            {READING_KIND_LONG} {longTotal}
           </button>
         </div>
 
         {shelf === "long" ? (
           <>
-            <p className="caption" style={{ margin: 0 }}>
-              사건과 해석이 어떻게 이어지는지 봐요.
-            </p>
             <Link to={`/briefing/${featured.id}`} className="card pad-lg featured" style={{ color: "inherit" }}>
               <div className="eyebrow">오늘</div>
               <div className="caption" style={{ marginTop: 6 }}>
-                {READING_EXAMPLE_LABEL} · {featured.kicker} · {featured.minutes}분
+                {featured.kicker} · {featured.minutes}분
               </div>
-              <strong style={{ display: "block", margin: "8px 0 6px", fontSize: 18, lineHeight: 1.4 }}>
+              <strong style={{ display: "block", margin: "8px 0 6px", fontSize: 20, lineHeight: 1.4 }}>
                 {featured.headline}
               </strong>
-              <span className="muted">{featured.subtitle}</span>
+              {featured.subtitle ? <span className="muted">{featured.subtitle}</span> : null}
             </Link>
             {longer.map((b) => (
               <Link key={b.id} to={`/briefing/${b.id}`} className="read-clip">
-                <div className="caption">
-                  {READING_EXAMPLE_LABEL} · {b.kicker} · {b.minutes}분
-                  {progress.seenContextIds.includes(b.id) ? " · 다시 보기" : ""}
-                </div>
                 <strong>{b.headline}</strong>
-                {b.subtitle ? <span>{b.subtitle}</span> : null}
+                <span>
+                  {b.kicker} · {b.minutes}분
+                  {progress.seenContextIds.includes(b.id) ? " · 다시 보기" : ""}
+                </span>
               </Link>
             ))}
           </>
         ) : (
-          <>
-            <p className="caption" style={{ margin: 0 }}>
-              상황만 짧게 보고 판단해요.
-            </p>
-            {CONTEXT_CASES.map((c) => (
-              <Link key={c.id} to={`/context/${c.id}`} className="read-clip">
-                <div className="caption">
-                  {READING_EXAMPLE_LABEL} · {c.era}
-                  {seen(c.id) ? " · 다시 보기" : ""}
-                </div>
-                <strong>{c.title}</strong>
-              </Link>
-            ))}
-          </>
+          CONTEXT_CASES.map((c) => (
+            <Link key={c.id} to={`/context/${c.id}`} className="read-clip">
+              <strong>{c.title}</strong>
+              <span>
+                {c.era}
+                {seen(c.id) ? " · 다시 보기" : ""}
+              </span>
+            </Link>
+          ))
         )}
 
         <p className="notice">{READING_DISCLAIMER}</p>

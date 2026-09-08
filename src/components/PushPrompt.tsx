@@ -1,23 +1,82 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PUSH_PROMPT } from "../content/notifications";
 import { logEvent } from "../lib/events";
-import { loadProgress, markPushAsked, saveProgress } from "../lib/progress";
-import { needsInstallFirst, permission, pushSupported, subscribePush } from "../lib/push";
+import {
+  loadProgress,
+  markPushAsked,
+  markPushLater,
+  saveProgress,
+  setPushDisabled,
+} from "../lib/progress";
+import {
+  hasPushSubscription,
+  needsInstallFirst,
+  pushSupported,
+  pushUiState,
+  showPushEntry,
+  subscribePush,
+  unsubscribePush,
+  type PushUiState,
+} from "../lib/push";
+import type { ProgressState } from "../types";
+import type { SessionSource } from "../lib/today";
+
+const BELL_SEEN_KEY = "voca:push-bell-opened";
+
+function bellSeen(): boolean {
+  try {
+    return localStorage.getItem(BELL_SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markBellSeen(): void {
+  try {
+    localStorage.setItem(BELL_SEEN_KEY, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
+export function showBellHint(progress: ProgressState): boolean {
+  return showPushEntry(progress) && progress.doneSessions >= 1 && !bellSeen();
+}
 
 /**
- * 알림 허용을 묻기 전에 먼저 보여 주는 화면.
- *
- * 브라우저 권한창을 바로 띄우지 않는다. 거절은 되돌리기 어렵고, 아직 이 앱이 뭘 하는지
- * 모르는 사람은 대부분 거절한다. 그래서 온보딩이 아니라 첫 세션을 마친 뒤에 묻고,
- * 사용자가 직접 이 버튼을 눌렀을 때만 권한을 요청한다.
+ * 첫 권장 세션을 마친 뒤에만 자동으로 묻는다.
+ * `나중에`는 OS 거절이 아니므로 벨에서 다시 켤 수 있다.
+ * 브라우저에서 학습하고 나중에 설치한 사람은 홈에서도 같은 조건으로 한 번 본다.
  */
+export function shouldOfferPush(state: ProgressState): boolean {
+  if (state.doneSessions < 1) return false;
+  if (state.pushAskedAt || state.pushLaterAt) return false;
+  return pushUiState(state) === "permission_default";
+}
+
+export function shouldAskPush(state: ProgressState, source: SessionSource): boolean {
+  if (source !== "home_default") return false;
+  return shouldOfferPush(state);
+}
+
+async function recordSubscribe(): Promise<boolean> {
+  const ok = await subscribePush(loadProgress());
+  if (ok) saveProgress(setPushDisabled(markPushAsked(loadProgress()), false));
+  else saveProgress(markPushAsked(loadProgress()));
+  return ok;
+}
+
 export function PushPrompt({ onClose }: { onClose: () => void }) {
   const [busy, setBusy] = useState(false);
   const install = needsInstallFirst();
 
-  function dismiss(accepted: boolean, granted?: boolean) {
-    saveProgress(markPushAsked(loadProgress()));
-    logEvent("push_prompt_result", { accepted, granted: granted ?? false, install });
+  useEffect(() => {
+    logEvent("push_soft_prompt_shown", { install });
+  }, [install]);
+
+  function later() {
+    saveProgress(markPushLater(loadProgress()));
+    logEvent("push_soft_prompt_later", { install });
     onClose();
   }
 
@@ -25,24 +84,22 @@ export function PushPrompt({ onClose }: { onClose: () => void }) {
     <div className="card pad-lg">
       <div className="caption">알림</div>
       <p style={{ margin: "8px 0 0", fontWeight: 600, lineHeight: 1.45 }}>{PUSH_PROMPT.title}</p>
-      <p className="muted" style={{ margin: "6px 0 0", lineHeight: 1.6 }}>{PUSH_PROMPT.body}</p>
-      {install ? (
-        <p className="notice" style={{ marginTop: 12 }}>
-          아이폰에서는 공유 버튼을 눌러 홈 화면에 추가한 뒤에 알림을 받을 수 있어요.
-        </p>
-      ) : null}
+      <p className="muted" style={{ margin: "6px 0 0" }}>{PUSH_PROMPT.body}</p>
       <div className="grade-bar two" style={{ marginTop: 14 }}>
-        <button className="btn btn-ghost" disabled={busy} onClick={() => dismiss(false)}>
+        <button className="btn btn-ghost" disabled={busy} onClick={later}>
           {PUSH_PROMPT.decline}
         </button>
         <button
           className="btn btn-primary"
-          disabled={busy || install}
+          disabled={busy}
           onClick={async () => {
             setBusy(true);
-            const ok = await subscribePush(loadProgress());
+            logEvent("push_soft_prompt_accept", { install });
+            const ok = await recordSubscribe();
+            logEvent(ok ? "push_permission_granted" : "push_permission_denied", { install });
+            logEvent("push_prompt_result", { accepted: true, granted: ok, install });
             setBusy(false);
-            dismiss(true, ok);
+            onClose();
           }}
         >
           {PUSH_PROMPT.accept}
@@ -52,12 +109,165 @@ export function PushPrompt({ onClose }: { onClose: () => void }) {
   );
 }
 
-/**
- * 물어볼 때인지 판단한다.
- * 첫 세션을 마친 직후는 아직 이르다. 두 번째 완료부터 묻는다.
- */
-export function shouldAskPush(doneSessions: number, asked: boolean): boolean {
-  if (asked || !pushSupported()) return false;
-  if (permission() !== "default") return false;
-  return doneSessions >= 2;
+export function PushBell({ onOpen, tick = 0 }: { onOpen: () => void; tick?: number }) {
+  const progress = loadProgress();
+  const [subscribed, setSubscribed] = useState<boolean | undefined>(undefined);
+  const ui = pushUiState(progress, subscribed);
+  const on = ui === "permission_granted";
+  const hint = showBellHint(progress);
+
+  useEffect(() => {
+    let cancel = false;
+    void hasPushSubscription().then((has) => {
+      if (!cancel) setSubscribed(has);
+    });
+    return () => {
+      cancel = true;
+    };
+  }, [tick]);
+
+  return (
+    <button
+      type="button"
+      className="icon-btn"
+      aria-label={on ? "알림 켜짐, 알림 설정" : hint ? "알림 설정, 아직 확인하지 않음" : "알림 설정"}
+      onClick={() => {
+        markBellSeen();
+        logEvent("push_settings_open", { state: ui });
+        onOpen();
+      }}
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path
+          d="M6 17h12l-1.2-2.1a6.2 6.2 0 0 1-.8-3.1V10a4 4 0 1 0-8 0v1.8c0 1.1-.28 2.18-.8 3.1L6 17z"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinejoin="round"
+          fill={on ? "currentColor" : "none"}
+        />
+        <path d="M10 17a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      </svg>
+      {hint ? <i className="hint-dot" aria-hidden /> : null}
+    </button>
+  );
 }
+
+export function PushSheet({ onClose }: { onClose: () => void }) {
+  const [tick, setTick] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const [subscribed, setSubscribed] = useState<boolean | undefined>(undefined);
+  const state = loadProgress();
+  const ui = pushUiState(state, subscribed);
+
+  useEffect(() => {
+    let cancel = false;
+    void hasPushSubscription().then((has) => {
+      if (!cancel) setSubscribed(has);
+    });
+    return () => {
+      cancel = true;
+    };
+  }, [tick]);
+
+  function refresh() {
+    setTick((n) => n + 1);
+  }
+
+  async function turnOn() {
+    setBusy(true);
+    const ok = await recordSubscribe();
+    logEvent(ok ? "push_permission_granted" : "push_permission_denied", {
+      source: "settings",
+    });
+    setBusy(false);
+    refresh();
+  }
+
+  async function turnOff() {
+    setBusy(true);
+    await unsubscribePush(loadProgress());
+    saveProgress(setPushDisabled(loadProgress(), true));
+    setBusy(false);
+    refresh();
+  }
+
+  return (
+    <div className="sheet-backdrop" onClick={onClose} role="presentation">
+      <div
+        className="sheet"
+        role="dialog"
+        aria-labelledby="push-sheet-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 id="push-sheet-title" className="term-title" style={{ fontSize: 20, margin: 0 }}>
+          알림
+        </h2>
+        <SheetBody ui={ui} busy={busy} onOn={() => void turnOn()} onOff={() => void turnOff()} />
+        <button className="btn btn-ghost" style={{ marginTop: 12 }} onClick={onClose}>
+          닫기
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function SheetBody({
+  ui,
+  busy,
+  onOn,
+  onOff,
+}: {
+  ui: PushUiState;
+  busy: boolean;
+  onOn: () => void;
+  onOff: () => void;
+}) {
+  if (ui === "not_installed") {
+    return (
+      <>
+        <p className="muted" style={{ margin: "10px 0 0" }}>
+          이 브라우저에서는 홈 화면에 추가한 뒤에 알림을 받을 수 있어요.
+        </p>
+        <p className="caption" style={{ margin: "8px 0 0" }}>
+          공유 버튼에서 ‘홈 화면에 추가’를 고른 다음, 그 아이콘으로 다시 열어 주세요.
+        </p>
+      </>
+    );
+  }
+  if (ui === "permission_denied") {
+    return (
+      <>
+        <p style={{ margin: "10px 0 0", fontWeight: 600 }}>알림이 차단되어 있어요.</p>
+        <p className="muted" style={{ margin: "8px 0 0" }}>
+          휴대폰 설정에서 금맹탈출의 알림을 허용해 주세요.
+        </p>
+      </>
+    );
+  }
+  if (ui === "permission_granted") {
+    return (
+      <>
+        <p style={{ margin: "10px 0 0", fontWeight: 600 }}>알림 켜짐</p>
+        <p className="muted" style={{ margin: "8px 0 0" }}>
+          오늘 학습을 마치지 않은 날에 하루 한 번 알려드려요.
+        </p>
+        <button className="btn btn-ghost" style={{ marginTop: 14 }} disabled={busy} onClick={onOff}>
+          알림 끄기
+        </button>
+      </>
+    );
+  }
+  return (
+    <>
+      <p style={{ margin: "10px 0 0", fontWeight: 600 }}>알림 꺼짐</p>
+      <p className="muted" style={{ margin: "8px 0 0" }}>
+        원하는 경우 다시 받을 수 있어요. 오늘 학습을 마치지 않은 날에만 하루 한 번 알려드려요.
+      </p>
+      <button className="btn btn-primary" style={{ marginTop: 14 }} disabled={busy} onClick={onOn}>
+        알림 받기
+      </button>
+    </>
+  );
+}
+
+export { showPushEntry, pushSupported };

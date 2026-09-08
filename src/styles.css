@@ -97,6 +97,76 @@ a { color: var(--color-primary-deep); text-decoration: none; }
   display: grid;
   place-items: center;
   border-radius: var(--radius-sm);
+  position: relative;
+}
+.hint-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+.topbar-end {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.learn-visual {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-ink);
+}
+.learn-visual svg {
+  width: 32px;
+  height: 32px;
+}
+.learn-visual-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0;
+}
+.learn-visual-row .learn-visual {
+  flex: 1;
+}
+.onboard-main {
+  margin-top: 20px;
+  gap: 16px;
+}
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sheet {
+  width: min(430px, 100%);
+  background: var(--color-canvas);
+  border-top: 1px solid var(--color-hairline);
+  border-radius: 16px 16px 0 0;
+  padding: 24px 20px calc(20px + env(safe-area-inset-bottom));
+}
+.cho-toggle,
+.text-link {
+  border: 0;
+  background: transparent;
+  color: var(--color-mute);
+  font-size: 13px;
+  font-weight: 600;
+  min-height: var(--touch-min);
+  padding: 0;
+  text-align: left;
+}
+.text-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 .page {
   padding: 0 20px calc(var(--tabbar-h) + 16px);
@@ -171,15 +241,15 @@ a { color: var(--color-primary-deep); text-decoration: none; }
 .card.featured { border-width: 2px; border-color: var(--color-primary); }
 
 .caption {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 13px;
+  line-height: 1.45;
   color: var(--color-mute);
   font-weight: 500;
 }
-.muted { color: var(--color-body); font-size: 15px; line-height: 24px; }
+.muted { color: var(--color-body); font-size: 14px; line-height: 1.55; }
 .display {
-  font-size: 32px;
-  line-height: 36px;
+  font-size: 26px;
+  line-height: 1.35;
   font-weight: 400;
   letter-spacing: -0.6px;
   color: var(--color-ink-strong);
@@ -378,7 +448,7 @@ a.chip {
 }
 .read-clip strong {
   display: block;
-  margin-top: 6px;
+  margin-top: 0;
   font-size: 16px;
   font-weight: 600;
   line-height: 1.4;
@@ -387,9 +457,9 @@ a.chip {
 .read-clip span {
   display: block;
   margin-top: 6px;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--color-body);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-mute);
 }
 
 .tabbar {

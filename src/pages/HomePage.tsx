@@ -1,11 +1,14 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { InstallNudge, shouldShowInstallNudge } from "../components/InstallNudge";
+import { PushBell, PushPrompt, PushSheet, shouldOfferPush, showPushEntry } from "../components/PushPrompt";
 import { TopBar } from "../components/Chrome";
-import { APP_SHORT_NAME, READING_EXAMPLE_LABEL, READING_KIND_LONG, SOURCE_DISCLAIMER } from "../content/brand";
+import { APP_SHORT_NAME, READING_KIND_LONG, SOURCE_DISCLAIMER } from "../content/brand";
 import { CORE100 } from "../content/literacy";
 import { mapForBriefing } from "../content/learningMaps";
 import { labelFor } from "../lib/lookup";
 import { nudgeFor } from "../content/notifications";
+import { markOpenedFromPush } from "../lib/events";
 import { daysSinceStudy } from "../lib/learner";
 import { briefingCompletedOn, defaultDoneToday, extraSessionsToday, stats, storageWritable } from "../lib/progress";
 import { isFamiliar, kstDateKey } from "../lib/srs";
@@ -61,17 +64,33 @@ export function HomePage({
   const todayCounts = todayStudyCounts(progress, terms);
   const week = weeklyStats(progress, terms);
   const showWeek = Boolean(progress.lastStudyDate || seenAll || week.studyDays);
+  const [pushOpen, setPushOpen] = useState(false);
+  const [hideHomePush, setHideHomePush] = useState(false);
+  const [params, setParams] = useSearchParams();
+  const offerPush = !hideHomePush && shouldOfferPush(progress);
+
+  useEffect(() => {
+    if (params.get("from") !== "push") return;
+    markOpenedFromPush();
+    const next = new URLSearchParams(params);
+    next.delete("from");
+    setParams(next, { replace: true });
+  }, [params, setParams]);
 
   return (
     <>
       <TopBar
         title={APP_SHORT_NAME}
         trailing={
-          <Link to="/report" className="streak">
-            {s.streakDays}일 연속
-          </Link>
+          <div className="topbar-end">
+            {showPushEntry(progress) ? <PushBell tick={Number(pushOpen)} onOpen={() => setPushOpen(true)} /> : null}
+            <Link to="/report" className="streak">
+              {s.streakDays}일 연속
+            </Link>
+          </div>
         }
       />
+      {pushOpen ? <PushSheet onClose={() => setPushOpen(false)} /> : null}
       <div className="page stack">
         <div className="card pad-lg featured">
           {done ? (
@@ -83,23 +102,19 @@ export function HomePage({
                 {[
                   todayCounts.neu ? `새로 본 용어 ${todayCounts.neu}개` : null,
                   todayCounts.review ? `다시 본 용어 ${todayCounts.review}개` : null,
+                  extras ? `오늘은 ${extras}번 더 했어요` : null,
                 ]
                   .filter(Boolean)
-                  .join(" · ") || (extras ? `오늘은 ${extras}번 더 익혔어요.` : "내일 다시 볼 용어가 있어요.")}
+                  .join(" · ") || "내일 다시 볼 용어가 있어요."}
               </p>
-              {extras ? (
-                <p className="caption" style={{ margin: "8px 0 0" }}>
-                  오늘은 {extras}번 더 익혔어요.
-                </p>
-              ) : null}
             </>
           ) : termsDone ? (
             <>
               <div className="display" style={{ margin: 0, fontSize: 22, lineHeight: 1.35 }}>
-                학습은 마쳤어요
+                오늘 학습 완료
               </div>
               <p className="muted" style={{ margin: "10px 0 0" }}>
-                읽기가 남아 있어요. 용어를 다른 문장에서 한 번 더 만나 보세요.
+                읽기 1편이 남아 있어요.
               </p>
             </>
           ) : (
@@ -167,14 +182,17 @@ export function HomePage({
           >
             <div className="caption">{termsDone && !readingDone ? "남은 읽기" : READING_KIND_LONG}</div>
             <div className="caption" style={{ marginTop: 4 }}>
-              {READING_EXAMPLE_LABEL} · {briefing.kicker} · {briefing.minutes}분
+              {briefing.kicker} · {briefing.minutes}분
             </div>
-            <strong style={{ display: "block", marginTop: 6, lineHeight: 1.45 }}>{briefing.headline}</strong>
-            <span className="muted">{briefing.subtitle}</span>
+            <strong style={{ display: "block", marginTop: 6, fontSize: 20, lineHeight: 1.4 }}>{briefing.headline}</strong>
           </Link>
         ) : null}
 
-        {shouldShowInstallNudge(progress.doneSessions) ? <InstallNudge /> : null}
+        {offerPush ? (
+          <PushPrompt onClose={() => setHideHomePush(true)} />
+        ) : shouldShowInstallNudge(progress.doneSessions) ? (
+          <InstallNudge />
+        ) : null}
 
         {done && moreLeft ? (
           <Link
@@ -233,11 +251,11 @@ export function HomePage({
                   ))}
                 </div>
               </>
-            ) : (
+            ) : knownAll === 0 && seenAll === 0 ? (
               <p className="caption" style={{ margin: "12px 0 0" }}>
                 아직 익히는 중이에요. 며칠 뒤 다시 만나면서 익숙한 용어가 생겨요.
               </p>
-            )}
+            ) : null}
           </div>
         ) : null}
 

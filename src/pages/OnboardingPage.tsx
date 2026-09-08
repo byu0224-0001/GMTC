@@ -10,6 +10,7 @@ import {
   promptNativeInstall,
   type InstallSurface,
 } from "../lib/install";
+import { LearningVisualRow } from "../components/LearningVisual";
 import { loadProgress, markOnboarded, saveProgress } from "../lib/progress";
 
 type Panel = "main" | "ios" | "android" | "inapp";
@@ -51,33 +52,28 @@ export function OnboardingPage({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="page session">
-      <div className="stack" style={{ marginTop: 40 }}>
+      <div className="stack onboard-main">
         {panel === "main" ? (
           <>
             <div className="eyebrow">{APP_SHORT_NAME}</div>
             <h1 className="display" style={{ margin: 0, fontSize: 26, lineHeight: 1.35 }}>
-              들어본 말은 많은데,
+              들어본 금융용어,
               <br />
-              막상 설명하려면 헷갈린다면.
+              막상 뜻은 헷갈린다면
             </h1>
-            <p style={{ margin: 0, fontWeight: 600, lineHeight: 1.55, color: "var(--color-ink-strong)" }}>
-              짧게 다시 만나고, 비슷한 말과 구분하고,
+            <p className="muted" style={{ margin: 0 }}>
+              하루 5~10분, 반복해서 익히고
               <br />
-              새로운 문장에서도 알아보게 돼요.
+              비슷한 개념과 구분해 보세요.
             </p>
 
-            <div className="card pad-lg">
-              <div className="caption">하루 5~10분</div>
-              <p style={{ margin: "6px 0 0", lineHeight: 1.6 }}>오늘 볼 만큼만 가볍게 시작해요.</p>
-              <div className="caption" style={{ marginTop: 18 }}>다시 만나고, 구분하기</div>
-              <p style={{ margin: "6px 0 0", lineHeight: 1.6 }}>
-                뜻을 떠올리고, 비슷한 개념과 비교하고, 잘못 알고 있던 부분을 바로잡아요.
-              </p>
-              <div className="caption" style={{ marginTop: 18 }}>새로운 문장에서 알아보기</div>
-              <p style={{ margin: "6px 0 0", lineHeight: 1.6 }}>
-                처음 보는 문장에서도 그 용어를 알아보게 돼요.
-              </p>
-            </div>
+            <LearningVisualRow
+              items={[
+                { type: "repeat", label: "다시 보기" },
+                { type: "contrast", label: "구분하기" },
+                { type: "context", label: "문장에서 확인하기" },
+              ]}
+            />
 
             <button className="btn btn-primary" onClick={() => start(standalone ? "standalone_start" : "web_start")}>
               시작하기
@@ -94,9 +90,6 @@ export function OnboardingPage({ onDone }: { onDone: () => void }) {
                 onInapp={() => { logEvent("install_choice", { surface, choice: "inapp_guide" }); setPanel("inapp"); }}
               />
             )}
-            <p className="notice">
-              학습 기록은 지금 사용하는 기기에 저장돼요. 나중에 홈 화면에 추가하면 이 기록이 옮겨지지 않을 수 있어요.
-            </p>
           </>
         ) : null}
 
@@ -156,30 +149,14 @@ function OptionalInstall({
 }) {
   const inapp = surface === "inapp";
   return (
-    <div className="card pad-lg">
-      <div className="caption">다음에 바로 이어서 하려면</div>
-      <p style={{ margin: "8px 0 0", fontWeight: 600, lineHeight: 1.45 }}>
-        {inapp ? "카카오톡 안에서는 설치가 제한될 수 있어요." : "홈 화면에 추가해 두면 기록을 이어가기 쉬워요."}
-      </p>
-      {inapp ? (
-        <p className="muted" style={{ margin: "6px 0 0", lineHeight: 1.6 }}>
-          Safari나 Chrome에서 열면 홈 화면에 설치할 수 있어요.
-        </p>
-      ) : null}
-      <div className="stack" style={{ marginTop: 16 }}>
-        {inapp ? (
-          <button className="btn btn-ghost" onClick={onInapp}>여는 방법 보기</button>
-        ) : surface === "ios" ? (
-          <button className="btn btn-ghost" onClick={onIos}>설치 방법 보기</button>
-        ) : nativeReady ? (
-          <button className="btn btn-ghost" disabled={installBusy} onClick={onNative}>
-            {installBusy ? "설치 창을 여는 중" : "앱으로 설치하기"}
-          </button>
-        ) : (
-          <button className="btn btn-ghost" onClick={onAndroidGuide}>앱으로 설치하기</button>
-        )}
-      </div>
-    </div>
+    <button
+      className="text-link"
+      type="button"
+      disabled={installBusy}
+      onClick={inapp ? onInapp : surface === "ios" ? onIos : nativeReady ? onNative : onAndroidGuide}
+    >
+      {installBusy ? "설치 창을 여는 중" : "앱으로 설치해서 사용하기"}
+    </button>
   );
 }
 

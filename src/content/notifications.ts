@@ -119,8 +119,8 @@ export function nudgeFor(input: {
 
 /** 알림 허용을 묻는 화면. 브라우저 권한창을 띄우기 전에 먼저 보여 준다. */
 export const PUSH_PROMPT = {
-  title: "내일도 잊지 않게 알려드릴까요?",
-  body: "하루 한 번, 오늘 학습을 아직 마치지 않은 날에만 알려드릴게요.",
+  title: "내일도 이어서 볼까요?",
+  body: "오늘 학습을 놓친 날에만 알려드릴게요.",
   accept: "알림 받기",
-  decline: "괜찮아요",
+  decline: "나중에",
 } as const;

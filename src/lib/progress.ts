@@ -5,7 +5,7 @@ import { addDays, clampCardSchedule, grade, isFamiliar, kstDateKey, newCard } fr
 
 export const STORAGE_KEY = "voca:progress:v2";
 const LEGACY_KEY = "voca:progress:v1";
-export const SCHEMA_VERSION = 6;
+export const SCHEMA_VERSION = 7;
 
 function empty(): ProgressState {
   return {
@@ -22,6 +22,8 @@ function empty(): ProgressState {
     extraSessions: {},
     onboardedAt: null,
     pushAskedAt: null,
+    pushLaterAt: null,
+    pushDisabled: false,
     doneSessions: 0,
     studyDates: [],
     celebratedFamiliarIds: [],
@@ -99,6 +101,8 @@ export function loadProgress(): ProgressState {
       extraSessions: parsed.extraSessions ?? {},
       onboardedAt: parsed.onboardedAt ?? null,
       pushAskedAt: parsed.pushAskedAt ?? null,
+      pushLaterAt: parsed.pushLaterAt ?? null,
+      pushDisabled: parsed.pushDisabled ?? false,
       doneSessions: parsed.doneSessions ?? 0,
       studyDates: parsed.studyDates ?? [],
       celebratedFamiliarIds: parsed.celebratedFamiliarIds,
@@ -206,7 +210,15 @@ export function markDefaultDone(state: ProgressState, now = new Date()): Progres
 }
 
 export function markPushAsked(state: ProgressState, now = new Date()): ProgressState {
-  return { ...state, pushAskedAt: now.toISOString() };
+  return { ...state, pushAskedAt: now.toISOString(), pushLaterAt: state.pushLaterAt ?? null };
+}
+
+export function markPushLater(state: ProgressState, now = new Date()): ProgressState {
+  return { ...state, pushLaterAt: now.toISOString() };
+}
+
+export function setPushDisabled(state: ProgressState, disabled: boolean): ProgressState {
+  return { ...state, pushDisabled: disabled };
 }
 
 export function defaultDoneToday(state: ProgressState, now = new Date()): boolean {

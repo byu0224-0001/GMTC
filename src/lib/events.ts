@@ -15,6 +15,13 @@ export type EventName =
   | "briefing_complete"
   | "reading_answer"
   | "push_prompt_result"
+  | "push_soft_prompt_shown"
+  | "push_soft_prompt_accept"
+  | "push_soft_prompt_later"
+  | "push_permission_granted"
+  | "push_permission_denied"
+  | "push_settings_open"
+  | "notification_open"
   | "deep_dive_opened"
   | "install_choice"
   | "session_complete"
@@ -101,6 +108,32 @@ function currentActiveMs(): number | null {
   return current.activeMs + (Date.now() - current.lastVisibleAt);
 }
 
+const FROM_PUSH_KEY = "voca:from-push";
+let lastPushOpenLog = 0;
+
+/** 알림을 눌러 앱을 연 사실을 남긴다. 이어지는 session_start와 연결한다. */
+export function markOpenedFromPush(): void {
+  try {
+    sessionStorage.setItem(FROM_PUSH_KEY, "1");
+  } catch {
+    // 저장이 막혀도 이벤트는 남긴다.
+  }
+  const now = Date.now();
+  if (now - lastPushOpenLog < 2000) return;
+  lastPushOpenLog = now;
+  logEvent("notification_open");
+}
+
+function consumeOpenedFromPush(): boolean {
+  try {
+    if (sessionStorage.getItem(FROM_PUSH_KEY) !== "1") return false;
+    sessionStorage.removeItem(FROM_PUSH_KEY);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function beginTodaySession(meta: {
   briefingId?: string;
   contentVersion?: number;
@@ -122,7 +155,7 @@ export function beginTodaySession(meta: {
   if (typeof document !== "undefined") {
     document.addEventListener("visibilitychange", onVisibility);
   }
-  logEvent("session_start");
+  logEvent("session_start", { from_push: consumeOpenedFromPush() });
 }
 
 export function endTodaySession(): void {

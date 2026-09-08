@@ -1,27 +1,39 @@
 import { Link } from "react-router-dom";
 import { TopBar } from "../components/Chrome";
+import { LearningVisual } from "../components/LearningVisual";
 import { LEARNING_MAPS, LEARNING_MAP_GROUPS } from "../content/learningMaps";
-import { TAXONOMY_LABEL, type Taxonomy } from "../content/literacy";
 import { canonBokId } from "../content/reportLexicon";
 import { labelFor } from "../lib/lookup";
 import { formFor } from "../lib/quiz";
-import { topicOf } from "../lib/pool";
 import { defaultDoneToday } from "../lib/progress";
-import { extraQueue, lessonPool, planCounts, studyCandidates } from "../lib/today";
+import { extraQueue, lessonPool, planCounts } from "../lib/today";
 import type { TodayPlanFile } from "../lib/todayPlan";
-import { GRADUATE_REPETITIONS } from "../lib/srs";
 import type { ProgressState, RetrievalForm, SrsCard, Term } from "../types";
 
-const FORM_LABEL: Record<RetrievalForm, string> = {
-  recognition: "뜻 고르기",
-  recall: "용어 떠올리기",
-  contrast: "비슷한 개념 구분",
-  judgment: "맞는 설명인지 판단",
-  context: "짧은 상황에 적용",
+const FORM_SHORT: Record<RetrievalForm, string> = {
+  recognition: "뜻",
+  recall: "떠올리기",
+  contrast: "구분",
+  judgment: "판단",
+  context: "문장",
 };
 
-function nextFormLabel(term: Term, pool: Term[], repetitions: number): string {
-  return FORM_LABEL[formFor(term, pool, { repetitions } as SrsCard)];
+function uniqueTerms(terms: Term[]): Term[] {
+  const seen = new Set<string>();
+  return terms.filter((t) => {
+    if (seen.has(t.id)) return false;
+    seen.add(t.id);
+    return true;
+  });
+}
+
+function formSummary(items: { term: Term; reps: number }[], pool: Term[]): string {
+  const counts = new Map<string, number>();
+  for (const item of items) {
+    const label = FORM_SHORT[formFor(item.term, pool, { repetitions: item.reps } as SrsCard)];
+    counts.set(label, (counts.get(label) ?? 0) + 1);
+  }
+  return [...counts.entries()].map(([name, n]) => `${name} ${n}`).join(" · ");
 }
 
 export function CurriculumPage({
@@ -35,15 +47,19 @@ export function CurriculumPage({
 }) {
   const plan = planCounts(terms, progress, todayPlan);
   const pool = lessonPool(terms);
-  const candidates = studyCandidates(terms);
-  const started = candidates.length - plan.remainingUnseen;
   const done = defaultDoneToday(progress) || plan.total === 0;
   const extra = done ? extraQueue(terms, progress) : [];
-  /** 권장 분량 전이면 오늘 큐를, 마친 뒤면 추가 세션에 담길 것을 미리 보여 준다. */
-  const upNext = (done
-    ? extra.filter((s) => s.kind === "recall" || s.kind === "practice").map((s) => s.term)
-    : plan.reviewTerms
-  ).slice(0, 5);
+  const preview = uniqueTerms(
+    done
+      ? extra.filter((s) => s.kind === "recall" || s.kind === "practice").map((s) => s.term)
+      : [...plan.newTerms, ...plan.reviewTerms],
+  );
+  const mix = formSummary(
+    extra
+      .filter((s) => s.kind === "recall" || s.kind === "practice")
+      .map((s) => ({ term: s.term, reps: progress.cards[s.term.id]?.repetitions ?? 0 })),
+    pool,
+  );
 
   return (
     <>
@@ -52,31 +68,38 @@ export function CurriculumPage({
         <div className="card pad-lg">
           <div className="caption">{done ? "조금 더 익혀볼까요?" : "이어서 학습하기"}</div>
           {done ? (
-            <p className="muted" style={{ margin: "8px 0 0", lineHeight: 1.5 }}>
-              {extra.length
-                ? "오늘 권장 분량은 마쳤어요. 여기서부터는 원하는 만큼만 하면 돼요."
-                : "지금은 더 볼 것이 없어요. 복습할 용어는 날짜가 되면 다시 나와요."}
-            </p>
+            extra.length ? (
+              <>
+                <p className="muted" style={{ margin: "8px 0 0" }}>
+                  오늘 권장 학습은 마쳤어요. 더 보고 싶을 때만 시작하면 돼요.
+                </p>
+                <div className="learn-visual" style={{ marginTop: 14 }}>
+                  <LearningVisual type="repeat" label="다시 보기" />
+                </div>
+                {mix ? (
+                  <>
+                    <div className="caption" style={{ marginTop: 12 }}>이번 5분</div>
+                    <p style={{ margin: "6px 0 0", fontWeight: 600 }}>{mix}</p>
+                  </>
+                ) : null}
+              </>
+            ) : (
+              <p className="muted" style={{ margin: "8px 0 0" }}>
+                지금은 더 볼 것이 없어요. 복습할 용어는 날짜가 되면 다시 나와요.
+              </p>
+            )
           ) : (
             <p style={{ margin: "8px 0 0", fontWeight: 600, lineHeight: 1.45 }}>
-              오늘 {plan.minutes}분 · 새 용어 {plan.neu}개 · 복습 {plan.review}개
+              오늘 {Math.round(plan.minutes)}분 · 새 용어 {plan.neu}개 · 복습 {plan.review}개
             </p>
           )}
-          {upNext.length ? (
-            <div style={{ marginTop: 14 }}>
-              {upNext.map((t) => {
-                const reps = progress.cards[t.id]?.repetitions ?? 0;
-                const topic = topicOf(terms, t.id) ?? t.taxonomy;
-                return (
-                  <div key={t.id} className="term-row" style={{ cursor: "default" }}>
-                    <strong>{labelFor(t.id, terms)}</strong>
-                    <span>
-                      {nextFormLabel(t, pool, reps)}
-                      {topic ? ` · ${TAXONOMY_LABEL[topic as Taxonomy] ?? topic}` : ""}
-                    </span>
-                  </div>
-                );
-              })}
+          {preview.length ? (
+            <div className="chip-row" style={{ marginTop: 14 }}>
+              {preview.map((t) => (
+                <span key={t.id} className="chip">
+                  {labelFor(t.id, terms)}
+                </span>
+              ))}
             </div>
           ) : null}
           {done ? (
@@ -98,15 +121,7 @@ export function CurriculumPage({
               시작하기
             </Link>
           )}
-          <p className="caption" style={{ marginTop: 14, marginBottom: 0 }}>
-            학습 가능한 용어 {candidates.length}개 중 {started}개 시작 · {plan.graduated}개 익숙해짐
-          </p>
         </div>
-
-        <p className="muted" style={{ margin: 0 }}>
-          같은 용어를 며칠에 걸쳐 다른 방식으로 다시 만나요. 서로 다른 날에 {GRADUATE_REPETITIONS}번
-          맞히고 방식도 두 가지 이상 통과하면 복습에서 빠져요.
-        </p>
 
         <section>
           <div className="eyebrow">개념 흐름</div>
@@ -130,8 +145,6 @@ export function CurriculumPage({
             </div>
           ))}
         </section>
-
-        <p className="notice">개별 용어를 찾을 때는 사전을 이용하세요.</p>
       </div>
     </>
   );

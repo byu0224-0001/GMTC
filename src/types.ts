@@ -88,8 +88,12 @@ export interface ProgressState {
   extraSessions: Record<string, number>;
   /** 첫 화면 안내를 본 시각. null이면 온보딩을 보여 준다. */
   onboardedAt: string | null;
-  /** 알림 허용을 물어본 적이 있는지. 거절한 사람에게 반복해서 묻지 않는다. */
+  /** 알림 OS 권한창을 띄운 시각. `나중에`와 구분한다. */
   pushAskedAt: string | null;
+  /** 완료 화면에서 `나중에`를 누른 시각. OS 거절이 아니다. */
+  pushLaterAt?: string | null;
+  /** 권한은 있는데 앱에서 끈 상태. */
+  pushDisabled?: boolean;
   /** 권장 분량을 마친 날의 수. 알림을 물어볼 시점을 정하는 데 쓴다. */
   doneSessions: number;
   /** 학습한 날(KST). 주간 점을 그릴 때 쓴다. 최근 21일만 둔다. */

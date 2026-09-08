@@ -5,9 +5,9 @@ import type { ProgressState } from "../types";
 /**
  * 알림 구독.
  *
- * 이 기능의 한계를 분명히 해 둔다. iOS에서는 홈 화면에 추가한 뒤에만 동작한다.
- * 그래서 알림을 받는 사람과 받지 못하는 사람이 섞이고, 재방문율을 하나로 묶어
- * `알림이 효과 있었다`고 해석하면 안 된다. 파일럿 분석에서 두 집단을 나눠 본다.
+ * 이 기능의 한계를 분명히 해 둔다. 알림을 받는 사람과 받지 못하는 사람이 섞이고,
+ * 재방문율을 하나로 묶어 `알림이 효과 있었다`고 해석하면 안 된다.
+ * 파일럿에서는 permission, 설치, 구독, 알림 클릭, 그다음 학습 시작을 나눠 본다.
  *
  * 지원되지 않는 환경에서도 앱은 그대로 쓸 수 있어야 한다. 여기서 실패하는 모든 경로는
  * 조용히 false를 돌려주고 끝난다.
@@ -26,16 +26,74 @@ export function pushSupported(): boolean {
 }
 
 /**
- * iOS는 홈 화면에 추가하지 않으면 알림을 받을 수 없다.
- * 설치 전에 권한을 물으면 거절만 쌓이므로, 먼저 설치를 안내해야 하는지 판단한다.
+ * 지금 이 화면에서 구독이 가능한지.
+ *
+ * OS 이름을 UI에 쓰지 않되, 실제 제약은 반영한다. Android Chrome은 탭에서도
+ * 구독할 수 있고, iOS는 홈 화면 웹 앱에서만 푸시가 간다. standalone이면 어느
+ * 쪽이든 가능하다.
  */
-export function needsInstallFirst(): boolean {
-  return isIOS() && !isStandalone();
+export function canSubscribeHere(): boolean {
+  if (!pushSupported()) return false;
+  if (isStandalone()) return true;
+  return !isIOS();
 }
 
-export function permission(): NotificationPermission | "unsupported" {
-  if (!pushSupported()) return "unsupported";
+/**
+ * 구독 API는 있는데 이 컨텍스트에서는 쓸 수 없을 때. 그때만 설치를 먼저 안내한다.
+ */
+export function needsInstallFirst(): boolean {
+  return pushSupported() && !canSubscribeHere();
+}
+
+export function permission(): NotificationPermission {
+  if (typeof Notification === "undefined") return "denied";
   return Notification.permission;
+}
+
+export async function hasPushSubscription(): Promise<boolean> {
+  if (!pushSupported()) return false;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    return Boolean(await reg.pushManager.getSubscription());
+  } catch {
+    return false;
+  }
+}
+
+export type PushUiState =
+  | "unsupported"
+  | "not_installed"
+  | "permission_default"
+  | "permission_granted"
+  | "permission_denied"
+  | "preprompt_later"
+  | "opted_out";
+
+/**
+ * 알림 UI가 봐야 할 상태.
+ *
+ * `나중에`와 OS 거절을 같은 값으로 두면, 벨에서 다시 켤 수 있는 사람과
+ * 시스템에서 막힌 사람을 파일럿에서 구분하지 못한다.
+ * permission granted만으로 `켜짐`을 말하지 않는다. 구독이 없으면 꺼짐으로 본다.
+ */
+export function pushUiState(progress: ProgressState, subscribed?: boolean): PushUiState {
+  if (!pushSupported()) return "unsupported";
+  if (needsInstallFirst()) return "not_installed";
+  const p = permission();
+  if (p === "denied") return "permission_denied";
+  if (p === "granted") {
+    if (progress.pushDisabled) return "opted_out";
+    if (subscribed === false) return "opted_out";
+    return "permission_granted";
+  }
+  if (progress.pushLaterAt) return "preprompt_later";
+  return "permission_default";
+}
+
+/** 벨 아이콘을 그릴지. 지원 안 되면 없는 기능을 보여 주지 않는다. */
+export function showPushEntry(progress: ProgressState): boolean {
+  const ui = pushUiState(progress);
+  return ui !== "unsupported";
 }
 
 function urlBase64ToUint8Array(base64: string): Uint8Array {
@@ -47,9 +105,9 @@ function urlBase64ToUint8Array(base64: string): Uint8Array {
   return out;
 }
 
-/** 사용자가 직접 버튼을 누른 경우에만 호출한다. */
+/** 사용자가 직접 버튼을 누른 경우에만 호출한다. 로컬 구독이 생긴 뒤에만 true. */
 export async function subscribePush(progress: ProgressState): Promise<boolean> {
-  if (!pushSupported()) return false;
+  if (!canSubscribeHere()) return false;
   try {
     const granted = await Notification.requestPermission();
     if (granted !== "granted") return false;

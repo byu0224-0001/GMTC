@@ -1,4 +1,4 @@
-const CACHE = "voca-shell-v19";
+const CACHE = "voca-shell-v20";
 const PRECACHE = [
   "/",
   "/index.html",
@@ -52,9 +52,13 @@ self.addEventListener("notificationclick", (event) => {
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
       for (const client of list) {
+        if (!client.url || new URL(client.url).origin !== self.location.origin) continue;
+        client.postMessage({ type: "notification_open" });
         if ("focus" in client) return client.focus();
       }
-      return self.clients.openWindow(target);
+      const url = new URL(target, self.location.origin);
+      url.searchParams.set("from", "push");
+      return self.clients.openWindow(`${url.pathname}${url.search}${url.hash}`);
     }),
   );
 });
