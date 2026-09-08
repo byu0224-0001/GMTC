@@ -86,11 +86,9 @@ export function GlossaryPage({ terms }: { terms: Term[] }) {
             ))}
           </div>
         ) : null}
-        {q.trim() || cho || filter !== "all" ? (
-          <div className="caption">
-            {list.length}개{mode ? ` · ${mode}` : ""}
-          </div>
-        ) : null}
+        <div className="caption">
+          {list.length}개{mode ? ` · ${mode}` : ""}
+        </div>
         <div>
           {list.map((t) => {
             const report = t.id.startsWith("rpt-");

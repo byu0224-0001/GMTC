@@ -149,14 +149,21 @@ function OptionalInstall({
 }) {
   const inapp = surface === "inapp";
   return (
-    <button
-      className="text-link"
-      type="button"
-      disabled={installBusy}
-      onClick={inapp ? onInapp : surface === "ios" ? onIos : nativeReady ? onNative : onAndroidGuide}
-    >
-      {installBusy ? "설치 창을 여는 중" : "앱으로 설치해서 사용하기"}
-    </button>
+    <div className="install-hint">
+      <p className="caption" style={{ margin: 0 }}>
+        {inapp
+          ? "Safari나 Chrome에서 열면 홈 화면에 넣을 수 있어요."
+          : "같은 자리에서 열고, 학습 기록과 알림을 이어가요."}
+      </p>
+      <button
+        className="text-link"
+        type="button"
+        disabled={installBusy}
+        onClick={inapp ? onInapp : surface === "ios" ? onIos : nativeReady ? onNative : onAndroidGuide}
+      >
+        {installBusy ? "설치 창을 여는 중" : "앱으로 설치해서 사용하기"}
+      </button>
+    </div>
   );
 }
 
