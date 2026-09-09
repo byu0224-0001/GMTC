@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { Chain, TopBar } from "../components/Chrome";
 import { REPORT_BOK_CANON, REPORT_ESSENTIALS, reportTermById } from "../content/reportLexicon";
+import { logEvent } from "../lib/events";
 
 export function LexiconPage() {
   const { termId } = useParams();
@@ -19,6 +21,10 @@ export function LexiconPage() {
   }
 
   const related = REPORT_ESSENTIALS.filter((t) => term.chain.includes(t.abbr ?? "") || term.chain.includes(t.headword)).slice(0, 5);
+
+  useEffect(() => {
+    logEvent("term_detail_open", { termId: term.id, sourceType: "report" });
+  }, [term.id]);
 
   return (
     <>
@@ -49,8 +55,8 @@ export function LexiconPage() {
             ))}
           </div>
         ) : null}
-        <Link className="btn btn-ghost" to="/learn/report" style={{ display: "grid", placeItems: "center" }}>
-          리포트 표현으로
+        <Link className="text-link" to="/learn/report" style={{ display: "inline-flex", minHeight: "var(--touch-min)", alignItems: "center" }}>
+          리포트 표현에서 더 찾아보기
         </Link>
         <p className="notice">증권사 리포트 문장을 그대로 가져오지 않았어요.</p>
       </div>

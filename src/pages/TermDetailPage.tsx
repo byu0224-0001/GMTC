@@ -1,9 +1,11 @@
+import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { RelatedConcepts, TopBar } from "../components/Chrome";
 import { displayTitle } from "../lib/hangul";
 import { SOURCE_DISCLAIMER } from "../content/brand";
 import { readingsForTerm } from "../content/termReadings";
 import { BOK_REPORT_BRIDGE, reportTermById } from "../content/reportLexicon";
+import { logEvent } from "../lib/events";
 import type { Term } from "../types";
 
 export function TermDetailPage({ terms }: { terms: Term[] }) {
@@ -16,11 +18,16 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
   const showLearn = Boolean(term && (core || term.easyExplanation));
   const bridge = term ? BOK_REPORT_BRIDGE[term.id] : undefined;
 
+  useEffect(() => {
+    if (!term) return;
+    logEvent("term_detail_open", { termId: term.id, sourceType: "bok" });
+  }, [term?.id]);
+
   if (!term) {
     return (
       <div className="page">
         <p>용어를 찾지 못했어요.</p>
-        <button className="btn btn-primary" onClick={() => nav("/terms")}>사전으로</button>
+        <button className="btn btn-primary" onClick={() => nav("/terms")}>용어 목록으로</button>
       </div>
     );
   }
@@ -114,8 +121,8 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
             ))}
           </div>
         ) : null}
-        <Link className="btn btn-ghost" to="/terms" style={{ display: "grid", placeItems: "center" }}>
-          사전으로
+        <Link className="text-link" to="/terms" style={{ display: "inline-flex", minHeight: "var(--touch-min)", alignItems: "center" }}>
+          사전에서 더 찾아보기
         </Link>
         <p className="notice">{SOURCE_DISCLAIMER}</p>
       </div>

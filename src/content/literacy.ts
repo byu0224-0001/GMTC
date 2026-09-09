@@ -245,7 +245,7 @@ export interface ContextCase {
   choiceIds: string[];
   why: string;
   chain: string[];
-  /** 본문에 나온 핵심 용어. 눌러서 사전으로 간다. */
+  /** 본문에 나온 핵심 용어. 눌러서 미리보기를 연다. */
   termIds?: string[];
   asOf?: string;
   freshness?: "evergreen" | "dated";

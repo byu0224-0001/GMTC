@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ConceptFlowView } from "../components/Chrome";
-import { TermPeek, type PeekTarget } from "../components/TermPeek";
+import { TermPeek, type PeekQuery } from "../components/TermPeek";
 import { READING_DISCLAIMER, READING_EXAMPLE_LABEL, READING_KIND_SHORT } from "../content/brand";
 import { CONTEXT_CASES, type ContextCase } from "../content/literacy";
-import { canonBokId } from "../content/reportLexicon";
 import { beginTodaySession, endTodaySession, logEvent } from "../lib/events";
+import { chipClass } from "../lib/chipTone";
 import { flushEvents } from "../lib/learner";
 import { labelFor } from "../lib/lookup";
 import { loadProgress, recordContext, saveProgress } from "../lib/progress";
 import { clearUiResume, loadUiResume, saveUiResume } from "../lib/sessionUi";
+import { resolveTermPreview } from "../lib/termPreview";
 import { seededShuffle } from "../lib/quiz";
 import type { Term } from "../types";
 
@@ -39,7 +40,7 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
   const [stage, setStage] = useState<Stage>(boot?.stage ?? (cse?.fact ? "fact" : "concept"));
   const [factPick, setFactPick] = useState<string | null>(boot?.factPick ?? null);
   const [picked, setPicked] = useState<string | null>(boot?.picked ?? null);
-  const [peek, setPeek] = useState<PeekTarget | null>(null);
+  const [peek, setPeek] = useState<PeekQuery | null>(null);
 
   const conceptChoices = useMemo(
     () => (cse ? seededShuffle(cse.choiceIds, cse.id.length * 31 + 7) : []),
@@ -69,6 +70,10 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
     saveUiResume(resumeKey, { stage, factPick, picked });
   }, [resumeKey, stage, factPick, picked]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [stage]);
+
   if (!cse) {
     return (
       <div className="page">
@@ -78,7 +83,19 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
     );
   }
 
-  const chips = (cse.termIds ?? []).map((id) => canonBokId(id));
+  const article = cse;
+  const chips = article.termIds ?? [];
+
+  function openPeek(label: string, context: PeekQuery["context"], id?: string) {
+    const q: PeekQuery = {
+      label,
+      id,
+      fromId: article.answerTermId,
+      context,
+      articleId: article.id,
+    };
+    if (resolveTermPreview(q, terms)) setPeek(q);
+  }
 
   return (
     <>
@@ -212,7 +229,7 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
               <ConceptFlowView
                 steps={cse.chain}
                 terms={terms}
-                onPeek={(label) => setPeek({ fromId: cse.answerTermId, label })}
+                onPeek={(label) => openPeek(label, "flow")}
               />
               {cse.nextToCheck?.length ? (
                 <>
@@ -231,8 +248,8 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
                     <button
                       key={id}
                       type="button"
-                      className="chip chip-link"
-                      onClick={() => setPeek({ fromId: cse.answerTermId, label: labelFor(id, terms) })}
+                      className={chipClass(id)}
+                      onClick={() => openPeek(labelFor(id, terms), "in_article", id)}
                     >
                       {labelFor(id, terms)}
                     </button>

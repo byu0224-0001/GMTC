@@ -254,6 +254,7 @@ export function LearnPage({
     setPicked(null);
     setLastDue(null);
     setFamiliarId(null);
+    window.scrollTo(0, 0);
     if (i + 1 >= queue.length) setDone(true);
     else setI(i + 1);
   }
@@ -270,6 +271,7 @@ export function LearnPage({
     setPicked(null);
     setLastDue(null);
     setFamiliarId(null);
+    window.scrollTo(0, 0);
     setI(prevNewIndex);
   }
 
@@ -324,7 +326,7 @@ export function LearnPage({
                     <p className="why"><strong>기사에서는</strong> {inTheNews(step.term.id)}</p>
                   ) : null}
                   <RelatedConcepts term={step.term} terms={terms} preview />
-                  <DeepDive key={step.term.id} termId={step.term.id} />
+                  <DeepDive key={`${i}-${step.term.id}`} termId={step.term.id} />
                 </>
               ) : (
                 <>
@@ -467,7 +469,7 @@ export function LearnPage({
                   </div>
                 ) : null}
                 <RelatedConcepts term={step.term} terms={terms} note={false} preview />
-                <DeepDive key={`${step.term.id}-after`} termId={step.term.id} />
+                <DeepDive key={`${i}-${step.term.id}-after`} termId={step.term.id} />
                 <button className="btn btn-primary" onClick={goNext}>다음</button>
               </>
             ) : null}

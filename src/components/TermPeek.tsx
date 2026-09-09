@@ -1,82 +1,119 @@
 import { Link } from "react-router-dom";
-import { whyTogether } from "../content/related";
 import { logEvent } from "../lib/events";
-import { displayTitle } from "../lib/hangul";
-import { resolveChainHref } from "../lib/lookup";
+import { resolveTermPreview, type PeekQuery } from "../lib/termPreview";
 import type { Term } from "../types";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-export interface PeekTarget {
-  /** 지금 보고 있는 용어. 왜 같이 보는지 문장을 고를 때 쓴다. */
-  fromId?: string;
-  label: string;
-}
-
-function termFromHref(href: string, terms: Term[]): Term | undefined {
-  const m = href.match(/\/terms\/([^/?#]+)/);
-  if (!m) return undefined;
-  const id = decodeURIComponent(m[1]);
-  return terms.find((t) => t.id === id);
-}
+export type { PeekQuery };
 
 /**
  * 학습·읽기 세션 위에 띄우는 관련 용어 미리보기.
- * 열기·닫기는 진도에 손대지 않는다. 자세히 보기를 누른 뒤에만 사전으로 간다.
+ * 열기·닫기는 진도에 손대지 않는다. 제목만 있는 시트는 열지 않는다.
  */
 export function TermPeek({
   target,
   terms,
   onClose,
 }: {
-  target: PeekTarget | null;
+  target: PeekQuery | null;
   terms: Term[];
   onClose: () => void;
 }) {
-  const href = target ? resolveChainHref(target.label, terms) : null;
-  const term = href ? termFromHref(href, terms) : undefined;
-  const why = target?.fromId && target.label ? whyTogether(target.fromId, target.label) : null;
-  const blurb = term?.oneLiner || term?.easyExplanation || term?.shortDef || null;
+  const preview = target ? resolveTermPreview(target, terms) : null;
+  const open = Boolean(target && preview);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const pushed = useRef(false);
+  const skipHistory = useRef(false);
+  const scrollY = useRef(0);
 
   useEffect(() => {
     if (!target) return;
+    if (!preview) {
+      if (import.meta.env.DEV) {
+        console.error(`Missing preview copy for ${target.id ?? target.label}`);
+      }
+      return;
+    }
     logEvent("related_preview_open", {
       fromId: target.fromId ?? null,
-      label: target.label,
+      label: preview.title,
+      termId: preview.id,
+      sourceType: preview.sourceType,
     });
-  }, [target?.fromId, target?.label]);
+  }, [target?.fromId, target?.label, target?.id, preview?.id, preview?.title, preview?.sourceType]);
 
-  if (!target) return null;
+  useEffect(() => {
+    if (!open) return;
+    scrollY.current = window.scrollY;
+    const html = document.documentElement;
+    const body = document.body;
+    html.classList.add("sheet-open");
+    body.style.top = `-${scrollY.current}px`;
+
+    skipHistory.current = false;
+    history.pushState({ termPeek: true }, "");
+    pushed.current = true;
+    const onPop = () => {
+      pushed.current = false;
+      onCloseRef.current();
+    };
+    window.addEventListener("popstate", onPop);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      html.classList.remove("sheet-open");
+      body.style.top = "";
+      window.scrollTo(0, scrollY.current);
+      if (pushed.current && !skipHistory.current) {
+        pushed.current = false;
+        history.back();
+      }
+    };
+  }, [open]);
+
+  if (!target || !preview) return null;
+
+  function requestClose() {
+    if (pushed.current) history.back();
+    else onClose();
+  }
 
   return (
-    <div className="sheet-backdrop" onClick={onClose} role="presentation">
+    <div className="sheet-backdrop" onClick={requestClose} role="presentation">
       <div
         className="sheet"
         role="dialog"
+        aria-modal="true"
         aria-labelledby="term-peek-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 id="term-peek-title" className="term-title" style={{ fontSize: 20, margin: 0 }}>
-          {term ? displayTitle(term) : target.label}
-        </h2>
-        {blurb ? <p className="muted" style={{ margin: "10px 0 0" }}>{blurb}</p> : null}
-        {why ? (
+        <div className="sheet-head">
+          <h2 id="term-peek-title" className="term-title" style={{ fontSize: 20, margin: 0 }}>
+            {preview.title}
+          </h2>
+          <button type="button" className="icon-btn" onClick={requestClose} aria-label="닫기">
+            ✕
+          </button>
+        </div>
+        <p className="muted" style={{ margin: "10px 0 0" }}>{preview.summary}</p>
+        {preview.relationReason ? (
           <>
-            <div className="caption" style={{ marginTop: 16 }}>왜 같이 보나요?</div>
-            <p className="muted" style={{ margin: "6px 0 0" }}>{why}</p>
+            <div className="caption" style={{ marginTop: 16 }}>{preview.relationCaption}</div>
+            <p className="muted" style={{ margin: "6px 0 0" }}>{preview.relationReason}</p>
           </>
         ) : null}
-        {href ? (
-          <Link
-            className="btn btn-primary"
-            to={href}
-            style={{ display: "grid", placeItems: "center", marginTop: 16, textDecoration: "none" }}
-          >
-            자세히 보기
-          </Link>
-        ) : null}
-        <button className="btn btn-ghost" style={{ marginTop: 8 }} onClick={onClose}>
-          닫기
-        </button>
+        <Link
+          className="text-link"
+          to={preview.detailRoute}
+          onClick={() => {
+            skipHistory.current = true;
+            pushed.current = false;
+            onClose();
+          }}
+          style={{ display: "inline-flex", marginTop: 16, minHeight: "var(--touch-min)", alignItems: "center" }}
+        >
+          자세히 보기 〉
+        </Link>
       </div>
     </div>
   );

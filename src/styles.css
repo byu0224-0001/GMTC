@@ -153,6 +153,25 @@ a { color: var(--color-primary-deep); text-decoration: none; }
   border-radius: 16px 16px 0 0;
   padding: 24px 20px calc(20px + env(safe-area-inset-bottom));
 }
+.sheet-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sheet-head .term-title {
+  flex: 1;
+}
+html.sheet-open,
+html.sheet-open body {
+  overflow: hidden;
+}
+html.sheet-open body {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+}
 .cho-toggle,
 .text-link {
   border: 0;
@@ -391,6 +410,9 @@ a { color: var(--color-primary-deep); text-decoration: none; }
 .chip.known {
   border-color: var(--color-primary);
   color: var(--color-primary);
+}
+.chip-familiar {
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-hairline));
 }
 .chip.wrong { border-color: var(--color-wrong); color: var(--color-wrong); }
 a.chip,

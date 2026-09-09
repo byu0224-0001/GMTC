@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ConceptFlowView } from "../components/Chrome";
-import { TermPeek, type PeekTarget } from "../components/TermPeek";
+import { TermPeek, type PeekQuery } from "../components/TermPeek";
+import { resolveTermPreview } from "../lib/termPreview";
 import { briefingById } from "../content/briefings";
 import { READING_DISCLAIMER, READING_EXAMPLE_LABEL, READING_KIND_LONG } from "../content/brand";
 import { mapForBriefing } from "../content/learningMaps";
 import { logEvent } from "../lib/events";
+import { chipClass } from "../lib/chipTone";
 import { labelFor } from "../lib/lookup";
 import { loadProgress, recordBriefingAttempt, saveProgress } from "../lib/progress";
 import { clearUiResume, loadUiResume, saveUiResume } from "../lib/sessionUi";
@@ -43,7 +45,7 @@ export function BriefingReader({
   const [picked, setPicked] = useState<Record<number, string>>(
     () => loadUiResume<Record<number, string>>(resumeKey) ?? {},
   );
-  const [peek, setPeek] = useState<PeekTarget | null>(null);
+  const [peek, setPeek] = useState<PeekQuery | null>(null);
   const interactive = useMemo(
     () => briefing.blocks.map((b, i) => ({ b, i })).filter((x) => x.b.type === "cloze" || x.b.type === "choice"),
     [briefing],
@@ -51,6 +53,17 @@ export function BriefingReader({
   const answered = interactive.filter((x) => picked[x.i]).length;
   const allDone = interactive.length === 0 || answered === interactive.length;
   const relatedMap = mapForBriefing(briefing.id);
+
+  function openPeek(label: string, context: PeekQuery["context"] = "in_article", id?: string) {
+    const q: PeekQuery = {
+      label,
+      id,
+      fromId: briefing.primaryTermIds[0],
+      context,
+      articleId: briefing.id,
+    };
+    if (resolveTermPreview(q, terms)) setPeek(q);
+  }
 
   useEffect(() => {
     logEvent("briefing_start", { briefingId: briefing.id });
@@ -135,7 +148,7 @@ export function BriefingReader({
             terms={terms}
             picked={picked[i] ?? null}
             onPick={(id) => gradeBlock(i, id)}
-            onPeek={(label) => setPeek({ fromId: briefing.primaryTermIds[0], label })}
+            onPeek={(label) => openPeek(label, "in_article")}
           />
         ) : null,
       )}
@@ -146,9 +159,7 @@ export function BriefingReader({
             key={i}
             block={{ ...block, title: "핵심 문장" }}
             terms={terms}
-            picked={picked[i] ?? null}
-            onPick={(id) => gradeBlock(i, id)}
-            onPeek={(label) => setPeek({ fromId: briefing.primaryTermIds[0], label })}
+            onPeek={(label) => openPeek(label, "flow")}
           />
         ) : null,
       )}
@@ -170,7 +181,7 @@ export function BriefingReader({
               terms={terms}
               picked={picked[i] ?? null}
               onPick={(id) => gradeBlock(i, id)}
-              onPeek={(label) => setPeek({ fromId: briefing.primaryTermIds[0], label })}
+              onPeek={(label, id) => openPeek(label, "in_article", id)}
             />
           </div>
         );
@@ -184,7 +195,7 @@ export function BriefingReader({
             terms={terms}
             picked={picked[i] ?? null}
             onPick={(id) => gradeBlock(i, id)}
-            onPeek={(label) => setPeek({ fromId: briefing.primaryTermIds[0], label })}
+            onPeek={(label, id) => openPeek(label, "in_article", id)}
           />
         ) : null,
       )}
@@ -218,7 +229,7 @@ function ConceptChips({
 }: {
   ids: string[];
   terms: Term[];
-  onPeek: (label: string) => void;
+  onPeek: (label: string, id?: string) => void;
 }) {
   return (
     <div>
@@ -227,7 +238,12 @@ function ConceptChips({
         {ids.map((id) => {
           const label = labelFor(id, terms);
           return (
-            <button key={id} type="button" className="chip chip-link" onClick={() => onPeek(label)}>
+            <button
+              key={id}
+              type="button"
+              className={chipClass(id)}
+              onClick={() => onPeek(label, id)}
+            >
               {label}
             </button>
           );
@@ -240,15 +256,15 @@ function ConceptChips({
 function BriefingBlockView({
   block,
   terms,
-  picked,
-  onPick,
+  picked = null,
+  onPick = () => undefined,
   onPeek,
 }: {
   block: BriefingBlock;
   terms: Term[];
-  picked: string | null;
-  onPick: (id: string) => void;
-  onPeek: (label: string) => void;
+  picked?: string | null;
+  onPick?: (id: string) => void;
+  onPeek: (label: string, id?: string) => void;
 }) {
   if (block.type === "p") {
     return <p className="briefing-p">{block.text}</p>;

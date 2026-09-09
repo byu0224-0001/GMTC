@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -302,6 +303,81 @@ def check_reading_body(cid: str, text: str) -> list[str]:
     if POLICY_LOOKALIKE.search(text):
         out.append(f"{cid} figure reads like an actual regulation; use a relative change instead")
     return out
+
+
+def compact_label(s: str) -> str:
+    s = unicodedata.normalize("NFKC", s).lower()
+    return re.sub(r"[\s·ㆍ()]", "", s)
+
+
+def report_preview_fields(report_src: str) -> dict[str, dict[str, str]]:
+    """리포트 용어의 표시명·요약을 뽑는다. preview resolver와 같은 키를 쓴다."""
+    out: dict[str, dict[str, str]] = {}
+    for m in re.finditer(
+        r'id: "(rpt-[^"]+)"\s*,\s*headword: "([^"]+)",\s*abbr: ([^\n]+),\s*'
+        r'aliases: \[([^\]]*)\],\s*easyExplanation: "((?:[^"\\]|\\.)*)"',
+        report_src,
+    ):
+        rid, head, abbr_raw, aliases_raw, expl = m.groups()
+        abbr_m = re.search(r'"([^"]+)"', abbr_raw)
+        abbr = abbr_m.group(1) if abbr_m else ""
+        aliases = re.findall(r'"([^"]+)"', aliases_raw)
+        out[rid] = {"headword": head, "abbr": abbr, "aliases": " ".join(aliases), "easyExplanation": expl}
+    return out
+
+
+def preview_summary(
+    tid: str,
+    terms: dict,
+    copy_ids: list[str],
+    report_fields: dict[str, dict[str, str]],
+    canon: dict[str, str],
+) -> str:
+    mapped = canon.get(tid, tid)
+    if mapped in copy_ids:
+        return "core-copy"
+    if mapped in terms:
+        t = terms[mapped]
+        return (t.get("shortDef") or t.get("definition") or "").strip()
+    r = report_fields.get(tid)
+    if r:
+        return (r.get("easyExplanation") or "").strip()
+    return ""
+
+
+def check_clickable_previews(
+    terms: dict,
+    copy_ids: list[str],
+    report_src: str,
+    briefing_src: str,
+    reading_src: str,
+    maps_src: str,
+) -> list[str]:
+    """칩으로 열리는 모든 id는 title+summary가 있어야 한다."""
+    errors: list[str] = []
+    canon = dict(re.findall(r'"(rpt-[^"]+)": "([^"]+)"', report_src))
+    fields = report_preview_fields(report_src)
+    clickable: set[str] = set()
+    for raw in re.findall(r'type: "concepts", ids: \[([^\]]+)\]', briefing_src):
+        clickable.update(re.findall(r'"([^"]+)"', raw))
+    for raw in re.findall(r'termIds: \[([^\]]*)\]', reading_src):
+        clickable.update(re.findall(r'"([^"]+)"', raw))
+    clickable.update(re.findall(r'termId: "([^"]+)"', maps_src))
+
+    for tid in sorted(clickable):
+        summary = preview_summary(tid, terms, copy_ids, fields, canon)
+        if not summary:
+            errors.append(f"clickable {tid} has no preview summary")
+
+    for rid, meta in fields.items():
+        head, abbr = meta["headword"], meta["abbr"]
+        keys = [head, rid, abbr, *meta["aliases"].split()]
+        if head and abbr:
+            keys.append(f"{head} ({abbr})")
+        display = f"{head} ({abbr})" if abbr else head
+        if not any(compact_label(k) == compact_label(display) for k in keys if k):
+            errors.append(f"{rid} display '{display}' does not match preview keys")
+    return errors
 
 
 def ids_in(text: str, pattern: str) -> list[str]:
@@ -618,6 +694,15 @@ def main() -> int:
             errors.append(f"today.json unknown briefing {today.get('briefingId')}")
         if "contentVersion" in today and not isinstance(today.get("contentVersion"), int):
             errors.append("today.json contentVersion must be int")
+
+    errors += check_clickable_previews(
+        terms,
+        copy_ids,
+        report_src,
+        briefing_src,
+        reading_src,
+        maps_src,
+    )
 
     if errors:
         print("FAIL")

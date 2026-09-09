@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ConceptFlowView, TopBar } from "../components/Chrome";
+import { TermPeek, type PeekQuery } from "../components/TermPeek";
 import { briefingById } from "../content/briefings";
 import { learningMapById } from "../content/learningMaps";
 import { REPORT_BOK_CANON, canonBokId } from "../content/reportLexicon";
 import { labelFor } from "../lib/lookup";
+import { resolveTermPreview } from "../lib/termPreview";
 import type { ProgressState, Term } from "../types";
 
 function conceptHref(id: string): string {
@@ -24,6 +27,7 @@ export function LearnMapPage({
   const nav = useNavigate();
   const map = mapId ? learningMapById(mapId) : undefined;
   const briefing = map ? briefingById(map.readingId) : undefined;
+  const [peek, setPeek] = useState<PeekQuery | null>(null);
   const seen = map?.steps.filter((s) => progress.cards[s.termId] || progress.cards[canonBokId(s.termId)]).length ?? 0;
 
   if (!map) {
@@ -71,7 +75,14 @@ export function LearnMapPage({
         */}
         <div className="card insight">
           <div className="caption">한 번에 연결하면</div>
-          <ConceptFlowView steps={map.connect} terms={terms} />
+          <ConceptFlowView
+            steps={map.connect}
+            terms={terms}
+            onPeek={(label) => {
+              const q: PeekQuery = { label, context: "flow" };
+              if (resolveTermPreview(q, terms)) setPeek(q);
+            }}
+          />
         </div>
 
         {briefing ? (
@@ -94,6 +105,7 @@ export function LearnMapPage({
         >
           다른 개념 흐름 보기
         </Link>
+        <TermPeek target={peek} terms={terms} onClose={() => setPeek(null)} />
       </div>
     </>
   );

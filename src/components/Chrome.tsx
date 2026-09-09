@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { CONCEPT_FLOWS } from "../content/conceptFlows";
+import { chipClass } from "../lib/chipTone";
 import { relatedLabels, resolveChainHref } from "../lib/lookup";
+import { resolveTermPreview } from "../lib/termPreview";
 import type { Term } from "../types";
 import { TermPeek } from "./TermPeek";
 
@@ -175,9 +177,15 @@ export function Chain({
     <div className="chip-row">
       {items.map((x, i) => {
         const href = terms ? resolveChainHref(x, terms) : null;
+        const preview = terms ? resolveTermPreview({ label: x }, terms) : null;
         if (href && onPeek) {
           return (
-            <button key={`${x}-${i}`} type="button" className="chip chip-link" onClick={() => onPeek(x)}>
+            <button
+              key={`${x}-${i}`}
+              type="button"
+              className={preview ? chipClass(preview.id) : "chip chip-link"}
+              onClick={() => onPeek(x)}
+            >
               {x}
             </button>
           );
@@ -213,7 +221,11 @@ export function RelatedConcepts({
   preview?: boolean;
 }) {
   const [peek, setPeek] = useState<string | null>(null);
-  const onPeek = preview ? (label: string) => setPeek(label) : undefined;
+  const onPeek = preview
+    ? (label: string) => {
+        if (resolveTermPreview({ label, fromId: term.id, context: "related" }, terms)) setPeek(label);
+      }
+    : undefined;
   const flow = CONCEPT_FLOWS[term.id];
   return (
     <>
@@ -241,7 +253,7 @@ export function RelatedConcepts({
       )}
       {preview ? (
         <TermPeek
-          target={peek ? { fromId: term.id, label: peek } : null}
+          target={peek ? { fromId: term.id, label: peek, context: "related" } : null}
           terms={terms}
           onClose={() => setPeek(null)}
         />

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { TabBar } from "./components/Chrome";
+import { ScrollReset } from "./components/ScrollReset";
 import { loadTerms } from "./lib/data";
 import { fallbackPlan, loadExtraBriefings, loadTodayPlan, resolveDisplayPlan, type TodayPlanFile } from "./lib/todayPlan";
 import { loadProgress, storageWritable } from "./lib/progress";
@@ -81,6 +82,7 @@ export default function App() {
 
   return (
     <div className="app">
+      <ScrollReset />
       <Routes>
         <Route path="/" element={<HomePage terms={terms} progress={progress} todayPlan={displayPlan} />} />
         <Route path="/learn" element={<CurriculumPage terms={terms} progress={progress} todayPlan={displayPlan} />} />

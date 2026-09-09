@@ -39,6 +39,7 @@ export function ContextFeedPage({
             배운 용어를 문장에서 다시 만나보세요.
           </strong>
         </p>
+        <p className="caption" style={{ margin: 0 }}>학습을 위해 재구성한 예시</p>
 
         <div className="read-switch" role="tablist" aria-label="읽기 종류">
           <button

@@ -22,6 +22,7 @@ export type EventName =
   | "push_permission_denied"
   | "push_settings_open"
   | "notification_open"
+  | "term_detail_open"
   | "related_preview_open"
   | "deep_dive_opened"
   | "install_choice"
