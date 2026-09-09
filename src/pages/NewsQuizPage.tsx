@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ConceptFlowView } from "../components/Chrome";
+import { TermPeek, type PeekTarget } from "../components/TermPeek";
 import { READING_DISCLAIMER, READING_EXAMPLE_LABEL, READING_KIND_SHORT } from "../content/brand";
 import { CONTEXT_CASES, type ContextCase } from "../content/literacy";
 import { canonBokId } from "../content/reportLexicon";
@@ -8,6 +9,7 @@ import { beginTodaySession, endTodaySession, logEvent } from "../lib/events";
 import { flushEvents } from "../lib/learner";
 import { labelFor } from "../lib/lookup";
 import { loadProgress, recordContext, saveProgress } from "../lib/progress";
+import { clearUiResume, loadUiResume, saveUiResume } from "../lib/sessionUi";
 import { seededShuffle } from "../lib/quiz";
 import type { Term } from "../types";
 
@@ -30,9 +32,14 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
   const { caseId } = useParams();
   const nav = useNavigate();
   const cse = CONTEXT_CASES.find((c) => c.id === caseId);
-  const [stage, setStage] = useState<Stage>(cse?.fact ? "fact" : "concept");
-  const [factPick, setFactPick] = useState<string | null>(null);
-  const [picked, setPicked] = useState<string | null>(null);
+  const resumeKey = caseId ? `reading:${caseId}` : "";
+  const boot = resumeKey
+    ? loadUiResume<{ stage: Stage; factPick: string | null; picked: string | null }>(resumeKey)
+    : null;
+  const [stage, setStage] = useState<Stage>(boot?.stage ?? (cse?.fact ? "fact" : "concept"));
+  const [factPick, setFactPick] = useState<string | null>(boot?.factPick ?? null);
+  const [picked, setPicked] = useState<string | null>(boot?.picked ?? null);
+  const [peek, setPeek] = useState<PeekTarget | null>(null);
 
   const conceptChoices = useMemo(
     () => (cse ? seededShuffle(cse.choiceIds, cse.id.length * 31 + 7) : []),
@@ -57,6 +64,11 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
     };
   }, [caseId]);
 
+  useEffect(() => {
+    if (!resumeKey) return;
+    saveUiResume(resumeKey, { stage, factPick, picked });
+  }, [resumeKey, stage, factPick, picked]);
+
   if (!cse) {
     return (
       <div className="page">
@@ -71,7 +83,16 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
   return (
     <>
       <header className="topbar">
-        <button className="icon-btn" onClick={() => nav("/context")} aria-label="닫기">✕</button>
+        <button
+          className="icon-btn"
+          onClick={() => {
+            if (resumeKey) clearUiResume(resumeKey);
+            nav("/context");
+          }}
+          aria-label="닫기"
+        >
+          ✕
+        </button>
         <h1>읽기</h1>
         <span />
       </header>
@@ -188,7 +209,11 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
             <div className="card">
               <div className="caption">이렇게 이어져요</div>
               {/* 읽기 사례의 chain은 사례마다 손으로 적은 순서다. 화살표를 쓴다. */}
-              <ConceptFlowView steps={cse.chain} terms={terms} />
+              <ConceptFlowView
+                steps={cse.chain}
+                terms={terms}
+                onPeek={(label) => setPeek({ fromId: cse.answerTermId, label })}
+              />
               {cse.nextToCheck?.length ? (
                 <>
                   <div className="caption" style={{ marginTop: 14 }}>다음으로 확인할 것</div>
@@ -203,18 +228,28 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
                 <div className="caption">이 글에 나온 용어</div>
                 <div className="chip-row" style={{ marginTop: 8 }}>
                   {chips.map((id) => (
-                    <Link
+                    <button
                       key={id}
-                      className="chip"
-                      to={id.startsWith("rpt-") ? `/lexicon/${id}` : `/terms/${encodeURIComponent(id)}`}
+                      type="button"
+                      className="chip chip-link"
+                      onClick={() => setPeek({ fromId: cse.answerTermId, label: labelFor(id, terms) })}
                     >
                       {labelFor(id, terms)}
-                    </Link>
+                    </button>
                   ))}
                 </div>
               </div>
             ) : null}
-            <button className="btn btn-primary" onClick={() => nav("/context")}>읽기 목록으로</button>
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                if (resumeKey) clearUiResume(resumeKey);
+                nav("/context");
+              }}
+            >
+              읽기 목록으로
+            </button>
+            <TermPeek target={peek} terms={terms} onClose={() => setPeek(null)} />
           </>
         ) : null}
       </div>

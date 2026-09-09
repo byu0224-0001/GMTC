@@ -29,7 +29,21 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
       },
       {
         type: "p",
-        text: "시장은 물가 압력이 예상보다 오래 이어지면 중앙은행이 기준금리를 빠르게 내리기 어려울 수 있다고 해석했어요. 금리 인하 기대가 약해지면 미래의 기준금리 수준을 반영하는 시장금리도 오를 수 있어요.",
+        text: "시장은 물가 압력이 예상보다 오래 이어지면 중앙은행이 기준금리를 빠르게 내리기 어려울 수 있다고 해석했어요.",
+      },
+      {
+        type: "cloze",
+        before: "물가 상승률이 예상보다 높게 나오면서 시장에서는 기준금리 인하 시점이 예상보다 ",
+        after: " 수 있다는 전망이 커졌어요.",
+        question: "물가가 예상보다 높게 나오면 기준금리 인하 시점은 어떻게 읽힐까요?",
+        answerId: "late",
+        choices: [
+          { id: "late", label: "늦어질" },
+          { id: "early", label: "빨라질" },
+          { id: "fixed", label: "고정될" },
+          { id: "gone", label: "사라질" },
+        ],
+        note: "물가 압력이 쉽게 낮아지지 않으면 중앙은행이 기준금리를 빠르게 내리기 어려워요. 그래서 인하 시점이 뒤로 밀릴 수 있어요.",
       },
       {
         type: "p",
@@ -47,19 +61,6 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "신용스프레드", label: "신용스프레드" },
         ],
         note: "만기가 길고 이자를 적게 주는 채권일수록 듀레이션이 길어요. 그래서 금리가 같은 폭으로 움직여도 장기채의 가격이 더 크게 떨어질 수 있어요.",
-      },
-      {
-        type: "choice",
-        depth: "cause",
-        question: "물가 상승세가 이어질 것으로 보이면 시장금리가 오를 수 있는 이유는 무엇일까요?",
-        answerId: "cut",
-        choices: [
-          { id: "cut", label: "금리 인하 기대가 약해질 수 있기 때문" },
-          { id: "supply", label: "국채 발행이 이미 확정됐기 때문" },
-          { id: "div", label: "기업 배당이 늘면 국채 금리가 반드시 오르기 때문" },
-          { id: "core", label: "근원물가가 내려 완화 기대로 이어지기 때문" },
-        ],
-        note: "물가 상승세가 쉽게 낮아지지 않으면 중앙은행이 기준금리를 빠르게 내리기 어려워요. 그 기대가 약해지면 시장금리가 오를 수 있어요.",
       },
       {
         type: "causal",
@@ -282,7 +283,21 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "실업률이 오르자 고용 여건이 약해지고 있다는 신호가 먼저 읽혔어요. 발표 뒤 기준금리 인하 기대를 반영하는 시장금리가 낮아지는 움직임도 나왔어요.",
+        text: "실업률이 오르자 고용 여건이 약해지고 있다는 신호가 먼저 읽혔어요.",
+      },
+      {
+        type: "cloze",
+        before: "발표 뒤 시장에서는 기준금리 인하 시점이 예상보다 ",
+        after: " 수 있다는 전망이 커졌어요.",
+        question: "실업률이 오르면 기준금리 인하 시점은 어떻게 읽힐까요?",
+        answerId: "early",
+        choices: [
+          { id: "early", label: "빨라질" },
+          { id: "late", label: "늦어질" },
+          { id: "fixed", label: "고정될" },
+          { id: "gone", label: "사라질" },
+        ],
+        note: "고용이 약해지면 성장과 물가 압력도 낮아질 수 있다고 읽혀요. 그래서 인하 시점 기대가 앞당겨질 수 있어요. 다만 임금과 물가가 단단하면 그 기대가 바로 확정되지는 않아요.",
       },
       {
         type: "p",

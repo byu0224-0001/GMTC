@@ -7,7 +7,7 @@
  * 한 문장으로 답이 안 나오면 넣지 않는다. 2~4개, 보통 3개.
  *
  * 빼는 것: 자기 자신, 사실상 같은 말, 두 단계 떨어진 투자 맥락, 너무 넓은 분야.
- * reason은 검수용이고 화면에 안 나온다.
+ * reason은 검수용이다. 화면에 쓸 때는 `whyTogether`로 해요체를 만든다.
  */
 export interface RelatedSpec {
   chips: string[];
@@ -782,4 +782,29 @@ export const RELATED: Record<string, RelatedSpec> = {
 
 export function relatedOf(termId: string): RelatedSpec | undefined {
   return RELATED[termId];
+}
+
+/** 시트에 보여줄 관계 한 줄. 검수용 문장을 화면 해요체로 바꾼다. */
+export function whyTogether(fromId: string, chip: string): string | null {
+  const raw = RELATED[fromId]?.reason[chip];
+  if (!raw) return null;
+  return speakReason(raw);
+}
+
+function speakReason(s: string): string {
+  const t = s.replace(/\.$/, "");
+  if (t.endsWith("아니다")) return `${t.slice(0, -3)}아니에요.`;
+  if (t.endsWith("이다")) return `${t.slice(0, -2)}이에요.`;
+  if (t.endsWith("한다")) return `${t.slice(0, -2)}해요.`;
+  if (t.endsWith("본다")) return `${t.slice(0, -2)}봐요.`;
+  if (t.endsWith("된다")) return `${t.slice(0, -2)}돼요.`;
+  if (t.endsWith("난다")) return `${t.slice(0, -2)}나요.`;
+  if (t.endsWith("간다")) return `${t.slice(0, -2)}가요.`;
+  if (t.endsWith("있다")) return `${t.slice(0, -2)}있어요.`;
+  if (t.endsWith("진다")) return `${t.slice(0, -2)}져요.`;
+  if (t.endsWith("린다")) return `${t.slice(0, -2)}려요.`;
+  if (t.endsWith("인다")) return `${t.slice(0, -2)}여요.`;
+  if (t.endsWith("운다")) return `${t.slice(0, -2)}워요.`;
+  if (t.endsWith("다")) return `${t.slice(0, -1)}어요.`;
+  return `${t}.`;
 }

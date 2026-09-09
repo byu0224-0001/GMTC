@@ -49,8 +49,8 @@ export function LexiconPage() {
             ))}
           </div>
         ) : null}
-        <Link className="btn btn-primary" to="/learn/session" style={{ display: "grid", placeItems: "center" }}>
-          시작하기
+        <Link className="btn btn-ghost" to="/learn/report" style={{ display: "grid", placeItems: "center" }}>
+          리포트 표현으로
         </Link>
         <p className="notice">증권사 리포트 문장을 그대로 가져오지 않았어요.</p>
       </div>

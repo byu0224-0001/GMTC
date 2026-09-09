@@ -72,6 +72,12 @@ const cron = readFileSync("api/cron-nudge.ts", "utf8");
 check("같은 공백 구간 반복 발송 차단", /lastNotificationForStudyDate === rec\.lastStudyDate/.test(cron));
 check("오늘 완료자 발송 제외", /lastDefaultDoneDate === today/.test(cron));
 check("하루 1회 제한", /lastNotificationSentDate === today/.test(cron));
+check("발송 시 nudge_sent 기록", cron.includes("recordNudgeSent"));
+check("시험 발송은 하루 기록을 안 남김", cron.includes("test: true") && cron.includes("lastNotificationSentDate"));
+
+const settings = /export const PUSH_SETTINGS[\s\S]*?} as const/.exec(src)?.[0] ?? "";
+check("설정 시트에 미완료만 발송이라고 적음", settings.includes("하지 않은 날에만") && settings.includes("보내지 않아요"));
+check("시험 알림 버튼 문구", settings.includes("시험 알림 받기"));
 
 console.table(checks);
 const failed = checks.filter((c) => c.결과 === "실패");

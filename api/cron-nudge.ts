@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import webpush from "web-push";
-import { adminAuthorized } from "./_guard.js";
+import { adminAuthorized, validLearnerId } from "./_guard.js";
+import { configureVapid, deliverPush, recordNudgeSent, validSubscription } from "./_push.js";
 import { allLearnerIds, getLearner, putLearner, storeReady } from "./_store.js";
 import { nudgeFor } from "../src/content/notifications.js";
 
@@ -17,6 +17,9 @@ import { nudgeFor } from "../src/content/notifications.js";
  *
  * 문구는 src/content/notifications.ts에서 가져온다. 같은 문구를 두 곳에 적으면
  * 한쪽만 고쳐지고 갈라진다.
+ *
+ * `?test=1&learnerId=` 는 운영자가 파이프만 확인할 때 쓴다. 완료·하루 1회 조건을
+ * 건너뛰고, 저녁 발송 기록은 남기지 않는다.
  */
 
 const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
@@ -42,16 +45,41 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(404).json({ ok: false });
     return;
   }
-  const publicKey = process.env.VAPID_PUBLIC_KEY;
-  const privateKey = process.env.VAPID_PRIVATE_KEY;
-  const subject = process.env.VAPID_SUBJECT ?? "mailto:pilot@example.com";
-  if (!storeReady() || !publicKey || !privateKey) {
+  if (!storeReady() || !configureVapid()) {
     res.status(200).json({ ok: true, sent: 0, note: "push not configured" });
     return;
   }
-  webpush.setVapidDetails(subject, publicKey, privateKey);
 
   const today = kstDateKey();
+  const testId = req.query.test === "1" && typeof req.query.learnerId === "string" ? req.query.learnerId : null;
+  if (testId) {
+    if (!validLearnerId(testId)) {
+      res.status(400).json({ ok: false, error: "learnerId" });
+      return;
+    }
+    const rec = await getLearner(testId);
+    const sub = validSubscription(rec?.pushSubscription);
+    if (!rec || !sub) {
+      res.status(200).json({ ok: false, today, test: true, sent: 0, note: "no subscription" });
+      return;
+    }
+    const result = await deliverPush(sub, {
+      kind: "test",
+      title: "시험 알림이에요.",
+      body: "이 알림이 보이면 이 기기로 푸시가 도착한 거예요.",
+    });
+    if (result === "ok") {
+      await recordNudgeSent(testId, "test", true);
+      res.status(200).json({ ok: true, today, test: true, sent: 1 });
+      return;
+    }
+    if (result === "gone") {
+      await putLearner({ ...rec, pushSubscription: null, updatedAt: new Date().toISOString() });
+    }
+    res.status(200).json({ ok: false, today, test: true, sent: 0, note: result });
+    return;
+  }
+
   const ids = await allLearnerIds();
   let sent = 0;
   let skipped = 0;
@@ -60,7 +88,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   for (const id of ids) {
     const rec = await getLearner(id);
-    if (!rec?.pushSubscription) {
+    const sub = validSubscription(rec?.pushSubscription);
+    if (!rec || !sub) {
       skipped += 1;
       continue;
     }
@@ -94,11 +123,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       continue;
     }
 
-    try {
-      await webpush.sendNotification(
-        rec.pushSubscription as webpush.PushSubscription,
-        JSON.stringify({ title: copy.title, body: copy.body, kind: copy.kind, url: "/" }),
-      );
+    const result = await deliverPush(sub, { ...copy, url: "/" });
+    if (result === "ok") {
       sent += 1;
       byKind[copy.kind] = (byKind[copy.kind] ?? 0) + 1;
       await putLearner({
@@ -108,13 +134,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         lastNotificationForStudyDate: rec.lastStudyDate,
         updatedAt: new Date().toISOString(),
       });
-    } catch (e) {
-      const status = (e as { statusCode?: number }).statusCode;
-      // 404/410은 구독이 폐기된 것이다. 지우고 다음부터 시도하지 않는다.
-      if (status === 404 || status === 410) {
-        gone.push(id);
-        await putLearner({ ...rec, pushSubscription: null, updatedAt: new Date().toISOString() });
+      try {
+        await recordNudgeSent(id, copy.kind, false);
+      } catch {
+        /* 발송은 됐으므로 이벤트 실패로 다음 사람을 막지 않는다. */
       }
+      continue;
+    }
+    if (result === "gone") {
+      gone.push(id);
+      await putLearner({ ...rec, pushSubscription: null, updatedAt: new Date().toISOString() });
     }
   }
 

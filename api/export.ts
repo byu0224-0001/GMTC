@@ -61,7 +61,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     "responseTimeMs",
     "activeElapsedMs",
     "appVersion",
-    "contentVersion",
+    "kind",
+    "from_push",
+    "test",
   ];
   const esc = (v: unknown) => {
     if (v === null || v === undefined) return "";

@@ -1,5 +1,5 @@
 import { isIOS, isStandalone } from "./install";
-import { syncDailyStatus } from "./learner";
+import { learnerId, syncDailyStatus } from "./learner";
 import type { ProgressState } from "../types";
 
 /**
@@ -135,4 +135,31 @@ export async function unsubscribePush(progress: ProgressState): Promise<void> {
     // 무시한다.
   }
   await syncDailyStatus(progress, { pushSubscription: null });
+}
+
+export async function currentPushSubscriptionJSON(): Promise<unknown | null> {
+  if (!pushSupported()) return null;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    return sub ? sub.toJSON() : null;
+  } catch {
+    return null;
+  }
+}
+
+/** 크론 조건과 무관하게, 이 기기로 시험 알림 하나를 보낸다. */
+export async function requestTestPush(): Promise<boolean> {
+  const subscription = await currentPushSubscriptionJSON();
+  if (!subscription) return false;
+  try {
+    const res = await fetch("/api/push-test", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ learnerId: learnerId(), subscription }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
 }

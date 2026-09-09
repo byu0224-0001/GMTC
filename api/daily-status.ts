@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { clientKey, originAllowed, rateLimited, validLearnerId } from "./_guard.js";
 import { getLearner, putLearner, deleteLearner, storeReady, type LearnerRecord } from "./_store.js";
+import { validSubscription } from "./_push.js";
 
 /**
  * 알림 판단에 필요한 최소 상태만 받는다.
@@ -75,28 +76,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (e) {
     res.status(500).json({ ok: false, error: "server" });
   }
-}
-
-/**
- * 구독 정보 형태 검사.
- *
- * 이 값은 그대로 저장소에 들어가고 나중에 web-push에 넘어간다. 임의의 객체를 받아
- * 두면 저장소가 오염되고, 알 수 없는 endpoint로 요청을 보내는 통로가 된다.
- */
-function validSubscription(v: unknown): unknown | null {
-  if (!v || typeof v !== "object") return null;
-  const s = v as Record<string, unknown>;
-  if (typeof s.endpoint !== "string") return null;
-  if (s.endpoint.length > 600 || !s.endpoint.startsWith("https://")) return null;
-  const keys = s.keys as Record<string, unknown> | undefined;
-  if (!keys || typeof keys !== "object") return null;
-  if (typeof keys.p256dh !== "string" || typeof keys.auth !== "string") return null;
-  if (keys.p256dh.length > 200 || keys.auth.length > 100) return null;
-  return {
-    endpoint: s.endpoint,
-    expirationTime: typeof s.expirationTime === "number" ? s.expirationTime : null,
-    keys: { p256dh: keys.p256dh, auth: keys.auth },
-  };
 }
 
 function pickDate(v: unknown, fallback: string | null): string | null {

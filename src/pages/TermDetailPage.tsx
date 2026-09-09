@@ -94,11 +94,11 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
         ) : null}
         {readings.length > 0 ? (
           <div>
-            <div className="caption">이 개념이 나오는 읽기</div>
+            <div className="caption">관련 읽기</div>
             {readings.map((item) => (
               <Link key={item.id} to={`/context/${encodeURIComponent(item.id)}`} className="term-row">
                 <strong>{item.title}</strong>
-                <span>{item.primary ? "이 용어가 핵심인 글" : "이 용어가 같이 나오는 글"}</span>
+                <span>읽어보기</span>
               </Link>
             ))}
           </div>
@@ -114,15 +114,9 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
             ))}
           </div>
         ) : null}
-        {core ? (
-          <Link className="btn btn-primary" to="/learn/session" style={{ display: "grid", placeItems: "center" }}>
-            시작하기
-          </Link>
-        ) : (
-          <Link className="btn btn-ghost" to="/terms" style={{ display: "grid", placeItems: "center" }}>
-            사전으로
-          </Link>
-        )}
+        <Link className="btn btn-ghost" to="/terms" style={{ display: "grid", placeItems: "center" }}>
+          사전으로
+        </Link>
         <p className="notice">{SOURCE_DISCLAIMER}</p>
       </div>
     </>

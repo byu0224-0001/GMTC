@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { CONCEPT_FLOWS } from "../content/conceptFlows";
 import { relatedLabels, resolveChainHref } from "../lib/lookup";
 import type { Term } from "../types";
+import { TermPeek } from "./TermPeek";
 
 const TABS: { to: string; label: string; end?: boolean; icon: string }[] = [
   { to: "/", label: "홈", end: true, icon: "home" },
@@ -117,10 +119,12 @@ export function ConceptFlowView({
   steps,
   note,
   terms,
+  onPeek,
 }: {
   steps: string[];
   note?: string;
   terms?: Term[];
+  onPeek?: (label: string) => void;
 }) {
   if (!steps.length) return null;
   return (
@@ -131,7 +135,11 @@ export function ConceptFlowView({
           return (
             <span key={`${x}-${i}`}>
               {i > 0 ? <span className="chain-arrow"> → </span> : null}
-              {href ? (
+              {href && onPeek ? (
+                <button type="button" className="chain-link chain-btn" onClick={() => onPeek(x)}>
+                  {x}
+                </button>
+              ) : href ? (
                 <Link to={href} className="chain-link">
                   {x}
                 </Link>
@@ -153,12 +161,27 @@ export function ConceptFlowView({
  * 관련 용어라는 것 말고는 확인한 게 없는 관계다. 여기에 화살표를 씌우면
  * 우리가 검증하지 않은 인과를 가르치는 셈이 된다.
  */
-export function Chain({ items, terms }: { items: string[]; terms?: Term[] }) {
+export function Chain({
+  items,
+  terms,
+  onPeek,
+}: {
+  items: string[];
+  terms?: Term[];
+  onPeek?: (label: string) => void;
+}) {
   if (!items.length) return null;
   return (
     <div className="chip-row">
       {items.map((x, i) => {
         const href = terms ? resolveChainHref(x, terms) : null;
+        if (href && onPeek) {
+          return (
+            <button key={`${x}-${i}`} type="button" className="chip chip-link" onClick={() => onPeek(x)}>
+              {x}
+            </button>
+          );
+        }
         return href ? (
           <Link key={`${x}-${i}`} to={href} className="chip chip-link">
             {x}
@@ -181,26 +204,48 @@ export function RelatedConcepts({
   term,
   terms,
   note = true,
+  preview = false,
 }: {
   term: Term;
   terms: Term[];
   note?: boolean;
+  /** 세션 안에서는 페이지를 바꾸지 않고 미리보기만 연다. */
+  preview?: boolean;
 }) {
+  const [peek, setPeek] = useState<string | null>(null);
+  const onPeek = preview ? (label: string) => setPeek(label) : undefined;
   const flow = CONCEPT_FLOWS[term.id];
-  if (flow) {
-    return (
-      <div className="related-block">
-        <div className="caption">이렇게 이어져요</div>
-        <ConceptFlowView steps={flow.steps} note={note ? flow.note : undefined} terms={terms} />
-      </div>
-    );
-  }
-  const chips = relatedLabels(term, term.chain);
-  if (!chips.length) return null;
   return (
-    <div className="related-block">
-      <div className="caption">같이 보면</div>
-      <Chain items={chips} terms={terms} />
-    </div>
+    <>
+      {flow ? (
+        <div className="related-block">
+          <div className="caption">이렇게 이어져요</div>
+          <ConceptFlowView
+            steps={flow.steps}
+            note={note ? flow.note : undefined}
+            terms={terms}
+            onPeek={onPeek}
+          />
+        </div>
+      ) : (
+        (() => {
+          const chips = relatedLabels(term, term.chain);
+          if (!chips.length) return null;
+          return (
+            <div className="related-block">
+              <div className="caption">같이 보면</div>
+              <Chain items={chips} terms={terms} onPeek={onPeek} />
+            </div>
+          );
+        })()
+      )}
+      {preview ? (
+        <TermPeek
+          target={peek ? { fromId: term.id, label: peek } : null}
+          terms={terms}
+          onClose={() => setPeek(null)}
+        />
+      ) : null}
+    </>
   );
 }

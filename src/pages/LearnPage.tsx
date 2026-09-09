@@ -24,6 +24,7 @@ import {
 import { differenceNote, formsFor, makeDrill, makeFirstRecall, withJosa } from "../lib/quiz";
 import { dueLabel, daysUntil, isFamiliar, practice } from "../lib/srs";
 import { briefingForPlan, fallbackPlan, lockTodayLesson, type TodayPlanFile } from "../lib/todayPlan";
+import { clearUiResume, loadUiResume, saveUiResume } from "../lib/sessionUi";
 import {
   extraQueue,
   lessonPool,
@@ -54,17 +55,29 @@ export function LearnPage({
         : todayQueue(terms, loadProgress(), plan),
     [terms, source, plan],
   );
+  const resumeKey = source === "extra" ? "learn-extra" : "learn-session";
+  const queueSig = queue.map((s) => `${s.kind}:${s.term.id}`).join("|");
+  const boot = loadUiResume<{
+    sig: string;
+    i: number;
+    picked: string | null;
+    lastDue: string | null;
+    familiarId: string | null;
+    viewedNew: string[];
+    graded: string[];
+  }>(resumeKey);
+  const resume = boot?.sig === queueSig ? boot : null;
 
-  const [i, setI] = useState(0);
-  const [picked, setPicked] = useState<string | null>(null);
+  const [i, setI] = useState(resume?.i ?? 0);
+  const [picked, setPicked] = useState<string | null>(resume?.picked ?? null);
   const [done, setDone] = useState(false);
-  const [lastDue, setLastDue] = useState<string | null>(null);
-  const [familiarId, setFamiliarId] = useState<string | null>(null);
+  const [lastDue, setLastDue] = useState<string | null>(resume?.lastDue ?? null);
+  const [familiarId, setFamiliarId] = useState<string | null>(resume?.familiarId ?? null);
   const [askPush, setAskPush] = useState(false);
   const [hideInstall, setHideInstall] = useState(false);
   const askedAt = useRef(Date.now());
-  const viewedNew = useRef(new Set<string>());
-  const gradedKeys = useRef(new Set<string>());
+  const viewedNew = useRef(new Set<string>(resume?.viewedNew ?? []));
+  const gradedKeys = useRef(new Set<string>(resume?.graded ?? []));
   const closed = useRef(false);
 
   useEffect(() => {
@@ -74,6 +87,22 @@ export function LearnPage({
       source,
     });
   }, [plan.briefingId, plan.contentVersion, source]);
+
+  useEffect(() => {
+    if (done) {
+      clearUiResume(resumeKey);
+      return;
+    }
+    saveUiResume(resumeKey, {
+      sig: queueSig,
+      i,
+      picked,
+      lastDue,
+      familiarId,
+      viewedNew: [...viewedNew.current],
+      graded: [...gradedKeys.current],
+    });
+  }, [resumeKey, queueSig, i, picked, lastDue, familiarId, done]);
 
   /** 세션을 끝까지 본 것만 완료로 센다. 중간에 닫으면 홈은 여전히 미완료다. */
   useEffect(() => {
@@ -90,6 +119,9 @@ export function LearnPage({
   }, [done, source]);
 
   const step = queue[i];
+  useEffect(() => {
+    if (queue.length > 0 && i >= queue.length) setI(queue.length - 1);
+  }, [i, queue.length]);
   useEffect(() => {
     askedAt.current = Date.now();
   }, [i, step?.kind]);
@@ -291,8 +323,8 @@ export function LearnPage({
                   {inTheNews(step.term.id) ? (
                     <p className="why"><strong>기사에서는</strong> {inTheNews(step.term.id)}</p>
                   ) : null}
+                  <RelatedConcepts term={step.term} terms={terms} preview />
                   <DeepDive key={step.term.id} termId={step.term.id} />
-                  <RelatedConcepts term={step.term} terms={terms} />
                 </>
               ) : (
                 <>
@@ -423,13 +455,6 @@ export function LearnPage({
                   </strong>{" "}
                   {drill.note}
                 </p>
-                <DeepDive key={`${step.term.id}-after`} termId={step.term.id} />
-                {/*
-                  추가 세션의 `다시 보기`에는 다음 복습 날짜를 적지 않는다. 일정이
-                  바뀌지 않았으므로 적을 날짜가 없다. 예전에는 그걸 문장으로 설명했지만,
-                  사용자는 복습 일정이 앞당겨지는지를 애초에 궁금해하지 않는다.
-                  내부 동작을 설명하려고 화면에 줄을 하나 더 두지 않는다.
-                */}
                 {lastDue ? <div className="caption">{dueLabel(daysUntil(lastDue))}</div> : null}
                 {familiarId === step.term.id ? (
                   <div className="card familiar-note" role="status">
@@ -441,12 +466,8 @@ export function LearnPage({
                     </p>
                   </div>
                 ) : null}
-                {/*
-                  정답 뒤에는 해설 하나와 관계 하나만 남긴다. 새 용어 화면에서는
-                  화살표를 어떻게 읽는지 note가 필요하지만, 여기서는 바로 위 해설이
-                  이미 해석을 했다. note를 또 붙이면 같은 말을 세 번 읽게 된다.
-                */}
-                <RelatedConcepts term={step.term} terms={terms} note={false} />
+                <RelatedConcepts term={step.term} terms={terms} note={false} preview />
+                <DeepDive key={`${step.term.id}-after`} termId={step.term.id} />
                 <button className="btn btn-primary" onClick={goNext}>다음</button>
               </>
             ) : null}

@@ -1,22 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ConceptFlowView } from "../components/Chrome";
+import { TermPeek, type PeekTarget } from "../components/TermPeek";
 import { briefingById } from "../content/briefings";
 import { READING_DISCLAIMER, READING_EXAMPLE_LABEL, READING_KIND_LONG } from "../content/brand";
 import { mapForBriefing } from "../content/learningMaps";
-import { REPORT_BOK_CANON, canonBokId } from "../content/reportLexicon";
 import { logEvent } from "../lib/events";
 import { labelFor } from "../lib/lookup";
-import { withJosa } from "../lib/quiz";
 import { loadProgress, recordBriefingAttempt, saveProgress } from "../lib/progress";
+import { clearUiResume, loadUiResume, saveUiResume } from "../lib/sessionUi";
 import type { BriefingAttempt, BriefingBlock, LearningBriefing, Term } from "../types";
-
-function conceptHref(id: string): string {
-  if (REPORT_BOK_CANON[id] || !id.startsWith("rpt-")) {
-    return `/terms/${encodeURIComponent(canonBokId(id))}`;
-  }
-  return `/lexicon/${id}`;
-}
 
 function isCompactQuestion(block: BriefingBlock): boolean {
   if (block.type === "cloze") return true;
@@ -46,7 +39,11 @@ export function BriefingReader({
 }) {
   const startedAt = useRef(new Date().toISOString()).current;
   const lastActionAt = useRef(Date.now());
-  const [picked, setPicked] = useState<Record<number, string>>({});
+  const resumeKey = `briefing:${briefing.id}`;
+  const [picked, setPicked] = useState<Record<number, string>>(
+    () => loadUiResume<Record<number, string>>(resumeKey) ?? {},
+  );
+  const [peek, setPeek] = useState<PeekTarget | null>(null);
   const interactive = useMemo(
     () => briefing.blocks.map((b, i) => ({ b, i })).filter((x) => x.b.type === "cloze" || x.b.type === "choice"),
     [briefing],
@@ -58,6 +55,10 @@ export function BriefingReader({
   useEffect(() => {
     logEvent("briefing_start", { briefingId: briefing.id });
   }, [briefing.id]);
+
+  useEffect(() => {
+    saveUiResume(resumeKey, picked);
+  }, [resumeKey, picked]);
 
   function gradeBlock(i: number, id: string) {
     if (picked[i]) return;
@@ -98,7 +99,10 @@ export function BriefingReader({
       results,
     };
     saveProgress(recordBriefingAttempt(loadProgress(), attempt));
-    if (completed) logEvent("briefing_complete", { briefingId: briefing.id });
+    if (completed) {
+      clearUiResume(resumeKey);
+      logEvent("briefing_complete", { briefingId: briefing.id });
+    }
   }
 
   function finish() {
@@ -124,13 +128,14 @@ export function BriefingReader({
       <hr className="editorial-rule" />
 
       {briefing.blocks.map((block, i) =>
-        block.type === "p" ? (
+        block.type === "p" || block.type === "cloze" ? (
           <BriefingBlockView
             key={i}
             block={block}
             terms={terms}
             picked={picked[i] ?? null}
             onPick={(id) => gradeBlock(i, id)}
+            onPeek={(label) => setPeek({ fromId: briefing.primaryTermIds[0], label })}
           />
         ) : null,
       )}
@@ -143,6 +148,7 @@ export function BriefingReader({
             terms={terms}
             picked={picked[i] ?? null}
             onPick={(id) => gradeBlock(i, id)}
+            onPeek={(label) => setPeek({ fromId: briefing.primaryTermIds[0], label })}
           />
         ) : null,
       )}
@@ -154,8 +160,8 @@ export function BriefingReader({
       <hr className="editorial-rule" />
 
       {briefing.blocks.map((block, i) => {
-        if (block.type !== "choice" && block.type !== "cloze") return null;
-        const label = block.type === "cloze" ? QUESTION_LABEL.cloze : QUESTION_LABEL[block.depth] ?? "내용 확인";
+        if (block.type !== "choice") return null;
+        const label = QUESTION_LABEL[block.depth] ?? "내용 확인";
         return (
           <div key={i}>
             <div className="caption">{label}</div>
@@ -164,6 +170,7 @@ export function BriefingReader({
               terms={terms}
               picked={picked[i] ?? null}
               onPick={(id) => gradeBlock(i, id)}
+              onPeek={(label) => setPeek({ fromId: briefing.primaryTermIds[0], label })}
             />
           </div>
         );
@@ -177,6 +184,7 @@ export function BriefingReader({
             terms={terms}
             picked={picked[i] ?? null}
             onPick={(id) => gradeBlock(i, id)}
+            onPeek={(label) => setPeek({ fromId: briefing.primaryTermIds[0], label })}
           />
         ) : null,
       )}
@@ -198,6 +206,33 @@ export function BriefingReader({
       <button className={allDone ? "btn btn-primary" : "btn btn-ghost"} onClick={finish}>
         {allDone ? finishLabel : "나중에 이어서 하기"}
       </button>
+      <TermPeek target={peek} terms={terms} onClose={() => setPeek(null)} />
+    </div>
+  );
+}
+
+function ConceptChips({
+  ids,
+  terms,
+  onPeek,
+}: {
+  ids: string[];
+  terms: Term[];
+  onPeek: (label: string) => void;
+}) {
+  return (
+    <div>
+      <div className="caption">이 글에 나온 용어</div>
+      <div className="chip-row" style={{ marginTop: 8 }}>
+        {ids.map((id) => {
+          const label = labelFor(id, terms);
+          return (
+            <button key={id} type="button" className="chip chip-link" onClick={() => onPeek(label)}>
+              {label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -207,11 +242,13 @@ function BriefingBlockView({
   terms,
   picked,
   onPick,
+  onPeek,
 }: {
   block: BriefingBlock;
   terms: Term[];
   picked: string | null;
   onPick: (id: string) => void;
+  onPeek: (label: string) => void;
 }) {
   if (block.type === "p") {
     return <p className="briefing-p">{block.text}</p>;
@@ -225,47 +262,33 @@ function BriefingBlockView({
     return (
       <div className="card insight">
         <div className="caption">{block.title}</div>
-        <ConceptFlowView steps={block.chain} terms={terms} />
+        <ConceptFlowView steps={block.chain} terms={terms} onPeek={onPeek} />
         {block.extra ? <p className="muted" style={{ margin: "10px 0 0" }}>{block.extra}</p> : null}
       </div>
     );
   }
   if (block.type === "concepts") {
-    /*
-      예전에는 여기서 위 인과 사슬을 한 번 더 그렸다. `한 번에 연결하면`과
-      `이렇게 연결됩니다`가 같은 4개를 두 번 보여 주는 화면이 됐다. 둘이 멀리
-      떨어져 있을 때의 리마인더로 넣었지만, 실제로는 한 화면 안에 들어온다.
-      사슬은 본문이 그 순서를 설명한 자리에 한 번만 둔다.
-    */
-    return (
-      <div>
-        <div className="caption">이 글에서 나온 개념</div>
-        <div className="chip-row" style={{ marginTop: 10 }}>
-          {block.ids.map((id) => (
-            <Link key={id} to={conceptHref(id)} className="chip">
-              {labelFor(id, terms)}
-            </Link>
-          ))}
-        </div>
-      </div>
-    );
+    return <ConceptChips ids={block.ids} terms={terms} onPeek={onPeek} />;
   }
 
   const answerId = block.answerId;
   const choices =
     block.type === "cloze"
-      ? block.choiceIds.map((id) => ({ id, label: labelFor(id, terms) }))
+      ? block.choices ??
+        (block.choiceIds ?? []).map((id) => ({ id, label: labelFor(id, terms) }))
       : block.choices;
   const compact = isCompactQuestion(block);
   const answerLabel =
-    block.type === "choice" ? (block.choices.find((c) => c.id === answerId)?.label ?? labelFor(answerId, terms)) : labelFor(answerId, terms);
+    block.type === "choice"
+      ? (block.choices.find((c) => c.id === answerId)?.label ?? labelFor(answerId, terms))
+      : (choices.find((c) => c.id === answerId)?.label ?? labelFor(answerId, terms));
 
   const body = (
     <>
       {block.type === "cloze" ? (
         <p className="briefing-p" style={{ margin: 0 }}>
           {block.before}
-          <span className={picked ? "blank filled" : "blank"}>{picked ? labelFor(answerId, terms) : "□□"}</span>
+          <span className={picked ? "blank filled" : "blank"}>{picked ? answerLabel : "□□"}</span>
           {block.after}
         </p>
       ) : (
@@ -303,7 +326,7 @@ function BriefingBlockView({
             {picked === answerId
               ? "맞았어요"
               : block.type === "cloze"
-                ? `정답은 ${withJosa(answerLabel, "이에요")}`
+                ? `정답은 ‘${answerLabel}’이에요`
                 : "초록으로 표시한 쪽이 정답이에요"}
           </p>
           {/*

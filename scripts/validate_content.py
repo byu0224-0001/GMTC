@@ -520,10 +520,13 @@ def main() -> int:
                     errors.append(f"{bid} unknown supportTerm {pid}")
         n_p = len(re.findall(r'type: "p"', chunk))
         n_q = len(re.findall(r'type: "(?:choice|cloze)"', chunk))
+        n_cloze = len(re.findall(r'type: "cloze"', chunk))
         if n_q > 4:
             errors.append(f"{bid} too many questions: {n_q}")
         if n_p < n_q:
             errors.append(f"{bid} paragraphs ({n_p}) < questions ({n_q})")
+        if n_cloze > 1:
+            errors.append(f"{bid} cloze should be at most 1, got {n_cloze}")
         if 'contentMode: "synthetic"' in chunk or 'sourceMode: "synthetic"' in chunk:
             if re.search(r'eventDate: "[0-9]', chunk):
                 errors.append(f"{bid} synthetic briefing has eventDate")
@@ -542,16 +545,22 @@ def main() -> int:
             if len(cids) != len(set(cids)):
                 errors.append(f"{bid} duplicate choices {cids}")
         for m in re.finditer(
-            r'type: "cloze"[\s\S]*?answerId: "([^"]+)"[\s\S]*?choiceIds: \[([^\]]+)\]',
+            r'type: "cloze"[\s\S]*?answerId: "([^"]+)"[\s\S]*?(?:choiceIds: \[([^\]]+)\]|choices: \[([\s\S]*?)\])',
             chunk,
         ):
-            ans, raw = m.group(1), m.group(2)
-            cids = re.findall(r'"([^"]+)"', raw)
+            ans = m.group(1)
+            raw_ids, raw_choices = m.group(2), m.group(3)
+            cids = (
+                re.findall(r'"([^"]+)"', raw_ids)
+                if raw_ids
+                else re.findall(r'id: "([^"]+)"', raw_choices or "")
+            )
             if ans not in cids:
                 errors.append(f"{bid} cloze answer {ans} not in {cids}")
-            for c in cids:
-                if c not in known:
-                    errors.append(f"{bid} cloze choice unknown: {c}")
+            if raw_ids:
+                for c in cids:
+                    if c not in known:
+                        errors.append(f"{bid} cloze choice unknown: {c}")
         for m in re.finditer(r'type: "concepts", ids: \[([^\]]+)\]', chunk):
             for cid in re.findall(r'"([^"]+)"', m.group(1)):
                 if cid not in known:

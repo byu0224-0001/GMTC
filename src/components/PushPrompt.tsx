@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PUSH_PROMPT } from "../content/notifications";
+import { PUSH_PROMPT, PUSH_SETTINGS } from "../content/notifications";
 import { logEvent } from "../lib/events";
 import {
   loadProgress,
@@ -13,6 +13,7 @@ import {
   needsInstallFirst,
   pushSupported,
   pushUiState,
+  requestTestPush,
   showPushEntry,
   subscribePush,
   unsubscribePush,
@@ -155,6 +156,7 @@ export function PushBell({ onOpen, tick = 0 }: { onOpen: () => void; tick?: numb
 export function PushSheet({ onClose }: { onClose: () => void }) {
   const [tick, setTick] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [testState, setTestState] = useState<"idle" | "sent" | "fail">("idle");
   const [subscribed, setSubscribed] = useState<boolean | undefined>(undefined);
   const state = loadProgress();
   const ui = pushUiState(state, subscribed);
@@ -191,6 +193,14 @@ export function PushSheet({ onClose }: { onClose: () => void }) {
     refresh();
   }
 
+  async function sendTest() {
+    setBusy(true);
+    setTestState("idle");
+    const ok = await requestTestPush();
+    setTestState(ok ? "sent" : "fail");
+    setBusy(false);
+  }
+
   return (
     <div className="sheet-backdrop" onClick={onClose} role="presentation">
       <div
@@ -202,7 +212,14 @@ export function PushSheet({ onClose }: { onClose: () => void }) {
         <h2 id="push-sheet-title" className="term-title" style={{ fontSize: 20, margin: 0 }}>
           알림
         </h2>
-        <SheetBody ui={ui} busy={busy} onOn={() => void turnOn()} onOff={() => void turnOff()} />
+        <SheetBody
+          ui={ui}
+          busy={busy}
+          testState={testState}
+          onOn={() => void turnOn()}
+          onOff={() => void turnOff()}
+          onTest={() => void sendTest()}
+        />
         <button className="btn btn-ghost" style={{ marginTop: 12 }} onClick={onClose}>
           닫기
         </button>
@@ -214,13 +231,17 @@ export function PushSheet({ onClose }: { onClose: () => void }) {
 function SheetBody({
   ui,
   busy,
+  testState,
   onOn,
   onOff,
+  onTest,
 }: {
   ui: PushUiState;
   busy: boolean;
+  testState: "idle" | "sent" | "fail";
   onOn: () => void;
   onOff: () => void;
+  onTest: () => void;
 }) {
   if (ui === "not_installed") {
     return (
@@ -247,11 +268,20 @@ function SheetBody({
   if (ui === "permission_granted") {
     return (
       <>
-        <p style={{ margin: "10px 0 0", fontWeight: 600 }}>알림 켜짐</p>
-        <p className="muted" style={{ margin: "8px 0 0" }}>
-          오늘 학습을 마치지 않은 날에 하루 한 번 알려드려요.
+        <p style={{ margin: "10px 0 0", fontWeight: 600 }}>{PUSH_SETTINGS.onTitle}</p>
+        <p className="muted" style={{ margin: "8px 0 0" }}>{PUSH_SETTINGS.onBody}</p>
+        <p className="caption" style={{ margin: "8px 0 0" }}>{PUSH_SETTINGS.onWhen}</p>
+        <button className="btn btn-ghost" style={{ marginTop: 14 }} disabled={busy} onClick={onTest}>
+          {PUSH_SETTINGS.test}
+        </button>
+        <p className="caption" style={{ margin: "8px 0 0" }}>
+          {testState === "sent"
+            ? PUSH_SETTINGS.testSent
+            : testState === "fail"
+              ? PUSH_SETTINGS.testFail
+              : PUSH_SETTINGS.testHint}
         </p>
-        <button className="btn btn-ghost" style={{ marginTop: 14 }} disabled={busy} onClick={onOff}>
+        <button className="btn btn-ghost" style={{ marginTop: 8 }} disabled={busy} onClick={onOff}>
           알림 끄기
         </button>
       </>

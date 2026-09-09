@@ -124,3 +124,14 @@ export const PUSH_PROMPT = {
   accept: "알림 받기",
   decline: "나중에",
 } as const;
+
+/** 홈 알림 설정 시트. 매일 무조건 온다고 오해하지 않게 동작을 적는다. */
+export const PUSH_SETTINGS = {
+  onTitle: "알림 켜짐",
+  onBody: "오늘 학습을 아직 하지 않은 날에만 알려드려요. 이미 학습을 마쳤다면 알림은 보내지 않아요.",
+  onWhen: "보통 저녁 8시쯤 한 번 확인해요.",
+  test: "시험 알림 받기",
+  testHint: "지금 이 기기로 오는지 바로 확인해 볼 수 있어요. 오늘 학습과 상관없어요.",
+  testSent: "보냈어요. 알림이 보이면 이 기기로 푸시가 도착한 거예요.",
+  testFail: "지금은 보내지 못했어요. 잠시 후 다시 시도해 주세요.",
+} as const;

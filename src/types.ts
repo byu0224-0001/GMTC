@@ -195,7 +195,9 @@ export type BriefingBlock =
       after: string;
       question: string;
       answerId: string;
-      choiceIds: string[];
+      choiceIds?: string[];
+      /** 방향·비교·제약·인과. 용어 정의 빈칸이 아니다. */
+      choices?: { id: string; label: string }[];
       note: string;
     }
   | {
@@ -221,6 +223,12 @@ export interface LearningBriefing {
   supportTermIds?: string[];
   relatedTermIds?: string[];
   sourceMode: "official" | "synthetic";
+  /**
+   * 글의 사건 출처.
+   * `synthetic`은 학습용으로 재구성한 예시.
+   * `real_event`는 실제 사건을 사람이 fact sheet로 확인한 뒤 독립 문장으로 쓴 글.
+   * 수집 엔진 없이 소수를 수동으로 넣을 수 있게 값만 열어 둔다. 원문 복제가 아니다.
+   */
   contentMode?: "synthetic" | "real_event";
   readingFormat?: ReadingFormat;
   sourceRefs: { label: string; url?: string }[];

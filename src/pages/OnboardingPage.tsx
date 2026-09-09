@@ -153,7 +153,7 @@ function OptionalInstall({
       <p className="caption" style={{ margin: 0 }}>
         {inapp
           ? "Safari나 Chrome에서 열면 홈 화면에 넣을 수 있어요."
-          : "같은 자리에서 열고, 학습 기록과 알림을 이어가요."}
+          : "홈화면에 추가하여 나의 학습 기록과 알림을 이어가요."}
       </p>
       <button
         className="text-link"

@@ -393,11 +393,15 @@ a { color: var(--color-primary-deep); text-decoration: none; }
   color: var(--color-primary);
 }
 .chip.wrong { border-color: var(--color-wrong); color: var(--color-wrong); }
-a.chip {
+a.chip,
+button.chip {
   display: inline-flex;
   align-items: center;
   text-decoration: none;
   color: var(--color-ink);
+}
+button.chip {
+  font: inherit;
 }
 /* 눌러도 되는 칩과 아닌 칩을 색으로 가르지 않는다. 초록은 정답·진행에만 쓴다. */
 
@@ -603,6 +607,15 @@ a.chip {
   text-decoration: none;
   border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 30%, transparent);
 }
+.chain-btn {
+  background: none;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 30%, transparent);
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  border-radius: 0;
+}
 /* 화살표를 어떻게 읽는지 알리는 줄. 두 번째 해설이 아니라 그림의 캡션이다. */
 .chain-note {
   margin: 6px 0 0;
@@ -701,6 +714,54 @@ a.chip {
 }
 .deep-dive-body {
   margin-top: 8px;
+}
+.callout {
+  margin-top: 12px;
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-canvas));
+  border: 1px solid color-mix(in srgb, var(--color-primary) 32%, var(--color-hairline));
+  border-radius: var(--radius-md);
+}
+.callout-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--touch-min);
+  padding: 12px 14px;
+  background: none;
+  border: 0;
+  text-align: left;
+  color: inherit;
+}
+.callout-icon {
+  flex-shrink: 0;
+  color: var(--color-primary-soft);
+  display: grid;
+  place-items: center;
+}
+.callout-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.callout-copy strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ink-strong);
+}
+.callout-copy .caption {
+  margin: 0;
+}
+.callout-chevron {
+  flex-shrink: 0;
+  color: var(--color-mute);
+  font-size: 14px;
+}
+.callout .deep-dive-body {
+  margin: 0;
+  padding: 0 14px 14px;
 }
 .point-list {
   margin: 8px 0 0;
