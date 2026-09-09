@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ConceptFlowView } from "../components/Chrome";
+import { ReadingAsk, askKindFromDepth } from "../components/ReadingAsk";
 import { TermPeek, type PeekQuery } from "../components/TermPeek";
 import { resolveTermPreview } from "../lib/termPreview";
 import { briefingById } from "../content/briefings";
@@ -18,13 +19,61 @@ function isCompactQuestion(block: BriefingBlock): boolean {
   return block.type === "choice" && block.depth === "term";
 }
 
-const QUESTION_LABEL: Record<string, string> = {
-  term: "내용 확인",
-  number: "내용 확인",
-  cause: "한 번 더 생각해보기",
-  next: "다음으로 확인할 것",
-  cloze: "내용 확인",
+function isQuestion(block: BriefingBlock): boolean {
+  return block.type === "cloze" || block.type === "choice";
+}
+
+/** 문맥 복원·해석·다음 변수. 용어 고르기는 글에 다른 문항이 있으면 선택. */
+function isPrimaryQuestion(block: BriefingBlock, blocks: BriefingBlock[]): boolean {
+  if (block.type === "cloze") return true;
+  if (block.type !== "choice") return false;
+  if (block.depth !== "term") return true;
+  return !blocks.some(
+    (b) => b.type === "cloze" || (b.type === "choice" && b.depth !== "term"),
+  );
+}
+
+function resolved(
+  index: number,
+  picked: Record<number, string>,
+  skipped: number[],
+): boolean {
+  return Boolean(picked[index]) || skipped.includes(index);
+}
+
+/**
+ * 필수 문항은 답하거나 건너뛰면 다음 본문이 열린다.
+ * 정답일 필요는 없다. 선택 문항은 글을 막지 않는다.
+ */
+function blockVisible(
+  blocks: BriefingBlock[],
+  index: number,
+  picked: Record<number, string>,
+  skipped: number[],
+): boolean {
+  const block = blocks[index];
+  const firstGate = blocks.findIndex(
+    (b, i) => isQuestion(b) && isPrimaryQuestion(b, blocks) && !resolved(i, picked, skipped),
+  );
+  if (block.type === "concepts") return firstGate < 0;
+  if (firstGate < 0) return true;
+  return index <= firstGate;
+}
+
+type BriefingResume = {
+  picked: Record<number, string>;
+  skipped: number[];
 };
+
+function loadBriefingResume(key: string): BriefingResume {
+  const raw = loadUiResume<unknown>(key);
+  if (!raw || typeof raw !== "object") return { picked: {}, skipped: [] };
+  const obj = raw as { picked?: Record<number, string>; skipped?: number[] };
+  if (obj.picked && typeof obj.picked === "object") {
+    return { picked: obj.picked, skipped: Array.isArray(obj.skipped) ? obj.skipped : [] };
+  }
+  return { picked: raw as Record<number, string>, skipped: [] };
+}
 
 export function BriefingReader({
   briefing,
@@ -42,16 +91,19 @@ export function BriefingReader({
   const startedAt = useRef(new Date().toISOString()).current;
   const lastActionAt = useRef(Date.now());
   const resumeKey = `briefing:${briefing.id}`;
-  const [picked, setPicked] = useState<Record<number, string>>(
-    () => loadUiResume<Record<number, string>>(resumeKey) ?? {},
-  );
+  const boot = loadBriefingResume(resumeKey);
+  const [picked, setPicked] = useState<Record<number, string>>(boot.picked);
+  const [skipped, setSkipped] = useState<number[]>(boot.skipped);
+  const [optionalOpen, setOptionalOpen] = useState<Record<number, boolean>>({});
   const [peek, setPeek] = useState<PeekQuery | null>(null);
   const interactive = useMemo(
     () => briefing.blocks.map((b, i) => ({ b, i })).filter((x) => x.b.type === "cloze" || x.b.type === "choice"),
     [briefing],
   );
+  const primaries = interactive.filter((x) => isPrimaryQuestion(x.b, briefing.blocks));
   const answered = interactive.filter((x) => picked[x.i]).length;
-  const allDone = interactive.length === 0 || answered === interactive.length;
+  const allDone =
+    primaries.length === 0 || primaries.every((x) => resolved(x.i, picked, skipped));
   const relatedMap = mapForBriefing(briefing.id);
 
   function openPeek(label: string, context: PeekQuery["context"] = "in_article", id?: string) {
@@ -67,17 +119,49 @@ export function BriefingReader({
 
   useEffect(() => {
     logEvent("briefing_start", { briefingId: briefing.id });
+    logEvent("reading_start", { briefingId: briefing.id, kind: "article" });
   }, [briefing.id]);
 
   useEffect(() => {
-    saveUiResume(resumeKey, picked);
-  }, [resumeKey, picked]);
+    saveUiResume(resumeKey, { picked, skipped });
+  }, [resumeKey, picked, skipped]);
+
+  useEffect(() => {
+    if (answered === 0 && skipped.length === 0) return;
+    const asks = document.querySelectorAll(".read-ask");
+    asks[asks.length - 1]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [answered, skipped.length]);
+
+  const interacted = useRef(
+    Object.keys(boot.picked).length > 0 || boot.skipped.length > 0,
+  );
+
+  function markInteract() {
+    if (interacted.current) return;
+    interacted.current = true;
+    logEvent("first_interaction", { briefingId: briefing.id, kind: "article" });
+  }
+
+  function skipBlock(i: number) {
+    if (resolved(i, picked, skipped)) return;
+    markInteract();
+    setSkipped((s) => (s.includes(i) ? s : [...s, i]));
+    lastActionAt.current = Date.now();
+    logEvent("briefing_question_answer", {
+      briefingId: briefing.id,
+      index: i,
+      skipped: true,
+      correct: null,
+    });
+  }
 
   function gradeBlock(i: number, id: string) {
     if (picked[i]) return;
     const block = briefing.blocks[i];
     const answerId = block.type === "cloze" || block.type === "choice" ? block.answerId : "";
     const ok = id === answerId;
+    markInteract();
+    setSkipped((s) => s.filter((x) => x !== i));
     setPicked((p) => ({ ...p, [i]: id }));
     const depth = block.type === "choice" ? block.depth : block.type === "cloze" ? "term" : undefined;
     const responseTimeMs = Date.now() - lastActionAt.current;
@@ -94,20 +178,21 @@ export function BriefingReader({
   }
 
   function persistAttempt(completed: boolean) {
-    const results = interactive.map((x) => {
-      const answerId = x.b.type === "cloze" || x.b.type === "choice" ? x.b.answerId : "";
-      return {
-        index: x.i,
-        depth: x.b.type === "choice" ? x.b.depth : x.b.type === "cloze" ? "term" : undefined,
-        correct: picked[x.i] === answerId,
-      };
-    });
-    const answeredN = results.filter((_, idx) => Boolean(picked[interactive[idx].i])).length;
+    const results = interactive
+      .filter((x) => picked[x.i])
+      .map((x) => {
+        const answerId = x.b.type === "cloze" || x.b.type === "choice" ? x.b.answerId : "";
+        return {
+          index: x.i,
+          depth: x.b.type === "choice" ? x.b.depth : x.b.type === "cloze" ? "term" : undefined,
+          correct: picked[x.i] === answerId,
+        };
+      });
     const attempt: BriefingAttempt = {
       briefingId: briefing.id,
       startedAt,
       completedAt: completed ? new Date().toISOString() : undefined,
-      questionsAnswered: answeredN,
+      questionsAnswered: results.length,
       correctAnswers: results.filter((r) => r.correct).length,
       results,
     };
@@ -115,11 +200,19 @@ export function BriefingReader({
     if (completed) {
       clearUiResume(resumeKey);
       logEvent("briefing_complete", { briefingId: briefing.id });
+      logEvent("reading_complete", { briefingId: briefing.id, kind: "article" });
     }
   }
 
   function finish() {
     persistAttempt(allDone);
+    if (!allDone) {
+      logEvent("reading_exit", {
+        briefingId: briefing.id,
+        questionsAnswered: answered,
+        completed: false,
+      });
+    }
     if (allDone) onFinish();
     else (onPause ?? onFinish)();
   }
@@ -134,71 +227,41 @@ export function BriefingReader({
           {` · ${briefing.minutes}분`}
         </span>
       </div>
-      <h2 className="term-title" style={{ margin: "8px 0 8px", fontSize: 24, lineHeight: 1.35 }}>
-        {briefing.headline}
-      </h2>
+      <h2 className="read-headline">{briefing.headline}</h2>
       {briefing.subtitle ? <p className="muted" style={{ margin: 0 }}>{briefing.subtitle}</p> : null}
-      <hr className="editorial-rule" />
-
-      {briefing.blocks.map((block, i) =>
-        block.type === "p" || block.type === "cloze" ? (
-          <BriefingBlockView
-            key={i}
-            block={block}
-            terms={terms}
-            picked={picked[i] ?? null}
-            onPick={(id) => gradeBlock(i, id)}
-            onPeek={(label) => openPeek(label, "in_article")}
-          />
-        ) : null,
-      )}
-
-      {briefing.blocks.map((block, i) =>
-        block.type === "causal" ? (
-          <BriefingBlockView
-            key={i}
-            block={{ ...block, title: "핵심 문장" }}
-            terms={terms}
-            onPeek={(label) => openPeek(label, "flow")}
-          />
-        ) : null,
-      )}
-
       {briefing.sourceMode === "synthetic" ? (
         <p className="caption" style={{ margin: 0 }}>{READING_DISCLAIMER}</p>
       ) : null}
 
-      <hr className="editorial-rule" />
-
       {briefing.blocks.map((block, i) => {
-        if (block.type !== "choice") return null;
-        const label = QUESTION_LABEL[block.depth] ?? "내용 확인";
+        if (!blockVisible(briefing.blocks, i, picked, skipped)) return null;
+        const primary = isQuestion(block) && isPrimaryQuestion(block, briefing.blocks);
+        const pIndex = primaries.findIndex((x) => x.i === i);
         return (
-          <div key={i}>
-            <div className="caption">{label}</div>
-            <BriefingBlockView
-              block={block}
-              terms={terms}
-              picked={picked[i] ?? null}
-              onPick={(id) => gradeBlock(i, id)}
-              onPeek={(label, id) => openPeek(label, "in_article", id)}
-            />
-          </div>
-        );
-      })}
-
-      {briefing.blocks.map((block, i) =>
-        block.type === "concepts" ? (
           <BriefingBlockView
             key={i}
             block={block}
             terms={terms}
             picked={picked[i] ?? null}
+            skipped={skipped.includes(i)}
+            optional={isQuestion(block) && !primary}
+            optionalOpen={Boolean(optionalOpen[i])}
+            onOpenOptional={() => setOptionalOpen((o) => ({ ...o, [i]: true }))}
             onPick={(id) => gradeBlock(i, id)}
-            onPeek={(label, id) => openPeek(label, "in_article", id)}
+            onSkip={() => skipBlock(i)}
+            onPeek={(label, id) =>
+              openPeek(label, block.type === "causal" ? "flow" : "in_article", id)
+            }
+            askStep={pIndex >= 0 ? pIndex + 1 : 1}
+            askTotal={pIndex >= 0 ? primaries.length : 1}
+            followIds={
+              block.type === "choice" && block.depth === "next" && picked[i]
+                ? briefing.supportTermIds
+                : undefined
+            }
           />
-        ) : null,
-      )}
+        );
+      })}
 
       {allDone && relatedMap ? (
         <Link
@@ -210,12 +273,8 @@ export function BriefingReader({
         </Link>
       ) : null}
 
-      {/*
-        아직 문제를 남긴 상태에서 가장 밝은 버튼이 `나중에 이어서 하기`였다.
-        초록 꽉 찬 버튼이 그만두기를 권한 셈이다. 끝냈을 때만 primary로 둔다.
-      */}
       <button className={allDone ? "btn btn-primary" : "btn btn-ghost"} onClick={finish}>
-        {allDone ? finishLabel : "나중에 이어서 하기"}
+        {allDone ? finishLabel : "나중에 이어 읽기"}
       </button>
       <TermPeek target={peek} terms={terms} onClose={() => setPeek(null)} />
     </div>
@@ -257,24 +316,36 @@ function BriefingBlockView({
   block,
   terms,
   picked = null,
+  skipped = false,
+  optional = false,
+  optionalOpen = false,
+  onOpenOptional,
   onPick = () => undefined,
+  onSkip,
   onPeek,
+  askStep = 0,
+  askTotal = 0,
+  followIds,
 }: {
   block: BriefingBlock;
   terms: Term[];
   picked?: string | null;
+  skipped?: boolean;
+  optional?: boolean;
+  optionalOpen?: boolean;
+  onOpenOptional?: () => void;
   onPick?: (id: string) => void;
+  onSkip?: () => void;
   onPeek: (label: string, id?: string) => void;
+  askStep?: number;
+  askTotal?: number;
+  followIds?: string[];
 }) {
+  const [revive, setRevive] = useState(false);
   if (block.type === "p") {
     return <p className="briefing-p">{block.text}</p>;
   }
   if (block.type === "causal") {
-    /*
-      이 사슬은 바로 위 문단들이 순서대로 풀어 준 인과다. 손으로 검수해서
-      적어 둔 것이므로 화살표를 쓸 자격이 있다. 느슨한 관련 용어에 화살표를
-      씌우지 않으려고 `Chain`을 칩으로 바꿨더니 여기까지 같이 강등됐었다.
-    */
     return (
       <div className="card insight">
         <div className="caption">{block.title}</div>
@@ -285,6 +356,25 @@ function BriefingBlockView({
   }
   if (block.type === "concepts") {
     return <ConceptChips ids={block.ids} terms={terms} onPeek={onPeek} />;
+  }
+
+  if (optional && !optionalOpen && !picked && !skipped) {
+    return (
+      <button type="button" className="text-link read-skip" onClick={onOpenOptional}>
+        한 번 더 생각해보기
+      </button>
+    );
+  }
+
+  if (skipped && !picked && !revive) {
+    return (
+      <div className="read-skipped">
+        <span className="caption">이 질문은 건너뛰고 글을 이어 읽어요</span>
+        <button type="button" className="text-link" onClick={() => setRevive(true)}>
+          답해보기
+        </button>
+      </div>
+    );
   }
 
   const answerId = block.answerId;
@@ -298,19 +388,18 @@ function BriefingBlockView({
     block.type === "choice"
       ? (block.choices.find((c) => c.id === answerId)?.label ?? labelFor(answerId, terms))
       : (choices.find((c) => c.id === answerId)?.label ?? labelFor(answerId, terms));
+  const kind = askKindFromDepth(block.type === "choice" ? block.depth : "cloze");
 
   const body = (
     <>
       {block.type === "cloze" ? (
-        <p className="briefing-p" style={{ margin: 0 }}>
+        <p className="briefing-p" style={{ margin: 0, color: "var(--color-ink)" }}>
           {block.before}
           <span className={picked ? "blank filled" : "blank"}>{picked ? answerLabel : "□□"}</span>
           {block.after}
         </p>
       ) : (
-        <p className={compact ? "briefing-p" : "briefing-q"} style={compact ? { margin: 0, fontWeight: 600 } : undefined}>
-          {block.question}
-        </p>
+        <p className="briefing-q">{block.question}</p>
       )}
       <div className={compact ? "choice-row" : "stack-8"} style={{ marginTop: 12 }}>
         {choices.map((c) => {
@@ -329,11 +418,6 @@ function BriefingBlockView({
       </div>
       {picked ? (
         <>
-          {/*
-            학습 화면에는 `맞았어요`를 글로 적는데 브리핑에는 없었다. 같은 앱에서
-            정답을 알리는 방식이 두 개면 색을 구분하기 어려운 사람은 브리핑에서만
-            답을 못 읽는다.
-          */}
           <p
             className={picked === answerId ? "verdict ok" : "verdict no"}
             role="status"
@@ -345,18 +429,38 @@ function BriefingBlockView({
                 ? `정답은 ‘${answerLabel}’이에요`
                 : "초록으로 표시한 쪽이 정답이에요"}
           </p>
-          {/*
-            정답 라벨을 여기서 굵게 한 번 더 적지 않는다. 바로 위 선택지에 같은
-            문장이 초록 테두리로 남아 있어서 같은 말이 두 번 보였다.
-          */}
           <p className="why" style={{ marginTop: 8 }}>{block.note}</p>
+          {followIds?.length ? (
+            <div className="read-next-vars">
+              <div className="caption">다음에 볼 것</div>
+              <div className="chip-row" style={{ marginTop: 8 }}>
+                {followIds.map((id) => (
+                  <button
+                    key={id}
+                    type="button"
+                    className={chipClass(id)}
+                    onClick={() => onPeek(labelFor(id, terms), id)}
+                  >
+                    {labelFor(id, terms)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </>
-      ) : null}
+      ) : (
+        <button type="button" className="text-link read-skip" onClick={onSkip}>
+          그냥 계속 읽기
+        </button>
+      )}
     </>
   );
 
-  if (compact) return <div className="briefing-ask">{body}</div>;
-  return <div className="card pad-lg">{body}</div>;
+  return (
+    <ReadingAsk kind={kind} step={askStep} total={askTotal}>
+      {body}
+    </ReadingAsk>
+  );
 }
 
 export function BriefingPage({ terms }: { terms: Term[] }) {
@@ -376,7 +480,14 @@ export function BriefingPage({ terms }: { terms: Term[] }) {
   return (
     <>
       <header className="topbar">
-        <button className="icon-btn" onClick={() => nav("/context")} aria-label="닫기">
+        <button
+          className="icon-btn"
+          onClick={() => {
+            logEvent("reading_exit", { briefingId: briefing.id, completed: false });
+            nav("/context");
+          }}
+          aria-label="닫기"
+        >
           ✕
         </button>
         <h1>읽기</h1>

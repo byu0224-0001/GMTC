@@ -396,7 +396,7 @@ export const RELATED: Record<string, RelatedSpec> = {
     chips: ["주가지수", "펀드"],
     reason: {
       주가지수: "지수를 한 주로 담는 상품이 많다",
-      펀드: "펀드의 한 형태이되 거래소에서 산다",
+      펀드: "펀드의 한 형태이되 거래소에서 사요",
     },
   },
   "주가수익비율-per": {

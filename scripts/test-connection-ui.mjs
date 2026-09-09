@@ -39,12 +39,20 @@ check("Android 뒤로가기는 시트를 닫음", peekUi.includes("popstate") &&
 check("시트 열면 배경 스크롤 잠금", peekUi.includes("sheet-open"));
 
 const briefingPage = readFileSync("src/pages/BriefingPage.tsx", "utf8");
-check("긴 읽기 칩이 resolver를 탐", briefingPage.includes("resolveTermPreview") && briefingPage.includes("in_article"));
+check("기사형은 블록 순서대로 연다", briefingPage.includes("blockVisible") && briefingPage.includes("ReadingAsk"));
+check("안 푼 문항은 건너뛸 수 있다", briefingPage.includes("그냥 계속 읽기") && briefingPage.includes("skipBlock"));
+check("정답이 아니라 응답이 다음 본문을 연다", briefingPage.includes("isPrimaryQuestion") && briefingPage.includes("skipped"));
+check("읽기 시작·첫 판단을 남긴다", briefingPage.includes("reading_start") && briefingPage.includes("first_interaction"));
+check("읽기 이탈을 남긴다", briefingPage.includes("reading_exit"));
 check("긴 읽기 상세에 예시 고지", briefingPage.includes("READING_EXAMPLE_LABEL"));
 
 const news = readFileSync("src/pages/NewsQuizPage.tsx", "utf8");
 check("짧은 읽기 PeekQuery", news.includes("PeekQuery") && !news.includes("PeekTarget"));
-check("짧은 읽기 칩이 id를 넘김", news.includes('openPeek(labelFor(id, terms), "in_article", id)'));
+check("짧은 읽기도 같은 질문 문법", news.includes("ReadingAsk") && news.includes("askKindFromDepth"));
+check("짧은 읽기도 그냥 계속 읽기", news.includes("그냥 계속 읽기"));
+const newsClose = news.match(/className="icon-btn"[\s\S]*?aria-label="닫기"/)?.[0] ?? "";
+check("짧은 읽기 닫기는 위치를 남긴다", newsClose.length > 0 && !newsClose.includes("clearUiResume"));
+check("짧은 읽기 완료만 resume를 지운다", news.includes("clearUiResume") && news.includes("reading_complete"));
 
 const detail = readFileSync("src/pages/TermDetailPage.tsx", "utf8");
 check("사전 상세 같이 보면은 이동", detail.includes("<RelatedConcepts term={term} terms={terms} />") && !detail.includes("preview"));

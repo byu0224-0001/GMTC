@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ConceptFlowView } from "../components/Chrome";
+import { ReadingAsk, askKindFromDepth } from "../components/ReadingAsk";
 import { TermPeek, type PeekQuery } from "../components/TermPeek";
 import { READING_DISCLAIMER, READING_EXAMPLE_LABEL, READING_KIND_SHORT } from "../content/brand";
-import { CONTEXT_CASES, type ContextCase } from "../content/literacy";
+import { CONTEXT_CASES } from "../content/literacy";
 import { beginTodaySession, endTodaySession, logEvent } from "../lib/events";
 import { chipClass } from "../lib/chipTone";
 import { flushEvents } from "../lib/learner";
@@ -14,15 +15,28 @@ import { resolveTermPreview } from "../lib/termPreview";
 import { seededShuffle } from "../lib/quiz";
 import type { Term } from "../types";
 
-/** 사실 확인 → 개념 → 해설 순서로 읽는다. */
-type Stage = "fact" | "concept" | "done";
-
-/** 두 번째 문제가 어떤 읽기를 요구하는지 화면에 적는다. */
-const LENS_LABEL: Record<ContextCase["lens"], string> = {
-  name: "내용 확인",
-  cause: "한 번 더 생각해보기",
-  next: "다음으로 확인할 것",
+type ShortResume = {
+  factPick: string | null;
+  picked: string | null;
+  factSkipped?: boolean;
+  conceptSkipped?: boolean;
+  factOpen?: boolean;
+  /** 이전 저장 형식. 있으면 열어둔 위치만 복원한다. */
+  stage?: "fact" | "concept" | "done";
 };
+
+function loadShortResume(raw: ShortResume | null): ShortResume {
+  if (!raw) {
+    return { factPick: null, picked: null, factSkipped: false, conceptSkipped: false, factOpen: false };
+  }
+  return {
+    factPick: raw.factPick ?? null,
+    picked: raw.picked ?? null,
+    factSkipped: Boolean(raw.factSkipped),
+    conceptSkipped: Boolean(raw.conceptSkipped) || (raw.stage === "done" && !raw.picked),
+    factOpen: Boolean(raw.factOpen) || Boolean(raw.factPick) || raw.stage === "fact",
+  };
+}
 
 function bodyParagraphs(text: string): string[] {
   const parts = text.split(/(?<=요\.)\s+/).map((p) => p.trim()).filter(Boolean);
@@ -34,13 +48,16 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
   const nav = useNavigate();
   const cse = CONTEXT_CASES.find((c) => c.id === caseId);
   const resumeKey = caseId ? `reading:${caseId}` : "";
-  const boot = resumeKey
-    ? loadUiResume<{ stage: Stage; factPick: string | null; picked: string | null }>(resumeKey)
-    : null;
-  const [stage, setStage] = useState<Stage>(boot?.stage ?? (cse?.fact ? "fact" : "concept"));
-  const [factPick, setFactPick] = useState<string | null>(boot?.factPick ?? null);
-  const [picked, setPicked] = useState<string | null>(boot?.picked ?? null);
+  const boot = loadShortResume(
+    resumeKey ? loadUiResume<ShortResume>(resumeKey) : null,
+  );
+  const [factPick, setFactPick] = useState<string | null>(boot.factPick);
+  const [picked, setPicked] = useState<string | null>(boot.picked);
+  const [factSkipped, setFactSkipped] = useState(boot.factSkipped ?? false);
+  const [conceptSkipped, setConceptSkipped] = useState(boot.conceptSkipped ?? false);
+  const [factOpen, setFactOpen] = useState(boot.factOpen ?? false);
   const [peek, setPeek] = useState<PeekQuery | null>(null);
+  const interacted = useRef(Boolean(boot.factPick || boot.picked || boot.factSkipped || boot.conceptSkipped));
 
   const conceptChoices = useMemo(
     () => (cse ? seededShuffle(cse.choiceIds, cse.id.length * 31 + 7) : []),
@@ -59,6 +76,7 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
   useEffect(() => {
     if (!caseId) return;
     beginTodaySession({ source: "reading" });
+    logEvent("reading_start", { caseId, kind: "short" });
     return () => {
       endTodaySession();
       void flushEvents();
@@ -67,12 +85,8 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
 
   useEffect(() => {
     if (!resumeKey) return;
-    saveUiResume(resumeKey, { stage, factPick, picked });
-  }, [resumeKey, stage, factPick, picked]);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [stage]);
+    saveUiResume(resumeKey, { factPick, picked, factSkipped, conceptSkipped, factOpen });
+  }, [resumeKey, factPick, picked, factSkipped, conceptSkipped, factOpen]);
 
   if (!cse) {
     return (
@@ -85,6 +99,13 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
 
   const article = cse;
   const chips = article.termIds ?? [];
+  const conceptResolved = Boolean(picked) || conceptSkipped;
+
+  function markInteract() {
+    if (interacted.current) return;
+    interacted.current = true;
+    logEvent("first_interaction", { caseId: article.id, kind: "short" });
+  }
 
   function openPeek(label: string, context: PeekQuery["context"], id?: string) {
     const q: PeekQuery = {
@@ -103,7 +124,7 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
         <button
           className="icon-btn"
           onClick={() => {
-            if (resumeKey) clearUiResume(resumeKey);
+            if (!conceptResolved) logEvent("reading_exit", { caseId: cse.id, completed: false });
             nav("/context");
           }}
           aria-label="닫기"
@@ -122,23 +143,32 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
         </div>
 
         <div>
-          <h2 className="term-title" style={{ fontSize: 22, margin: "8px 0 10px", lineHeight: 1.35 }}>{cse.title}</h2>
+          <h2 className="read-headline">{cse.title}</h2>
           {bodyParagraphs(cse.situation).map((p) => (
-            <p key={p.slice(0, 24)} className="briefing-p" style={{ margin: "0 0 14px" }}>{p}</p>
+            <p key={p.slice(0, 24)} className="briefing-p" style={{ margin: "0 0 12px" }}>{p}</p>
           ))}
           <p className="caption" style={{ margin: "0 0 8px" }}>
             {READING_DISCLAIMER}
           </p>
-          <hr className="editorial-rule" />
         </div>
 
-        {cse.fact && stage === "fact" ? (
-          <>
-            <div className="card">
-              <div className="caption">내용 확인</div>
-              <p style={{ margin: "8px 0 0", lineHeight: 1.6 }}>{cse.fact.question}</p>
-            </div>
-            <div className="stack-8">
+        {cse.fact && !factOpen && !factPick && !factSkipped ? (
+          <button type="button" className="text-link read-skip" onClick={() => setFactOpen(true)}>
+            한 번 더 확인해보기
+          </button>
+        ) : null}
+
+        {cse.fact && factSkipped && !factPick ? (
+          <div className="read-skipped">
+            <span className="caption">이 질문은 건너뛰고 글을 이어 읽어요</span>
+            <button type="button" className="text-link" onClick={() => setFactSkipped(false)}>
+              답해보기
+            </button>
+          </div>
+        ) : cse.fact && (factOpen || factPick) ? (
+          <ReadingAsk kind="check" step={1} total={1}>
+            <p className="briefing-q">{cse.fact.question}</p>
+            <div className="stack-8" style={{ marginTop: 12 }}>
               {factChoices.map((c) => {
                 let cls = "choice";
                 if (factPick) {
@@ -152,6 +182,8 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
                     className={cls}
                     disabled={Boolean(factPick)}
                     onClick={() => {
+                      markInteract();
+                      setFactSkipped(false);
                       setFactPick(c.id);
                       logEvent("reading_answer", {
                         caseId: cse.id,
@@ -167,61 +199,99 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
             </div>
             {factPick ? (
               <>
-                <div className="hint" aria-live="polite">{cse.fact.why}</div>
-                <button className="btn btn-primary" onClick={() => setStage("concept")}>
-                  한 단계 더
+                <p
+                  className={factPick === cse.fact.answerId ? "verdict ok" : "verdict no"}
+                  role="status"
+                  style={{ marginTop: 14 }}
+                >
+                  {factPick === cse.fact.answerId ? "맞았어요" : "초록으로 표시한 쪽이 정답이에요"}
+                </p>
+                <p className="why" style={{ marginTop: 8 }}>{cse.fact.why}</p>
+              </>
+            ) : (
+              <button
+                type="button"
+                className="text-link read-skip"
+                onClick={() => {
+                  markInteract();
+                  setFactSkipped(true);
+                  logEvent("reading_answer", { caseId: cse.id, lens: "fact", skipped: true, correct: null });
+                }}
+              >
+                그냥 계속 읽기
+              </button>
+            )}
+          </ReadingAsk>
+        ) : null}
+
+        <ReadingAsk kind={askKindFromDepth(cse.lens)} step={1} total={1}>
+          <p className="briefing-q">{cse.question}</p>
+          <div className="stack-8" style={{ marginTop: 12 }}>
+            {conceptChoices.map((id) => {
+              let cls = "choice";
+              if (picked) {
+                if (id === cse.answerTermId) cls += " correct";
+                else if (id === picked) cls += " wrong";
+                else cls += " dim";
+              }
+              return (
+                <button
+                  key={id}
+                  className={cls}
+                  disabled={Boolean(picked)}
+                  onClick={() => {
+                    markInteract();
+                    setConceptSkipped(false);
+                    setPicked(id);
+                    const ok = id === cse.answerTermId;
+                    saveProgress(recordContext(loadProgress(), cse.id, ok));
+                    logEvent("reading_answer", {
+                      caseId: cse.id,
+                      lens: cse.lens,
+                      termId: cse.answerTermId,
+                      correct: ok,
+                    });
+                  }}
+                >
+                  {labelFor(id, terms)}
                 </button>
-              </>
-            ) : null}
-          </>
-        ) : null}
+              );
+            })}
+          </div>
+          {picked ? (
+            <>
+              <p
+                className={picked === cse.answerTermId ? "verdict ok" : "verdict no"}
+                role="status"
+                style={{ marginTop: 14 }}
+              >
+                {picked === cse.answerTermId ? "맞았어요" : "초록으로 표시한 쪽이 정답이에요"}
+              </p>
+              <p className="why" style={{ marginTop: 8 }}>{cse.why}</p>
+            </>
+          ) : conceptSkipped ? (
+            <p className="caption" style={{ marginTop: 10 }}>이 질문은 건너뛰고 글을 이어 읽어요</p>
+          ) : (
+            <button
+              type="button"
+              className="text-link read-skip"
+              onClick={() => {
+                markInteract();
+                setConceptSkipped(true);
+                logEvent("reading_answer", {
+                  caseId: cse.id,
+                  lens: cse.lens,
+                  skipped: true,
+                  correct: null,
+                });
+              }}
+            >
+              그냥 계속 읽기
+            </button>
+          )}
+        </ReadingAsk>
 
-        {stage === "concept" ? (
-          <>
-            <div className="card">
-              <div className="caption">{LENS_LABEL[cse.lens]}</div>
-              <p style={{ margin: "8px 0 0", lineHeight: 1.6 }}>{cse.question}</p>
-            </div>
-            <div className="stack-8">
-              {conceptChoices.map((id) => {
-                let cls = "choice";
-                if (picked) {
-                  if (id === cse.answerTermId) cls += " correct";
-                  else if (id === picked) cls += " wrong";
-                  else cls += " dim";
-                }
-                return (
-                  <button
-                    key={id}
-                    className={cls}
-                    disabled={Boolean(picked)}
-                    onClick={() => {
-                      setPicked(id);
-                      const ok = id === cse.answerTermId;
-                      saveProgress(recordContext(loadProgress(), cse.id, ok));
-                      logEvent("reading_answer", {
-                        caseId: cse.id,
-                        lens: cse.lens,
-                        termId: cse.answerTermId,
-                        correct: ok,
-                      });
-                    }}
-                  >
-                    {labelFor(id, terms)}
-                  </button>
-                );
-              })}
-            </div>
-            {picked ? (
-              <>
-                <div className="hint" aria-live="polite">{cse.why}</div>
-                <button className="btn btn-primary" onClick={() => setStage("done")}>다음</button>
-              </>
-            ) : null}
-          </>
-        ) : null}
-
-        {stage === "done" ? (
+        {conceptResolved ? (
           <>
             <div className="card">
               <div className="caption">이렇게 이어져요</div>
@@ -233,7 +303,7 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
               />
               {cse.nextToCheck?.length ? (
                 <>
-                  <div className="caption" style={{ marginTop: 14 }}>다음으로 확인할 것</div>
+                  <div className="caption" style={{ marginTop: 14 }}>다음에 볼 것</div>
                   <ul className="point-list">
                     {cse.nextToCheck.map((x) => <li key={x}>{x}</li>)}
                   </ul>
@@ -241,7 +311,7 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
               ) : null}
             </div>
             {chips.length > 0 ? (
-              <div className="card">
+              <div>
                 <div className="caption">이 글에 나온 용어</div>
                 <div className="chip-row" style={{ marginTop: 8 }}>
                   {chips.map((id) => (
@@ -261,14 +331,15 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
               className="btn btn-primary"
               onClick={() => {
                 if (resumeKey) clearUiResume(resumeKey);
+                logEvent("reading_complete", { caseId: cse.id, kind: "short" });
                 nav("/context");
               }}
             >
               읽기 목록으로
             </button>
-            <TermPeek target={peek} terms={terms} onClose={() => setPeek(null)} />
           </>
         ) : null}
+        <TermPeek target={peek} terms={terms} onClose={() => setPeek(null)} />
       </div>
     </>
   );

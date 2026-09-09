@@ -59,7 +59,64 @@ def validate_briefing_obj(obj: dict, errors: list[str], known: set[str], term_ma
             for cid in block.get("ids") or []:
                 if cid not in known:
                     errors.append(f"{bid} concepts unknown {cid}")
+    types, scored_n = rhythm_from_blocks(obj.get("blocks") or [])
+    warn_briefing_rhythm(str(bid), types, scored_n)
 
+
+READING_Q = {"cloze", "choice"}
+READING_BODY = {"p", "causal"}
+
+
+def scored_count(flags: list[str]) -> int:
+    """용어 고르기만 있으면 그게 기록 문항이다. 다른 문항이 있으면 용어 고르기는 선택."""
+    if any(f == "scored" for f in flags):
+        return sum(f == "scored" for f in flags)
+    return len(flags)
+
+
+def rhythm_from_blocks(blocks: list[dict]) -> tuple[list[str], int]:
+    types = [str(b.get("type") or "") for b in blocks]
+    flags: list[str] = []
+    for b in blocks:
+        kind = b.get("type")
+        if kind == "cloze":
+            flags.append("scored")
+        elif kind == "choice":
+            flags.append("optional" if b.get("depth") == "term" else "scored")
+    return types, scored_count(flags)
+
+
+def rhythm_from_chunk(chunk: str) -> tuple[list[str], int]:
+    types = re.findall(r'\n        type: "(p|cloze|choice|causal|concepts)"', chunk)
+    flags: list[str] = []
+    for m in re.finditer(
+        r'type: "(cloze|choice)"([\s\S]*?)(?=\n      \{\n|\n    \],\n)',
+        chunk,
+    ):
+        kind, body = m.group(1), m.group(2)
+        if kind == "cloze":
+            flags.append("scored")
+            continue
+        depth = re.search(r'depth: "(term|number|cause|next)"', body)
+        flags.append("optional" if depth and depth.group(1) == "term" else "scored")
+    return types, scored_count(flags)
+
+
+def warn_briefing_rhythm(bid: str, types: list[str], scored_n: int) -> None:
+    """기사형 리듬. build를 막지 않는다."""
+    if not types:
+        return
+    if types[0] in READING_Q:
+        WARNINGS.append(f"{bid} 첫 블록이 질문이다")
+    qpos = [i for i, t in enumerate(types) if t in READING_Q]
+    for a, b in zip(qpos, qpos[1:]):
+        mid = types[a + 1 : b]
+        if not mid:
+            WARNINGS.append(f"{bid} 질문이 연속된다")
+        elif not any(t in READING_BODY for t in mid):
+            WARNINGS.append(f"{bid} 질문 사이에 본문이 없다")
+    if scored_n > 2:
+        WARNINGS.append(f"{bid} scored interaction {scored_n}개 — MVP는 2개 권장")
 
 
 # 읽을 거리인지 판별하는 신호. 이 중 둘 이상이 있어야 상황문이 아니라 글이 된다.
@@ -472,6 +529,9 @@ def main() -> int:
             errors.append(f"{cid} missing lens")
         else:
             lens_counts[lens.group(1)] = lens_counts.get(lens.group(1), 0) + 1
+        scored_short = len(re.findall(r'\n    question: "', chunk))
+        if scored_short > 1:
+            WARNINGS.append(f"{cid} scored interaction {scored_short}개 — 짧은 읽기는 1개 권장")
         body = re.search(r'situation:\s*\n?\s*"((?:[^"\\]|\\.)*)"', chunk)
         if not body:
             errors.append(f"{cid} missing situation")
@@ -603,6 +663,8 @@ def main() -> int:
             errors.append(f"{bid} paragraphs ({n_p}) < questions ({n_q})")
         if n_cloze > 1:
             errors.append(f"{bid} cloze should be at most 1, got {n_cloze}")
+        types, scored_n = rhythm_from_chunk(chunk)
+        warn_briefing_rhythm(bid, types, scored_n)
         if 'contentMode: "synthetic"' in chunk or 'sourceMode: "synthetic"' in chunk:
             if re.search(r'eventDate: "[0-9]', chunk):
                 errors.append(f"{bid} synthetic briefing has eventDate")
