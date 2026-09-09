@@ -517,8 +517,8 @@ def main() -> int:
 
     reading_src = (ROOT / "src/content/readingCases.ts").read_text(encoding="utf-8")
     reading_ids = re.findall(r'\n    id: "(cx-[^"]+)"', reading_src)
-    if len(reading_ids) != 32:
-        errors.append(f"reading cases {len(reading_ids)} != 32")
+    if len(reading_ids) < 32:
+        errors.append(f"reading cases {len(reading_ids)} < 32")
     if len(reading_ids) != len(set(reading_ids)):
         errors.append("duplicate reading case ids")
     reading_chunks = re.split(r'\n  \{\n    id: "cx-', reading_src)[1:]

@@ -1,4 +1,4 @@
-import { LEARNING_BRIEFINGS, allBriefings, briefingById, registerExtraBriefings } from "../content/briefings";
+import { allBriefings, briefingById, registerExtraBriefings } from "../content/briefings";
 import type { LearningBriefing } from "../types";
 import { kstDateKey } from "./srs";
 
@@ -7,8 +7,30 @@ export type TodayPlanFile = { date: string; briefingId: string; contentVersion?:
 const CACHE_KEY = "voca:today-plan";
 const DAY_LESSON_KEY = "voca:day-lesson";
 
+function dayIndex(dateKey: string): number {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  return Math.floor(Date.UTC(y, m - 1, d) / 86_400_000);
+}
+
+/**
+ * 홈의 오늘 글.
+ * 새로고침마다 바꾸지 않고, 날짜가 같으면 같은 자리를 본다.
+ * 이미 읽은 글이면 그다음 안 읽은 글로 옮긴다. 편집자가 today.json 날짜를
+ * 오늘로 맞춰 두면 그 선택을 따른다.
+ */
+export function pickDailyBriefing(dateKey: string, seenIds: string[] = []): LearningBriefing {
+  const all = allBriefings();
+  const start = ((dayIndex(dateKey) % all.length) + all.length) % all.length;
+  for (let i = 0; i < all.length; i += 1) {
+    const b = all[(start + i) % all.length];
+    if (!seenIds.includes(b.id)) return b;
+  }
+  return all[start];
+}
+
 export function fallbackPlan(): TodayPlanFile {
-  return { date: kstDateKey(), briefingId: LEARNING_BRIEFINGS[0].id, contentVersion: 1 };
+  const date = kstDateKey();
+  return { date, briefingId: pickDailyBriefing(date).id, contentVersion: 1 };
 }
 
 export async function loadTodayPlan(): Promise<TodayPlanFile> {
@@ -76,7 +98,7 @@ export function briefingForPlan(plan: TodayPlanFile, seenIds: string[]): Learnin
     const hit = briefingById(plan.briefingId);
     if (hit) return hit;
   }
-  return allBriefings().find((b) => !seenIds.includes(b.id)) ?? allBriefings()[0];
+  return pickDailyBriefing(today, seenIds);
 }
 
 export async function loadExtraBriefings(): Promise<void> {

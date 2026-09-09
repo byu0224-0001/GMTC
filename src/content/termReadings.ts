@@ -3,7 +3,7 @@ import { READING_CASES } from "./readingCases";
 export type ReadingRef = { id: string; title: string; primary: boolean };
 
 /**
- * 용어 → 기존 읽기 32편. 새 콘텐츠가 아니라 이미 있는 사례의 인덱스다.
+ * 용어 → 기존 읽기 사례. 새 콘텐츠가 아니라 이미 있는 사례의 인덱스다.
  * 정답 용어를 먼저 두고, 본문에 같이 나온 용어는 그다음에 둔다.
  */
 export function readingsForTerm(termId: string): ReadingRef[] {
