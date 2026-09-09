@@ -971,6 +971,69 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
       { type: "concepts", ids: ["주가수익비율-per", "주가순자산비율-pbr", "자기자본이익률-roe"] },
     ],
   },
+  {
+    id: "bf-rate-fx",
+    kicker: "환율·금리",
+    minutes: 3,
+    headline: "원화가 빠르게 약해지자, 금리 인하 기대가 한발 물러났어요",
+    subtitle: "물가가 꺾여도 환율이 급하면 인하 속도에 제약이 붙을 수 있어요.",
+    primaryTermIds: ["기준금리", "기준환율", "인플레이션"],
+    supportTermIds: ["외환보유액"],
+    sourceMode: "synthetic",
+    contentMode: "synthetic",
+    readingFormat: "policy",
+    reviewStatus: "published",
+    difficulty: "core",
+    sourceRefs: [SRC],
+    evergreen: true,
+    blocks: [
+      {
+        type: "p",
+        text: "물가 상승세가 둔해지자 시장 일부는 기준금리 인하 시점이 앞당겨질 수 있다고 읽었어요. 그런데 같은 주 원/달러 기준환율이 빠르게 올랐어요.",
+      },
+      {
+        type: "p",
+        text: "원화가 약해지면 수입 물가 부담이 커질 수 있어요. 그래서 국내 물가가 조금 낮아져도, 환율이 급하면 중앙은행이 금리를 빠르게 내리기 어렵다는 해석이 나왔어요.",
+      },
+      {
+        type: "cloze",
+        before: "환율이 빠르게 오르면 기준금리 인하 시점은 예상보다 ",
+        after: " 수 있어요.",
+        question: "원화가 빠르게 약해지면 금리 인하 기대는 어떻게 읽힐까요?",
+        answerId: "late",
+        choices: [
+          { id: "late", label: "늦어질" },
+          { id: "early", label: "빨라질" },
+          { id: "fixed", label: "고정될" },
+          { id: "gone", label: "사라질" },
+        ],
+        note: "원화 약세는 수입 물가 압력으로 이어질 수 있어요. 물가가 둔해져도 환율이 급하면 인하를 서두르기 어렵다는 읽기가 나와요. 한 번의 환율 움직임으로 경로가 확정되지는 않아요.",
+      },
+      {
+        type: "p",
+        text: "다만 환율 한 줄만으로 금리 경로를 단정하기는 어려워요. 외환보유액, 수입 물가 전가, 자본 유출 우려를 같이 봐야 해요. 물가가 예상보다 높게 나온 날의 인하 후퇴와도, 고용이 약해진 날의 인하 확대와도 다른 제약이에요.",
+      },
+      {
+        type: "choice",
+        depth: "next",
+        question: "환율이 급할 때 금리 기대를 보려면 무엇을 같이 보는 게 좋을까요?",
+        answerId: "import",
+        choices: [
+          { id: "import", label: "수입 물가와 외환보유액" },
+          { id: "fxonly", label: "환율 한 줄이면 기준금리 경로가 확정된다" },
+          { id: "jobs", label: "환율이 오르면 고용만 보면 된다" },
+          { id: "ignore", label: "원화 약세는 물가와 무관하다" },
+        ],
+        note: "환율은 수입 물가와 자본 흐름을 통해 금리 제약으로 읽힐 수 있어요. 외환보유액과 물가 전가를 같이 봐야 그 제약이 큰지 가늠돼요.",
+      },
+      {
+        type: "causal",
+        title: "한 번에 연결하면",
+        chain: ["원화 약세", "수입 물가 부담", "인하 제약", "기준금리 기대"],
+      },
+      { type: "concepts", ids: ["기준금리", "기준환율", "인플레이션"] },
+    ],
+  },
 ];
 
 let extraBriefings: LearningBriefing[] = [];

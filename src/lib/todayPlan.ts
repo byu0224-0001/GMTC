@@ -1,36 +1,24 @@
-import { allBriefings, briefingById, registerExtraBriefings } from "../content/briefings";
+import { briefingById, registerExtraBriefings } from "../content/briefings";
 import type { LearningBriefing } from "../types";
+import type { ProgressState } from "../types";
+import { selectDailyReading } from "./readingSelect";
 import { kstDateKey } from "./srs";
 
-export type TodayPlanFile = { date: string; briefingId: string; contentVersion?: number };
+export type TodayPlanFile = {
+  date: string;
+  briefingId: string;
+  contentVersion?: number;
+  /** today.json을 오늘 날짜로 올린 편집 선택. fallback·세션 잠금은 false. */
+  editorial?: boolean;
+};
 
 const CACHE_KEY = "voca:today-plan";
 const DAY_LESSON_KEY = "voca:day-lesson";
 
-function dayIndex(dateKey: string): number {
-  const [y, m, d] = dateKey.split("-").map(Number);
-  return Math.floor(Date.UTC(y, m - 1, d) / 86_400_000);
-}
-
-/**
- * 홈의 오늘 글.
- * 새로고침마다 바꾸지 않고, 날짜가 같으면 같은 자리를 본다.
- * 이미 읽은 글이면 그다음 안 읽은 글로 옮긴다. 편집자가 today.json 날짜를
- * 오늘로 맞춰 두면 그 선택을 따른다.
- */
-export function pickDailyBriefing(dateKey: string, seenIds: string[] = []): LearningBriefing {
-  const all = allBriefings();
-  const start = ((dayIndex(dateKey) % all.length) + all.length) % all.length;
-  for (let i = 0; i < all.length; i += 1) {
-    const b = all[(start + i) % all.length];
-    if (!seenIds.includes(b.id)) return b;
-  }
-  return all[start];
-}
+export { selectDailyReading } from "./readingSelect";
 
 export function fallbackPlan(): TodayPlanFile {
-  const date = kstDateKey();
-  return { date, briefingId: pickDailyBriefing(date).id, contentVersion: 1 };
+  return { date: kstDateKey(), briefingId: "", contentVersion: 1, editorial: false };
 }
 
 export async function loadTodayPlan(): Promise<TodayPlanFile> {
@@ -44,6 +32,7 @@ export async function loadTodayPlan(): Promise<TodayPlanFile> {
           date: data.date,
           briefingId: data.briefingId,
           contentVersion: typeof data.contentVersion === "number" ? data.contentVersion : 1,
+          editorial: data.date === kstDateKey(),
         };
       }
     }
@@ -54,7 +43,12 @@ export async function loadTodayPlan(): Promise<TodayPlanFile> {
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
       const data = JSON.parse(cached) as TodayPlanFile;
-      if (data?.briefingId && briefingById(data.briefingId)) return data;
+      if (data?.briefingId && briefingById(data.briefingId)) {
+        return {
+          ...data,
+          editorial: data.date === kstDateKey(),
+        };
+      }
     }
   } catch {
     /* ignore */
@@ -74,15 +68,16 @@ export function readLockedTodayPlan(): TodayPlanFile | null {
   return null;
 }
 
-/** 그날 첫 Today 세션이 시작된 브리핑을 하루 동안 고정한다. */
-export function lockTodayLesson(plan: TodayPlanFile, seenIds: string[]): TodayPlanFile {
+/** 그날 첫 Today 세션이 시작된 브리핑을 하루 동안 고정한다. 용어 큐가 읽기와 어긋나지 않게. */
+export function lockTodayLesson(plan: TodayPlanFile, progress: ProgressState): TodayPlanFile {
   const existing = readLockedTodayPlan();
   if (existing) return existing;
-  const briefing = briefingForPlan(plan, seenIds);
+  const briefing = selectDailyReading(plan, progress).today;
   const locked: TodayPlanFile = {
     date: kstDateKey(),
     briefingId: briefing.id,
     contentVersion: plan.contentVersion ?? 1,
+    editorial: false,
   };
   localStorage.setItem(DAY_LESSON_KEY, JSON.stringify(locked));
   return locked;
@@ -92,13 +87,8 @@ export function resolveDisplayPlan(fetched: TodayPlanFile): TodayPlanFile {
   return readLockedTodayPlan() ?? fetched;
 }
 
-export function briefingForPlan(plan: TodayPlanFile, seenIds: string[]): LearningBriefing {
-  const today = kstDateKey();
-  if (plan.date === today) {
-    const hit = briefingById(plan.briefingId);
-    if (hit) return hit;
-  }
-  return pickDailyBriefing(today, seenIds);
+export function briefingForPlan(plan: TodayPlanFile, progress: ProgressState): LearningBriefing {
+  return selectDailyReading(plan, progress).today;
 }
 
 export async function loadExtraBriefings(): Promise<void> {

@@ -45,7 +45,7 @@ export function LearnPage({
 }) {
   const nav = useNavigate();
   const [plan] = useState(() =>
-    lockTodayLesson(todayPlan ?? fallbackPlan(), loadProgress().seenContextIds),
+    lockTodayLesson(todayPlan ?? fallbackPlan(), loadProgress()),
   );
 
   const queue = useMemo<SessionStep[]>(
@@ -152,7 +152,7 @@ export function LearnPage({
   };
 
   if (done || !step) {
-    const reading = briefingForPlan(plan, loadProgress().seenContextIds);
+    const reading = briefingForPlan(plan, loadProgress());
     const map = mapForBriefing(reading.id);
     const emptyExtra = source === "extra" && queue.length === 0;
     return (

@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { TopBar } from "../components/Chrome";
 import { LearningVisual } from "../components/LearningVisual";
 import { READING_DISCLAIMER, READING_KIND_LONG, READING_KIND_SHORT } from "../content/brand";
-import { allBriefings, briefingById } from "../content/briefings";
+import { allBriefings } from "../content/briefings";
 import { CONTEXT_CASES } from "../content/literacy";
-import { briefingForPlan, type TodayPlanFile } from "../lib/todayPlan";
+import { selectDailyReading, type TodayPlanFile } from "../lib/todayPlan";
 import type { ProgressState, Term } from "../types";
 
 type ReadShelf = "short" | "long";
@@ -22,8 +22,8 @@ export function ContextFeedPage({
   terms?: Term[];
   todayPlan: TodayPlanFile;
 }) {
-  const today = briefingForPlan(todayPlan, progress.seenContextIds);
-  const featured = briefingById(today.id) ?? today;
+  const reading = selectDailyReading(todayPlan, progress);
+  const featured = reading.todayCompleted && reading.next ? reading.next : reading.today;
   const longer = allBriefings().filter((b) => b.id !== featured.id);
   const seen = (id: string) => (progress.contextStats[id]?.seen ?? 0) > 0;
   const [shelf, setShelf] = useState<ReadShelf>("long");
@@ -65,7 +65,7 @@ export function ContextFeedPage({
         {shelf === "long" ? (
           <>
             <Link to={`/briefing/${featured.id}`} className="card pad-lg featured" style={{ color: "inherit" }}>
-              <div className="eyebrow">오늘</div>
+              <div className="eyebrow">{reading.todayCompleted ? "다음 글" : "오늘"}</div>
               <div className="caption" style={{ marginTop: 6 }}>
                 {featured.kicker} · {featured.minutes}분
               </div>

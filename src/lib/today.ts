@@ -403,7 +403,7 @@ export function planCounts(
     review: reviewTerms.length,
     newTerms,
     reviewTerms,
-    briefing: briefingForPlan(plan, progress.seenContextIds),
+    briefing: briefingForPlan(plan, progress),
     total: q.length,
     minutes: estimateQueueMinutes(q),
     remainingUnseen: candidates.filter((t) => !progress.cards[t.id]).length,

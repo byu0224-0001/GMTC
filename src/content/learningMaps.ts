@@ -227,6 +227,20 @@ export const LEARNING_MAPS: LearningMap[] = [
     connect: ["이익 변화", "PER", "순자산·ROE", "PBR"],
     readingId: "bf-per-pbr",
   },
+  {
+    id: "map-rate-fx",
+    group: "물가·금리",
+    kicker: "환율·금리",
+    title: "환율이 급하면 금리 인하가 왜 미뤄질까",
+    minutes: 3,
+    steps: [
+      { termId: "기준환율", point: "원/달러가 빠르게 오르면 원화 약세로 읽혀요." },
+      { termId: "인플레이션", point: "수입 물가 부담이 커지면 국내 물가 압력으로 이어질 수 있어요." },
+      { termId: "기준금리", point: "그래서 물가가 둔해져도 인하를 서두르기 어렵다는 제약이 붙어요." },
+    ],
+    connect: ["원화 약세", "수입 물가", "인하 제약", "기준금리 기대"],
+    readingId: "bf-rate-fx",
+  },
 ];
 
 export const LEARNING_MAP_GROUPS: LearningMap["group"][] = ["물가·금리", "기업·숫자"];

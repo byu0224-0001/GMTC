@@ -108,7 +108,11 @@ check("고용 빈칸 정답은 빨라질", /id: "bf-jobs"[\s\S]*?answerId: "earl
 check("기사형이 15편 이상", (briefing.match(/\n    id: "bf-/g) || []).length >= 15);
 
 const todayPlan = readFileSync("src/lib/todayPlan.ts", "utf8");
-check("오늘 읽기는 날짜로 돌아간다", todayPlan.includes("pickDailyBriefing") && todayPlan.includes("dayIndex"));
+const readingSelect = readFileSync("src/lib/readingSelect.ts", "utf8");
+check("오늘 읽기 selector가 한곳", todayPlan.includes("selectDailyReading") && readingSelect.includes("export function selectDailyReading"));
+check("편집 선택이 아니면 오늘 글을 강제하지 않는다", todayPlan.includes("editorial") && readingSelect.includes("plan.editorial"));
+check("홈이 읽기 탭과 같은 selector", readFileSync("src/pages/HomePage.tsx", "utf8").includes("selectDailyReading") && readFileSync("src/pages/NewsFeedPage.tsx", "utf8").includes("selectDailyReading"));
+check("읽기를 마치면 다른 글을 권한다", readFileSync("src/pages/HomePage.tsx", "utf8").includes("다른 글 한 편 더 보기"));
 
 const sheet = readFileSync("src/components/PushPrompt.tsx", "utf8");
 check("알림 시트에 시험 발송", sheet.includes("requestTestPush") && sheet.includes("PUSH_SETTINGS"));

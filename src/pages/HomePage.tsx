@@ -10,11 +10,11 @@ import { labelFor } from "../lib/lookup";
 import { nudgeFor } from "../content/notifications";
 import { markOpenedFromPush } from "../lib/events";
 import { daysSinceStudy } from "../lib/learner";
-import { briefingCompletedOn, defaultDoneToday, extraSessionsToday, stats, storageWritable } from "../lib/progress";
+import { defaultDoneToday, extraSessionsToday, stats, storageWritable } from "../lib/progress";
 import { isFamiliar, kstDateKey } from "../lib/srs";
 import { extraQueue, planCounts } from "../lib/today";
 import { todayStudyCounts, weeklyStats } from "../lib/weekly";
-import type { TodayPlanFile } from "../lib/todayPlan";
+import { selectDailyReading, type TodayPlanFile } from "../lib/todayPlan";
 import type { ProgressState, Term } from "../types";
 
 export function HomePage({
@@ -33,8 +33,8 @@ export function HomePage({
    * 추가로 공부하면 큐가 다시 차기 때문에, 큐 길이로 판단하면 완료가 취소된다.
    */
   const termsDone = defaultDoneToday(progress) || plan.total === 0;
-  const briefing = plan.briefing;
-  const readingDone = !briefing || briefingCompletedOn(progress, kstDateKey(), briefing.id);
+  const reading = selectDailyReading(todayPlan, progress);
+  const readingDone = reading.todayCompleted;
   /** 권장 학습을 마쳤다는 것과 하루를 다 했다는 말은 다르다. 읽기가 남았으면 완료로 말하지 않는다. */
   const done = termsDone && readingDone;
   const extras = extraSessionsToday(progress);
@@ -51,7 +51,7 @@ export function HomePage({
         streakDays: progress.streakDays,
         seed: kstDateKey(),
       });
-  const map = briefing ? mapForBriefing(briefing.id) : undefined;
+  const map = mapForBriefing(reading.today.id);
   const newLabels = plan.newTerms.map((t) => labelFor(t.id, terms));
   const moreLeft = termsDone ? extraQueue(terms, progress).length : 0;
   /**
@@ -174,19 +174,49 @@ export function HomePage({
           </Link>
         )}
 
-        {briefing ? (
+        {reading.todayCompleted ? (
+          reading.next ? (
           <Link
-            to={`/briefing/${briefing.id}`}
+            to={`/briefing/${reading.next.id}`}
+            className="card"
+            style={{ color: "inherit", display: "block" }}
+          >
+            <div className="caption">오늘 읽기도 마쳤어요</div>
+            <div className="caption" style={{ marginTop: 4 }}>다른 글 한 편 더 보기</div>
+            <strong style={{ display: "block", marginTop: 6, fontSize: 20, lineHeight: 1.4 }}>
+              {reading.next.headline}
+            </strong>
+            <div className="caption" style={{ marginTop: 4 }}>
+              {reading.next.kicker} · {reading.next.minutes}분
+            </div>
+          </Link>
+          ) : (
+          <Link
+            to="/context"
+            className="card"
+            style={{ color: "inherit", display: "block" }}
+          >
+            <div className="caption">오늘 읽기도 마쳤어요</div>
+            <strong style={{ display: "block", marginTop: 6, fontSize: 20, lineHeight: 1.4 }}>
+              다른 글 보기
+            </strong>
+          </Link>
+          )
+        ) : (
+          <Link
+            to={`/briefing/${reading.today.id}`}
             className={termsDone && !readingDone ? "card featured" : "card"}
             style={{ color: "inherit", display: "block" }}
           >
             <div className="caption">{termsDone && !readingDone ? "남은 읽기" : READING_KIND_LONG}</div>
             <div className="caption" style={{ marginTop: 4 }}>
-              {briefing.kicker} · {briefing.minutes}분
+              {reading.today.kicker} · {reading.today.minutes}분
             </div>
-            <strong style={{ display: "block", marginTop: 6, fontSize: 20, lineHeight: 1.4 }}>{briefing.headline}</strong>
+            <strong style={{ display: "block", marginTop: 6, fontSize: 20, lineHeight: 1.4 }}>
+              {reading.today.headline}
+            </strong>
           </Link>
-        ) : null}
+        )}
 
         {offerPush ? (
           <PushPrompt onClose={() => setHideHomePush(true)} />
