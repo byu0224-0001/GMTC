@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-09-11T08:20:43.639798+09:00",
+  "windowHours": 24,
+  "count": 3,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "The read operation timed out"
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Agencies reduce regulatory burden for community banks, increase eligibility for 18-month exam cycle",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260910a.htm",
+      "publishedAt": "2026-09-10T20:00:00+00:00",
+      "matchedTermIds": [
+        "은행인수어음-ba"
+      ],
+      "termIds": [
+        "은행인수어음-ba"
+      ],
+      "score": 5,
+      "fitness": "중간"
+    },
+    {
+      "id": "c2",
+      "title": "Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+      "publishedAt": "2026-09-10T13:00:00+00:00",
+      "matchedTermIds": [],
+      "termIds": [],
+      "score": 2,
+      "fitness": "낮음"
+    },
+    {
+      "id": "c3",
+      "title": "Monetary policy decisions",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+      "publishedAt": "2026-09-10T12:15:00+00:00",
+      "matchedTermIds": [],
+      "termIds": [],
+      "score": 2,
+      "fitness": "낮음"
+    }
+  ]
+}
