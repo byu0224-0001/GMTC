@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-09-12T08:29:13.236874+09:00",
+  "windowHours": 24,
+  "count": 2,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Agencies seek comment on proposed third-party risk management guidance and issue statement on community bank engagement with core service providers",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260911a.htm",
+      "publishedAt": "2026-09-11T14:00:00+00:00",
+      "matchedTermIds": [
+        "은행인수어음-ba",
+        "rpt-guidance"
+      ],
+      "termIds": [
+        "은행인수어음-ba",
+        "rpt-guidance"
+      ],
+      "score": 8,
+      "fitness": "중간"
+    },
+    {
+      "id": "c2",
+      "title": "Philip R. Lane: Outlook for the euro area economy",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260911~a4d6526f00.en.pdf",
+      "publishedAt": "2026-09-11T17:00:00+00:00",
+      "matchedTermIds": [
+        "유럽연합-eu"
+      ],
+      "termIds": [
+        "유럽연합-eu"
+      ],
+      "score": 5,
+      "fitness": "중간"
+    }
+  ]
+}
