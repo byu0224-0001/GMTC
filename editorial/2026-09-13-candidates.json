@@ -1,0 +1,50 @@
+{
+  "generatedAt": "2026-09-13T08:10:16.041658+09:00",
+  "windowHours": 24,
+  "count": 2,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Christine Lagarde: Europe seen from Normandy",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260912~fafa4b35b0.en.html",
+      "publishedAt": "2026-09-12T10:15:00+00:00",
+      "matchedTermIds": [
+        "유럽연합-eu"
+      ],
+      "termIds": [
+        "유럽연합-eu"
+      ],
+      "score": 3,
+      "fitness": "중간"
+    },
+    {
+      "id": "c2",
+      "title": "Christine Lagarde: Interview with Ouest-France",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in260912~3cc706f4d6.en.html",
+      "publishedAt": "2026-09-12T20:00:00+00:00",
+      "matchedTermIds": [],
+      "termIds": [],
+      "score": 2,
+      "fitness": "낮음"
+    }
+  ]
+}
