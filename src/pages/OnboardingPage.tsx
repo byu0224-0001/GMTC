@@ -78,6 +78,9 @@ export function OnboardingPage({ onDone }: { onDone: () => void }) {
             <button className="btn btn-primary" onClick={() => start(standalone ? "standalone_start" : "web_start")}>
               시작하기
             </button>
+            <p className="caption" style={{ margin: 0 }}>
+              알림은 학습을 시작한 뒤, 홈 오른쪽 위에서 켤 수 있어요.
+            </p>
 
             {standalone ? null : (
               <OptionalInstall

@@ -1,5 +1,5 @@
 import { loadEvents, type StudyEvent } from "./events";
-import { kstDateKey } from "./srs";
+import { daysBetweenKeys, kstDateKey, liveStreakDays } from "./srs";
 import type { ProgressState } from "../types";
 
 /**
@@ -135,7 +135,7 @@ export async function syncDailyStatus(
     timezone: timezone(),
     lastDefaultDoneDate: progress.defaultDoneDate,
     lastStudyDate: progress.lastStudyDate,
-    streakDays: progress.streakDays,
+    streakDays: liveStreakDays(progress.lastStudyDate, progress.streakDays),
     ...(extra ? { pushSubscription: extra.pushSubscription } : {}),
   };
   const ok = await postStatus(body);
@@ -204,8 +204,5 @@ export async function resetLearner(): Promise<void> {
 /** 마지막 학습에서 며칠 지났는지. 한 번도 학습하지 않았으면 null이다. */
 export function daysSinceStudy(progress: ProgressState, now = new Date()): number | null {
   if (!progress.lastStudyDate) return null;
-  const a = Date.parse(`${progress.lastStudyDate}T00:00:00Z`);
-  const b = Date.parse(`${kstDateKey(now)}T00:00:00Z`);
-  if (Number.isNaN(a) || Number.isNaN(b)) return null;
-  return Math.max(0, Math.round((b - a) / 86_400_000));
+  return daysBetweenKeys(progress.lastStudyDate, kstDateKey(now));
 }

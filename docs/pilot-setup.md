@@ -122,6 +122,10 @@ npx web-push generate-vapid-keys
 
 `VITE_` 접두사가 붙은 값만 클라이언트 번들에 들어간다. private key는 절대 붙이지 않는다.
 
+**이 값은 빌드 시점에 박힌다.** 서버에 `VAPID_PUBLIC_KEY`만 넣고 `VITE_VAPID_PUBLIC_KEY`를
+빼먹으면 `/api/health`의 `notifying`이 꺼지고, 앱에는 알림 벨이 안 뜨거나 켤 수 없다고
+나온다. 키를 추가한 뒤에는 반드시 다시 빌드·배포한다.
+
 발송 조건은 셋뿐이다. 여기에 개인별 최적 시각 예측 같은 것을 붙이지 않는다.
 
 1. 알림을 허용했다

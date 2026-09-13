@@ -116,6 +116,7 @@ check("읽기를 마치면 다른 글을 권한다", readFileSync("src/pages/Hom
 
 const sheet = readFileSync("src/components/PushPrompt.tsx", "utf8");
 check("알림 시트에 시험 발송", sheet.includes("requestTestPush") && sheet.includes("PUSH_SETTINGS"));
+check("지원 안 될 때도 이유를 보여 준다", sheet.includes('ui === "unsupported"'));
 
 const cron = readFileSync("api/cron-nudge.ts", "utf8");
 check("크론이 KST 날짜를 씀", cron.includes("KST_OFFSET_MS") && cron.includes("lastDefaultDoneDate === today"));

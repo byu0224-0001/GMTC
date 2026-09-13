@@ -13,6 +13,7 @@ import {
   needsInstallFirst,
   pushSupported,
   pushUiState,
+  pushUnavailableReason,
   requestTestPush,
   showPushEntry,
   subscribePush,
@@ -41,16 +42,16 @@ function markBellSeen(): void {
 }
 
 export function showBellHint(progress: ProgressState): boolean {
-  return showPushEntry(progress) && progress.doneSessions >= 1 && !bellSeen();
+  return showPushEntry(progress) && !bellSeen();
 }
 
 /**
- * 첫 권장 세션을 마친 뒤에만 자동으로 묻는다.
+ * 한 번이라도 학습한 뒤에 자동으로 묻는다.
+ * 권장 세션을 끝까지 마쳐야만 물으면, 중간에 나온 사람은 입구를 영영 못 본다.
  * `나중에`는 OS 거절이 아니므로 벨에서 다시 켤 수 있다.
- * 브라우저에서 학습하고 나중에 설치한 사람은 홈에서도 같은 조건으로 한 번 본다.
  */
 export function shouldOfferPush(state: ProgressState): boolean {
-  if (state.doneSessions < 1) return false;
+  if (!state.lastStudyDate && state.doneSessions < 1) return false;
   if (state.pushAskedAt || state.pushLaterAt) return false;
   return pushUiState(state) === "permission_default";
 }
@@ -243,6 +244,19 @@ function SheetBody({
   onOff: () => void;
   onTest: () => void;
 }) {
+  if (ui === "unsupported") {
+    const reason = pushUnavailableReason();
+    return (
+      <>
+        <p style={{ margin: "10px 0 0", fontWeight: 600 }}>지금은 알림을 켤 수 없어요.</p>
+        <p className="muted" style={{ margin: "8px 0 0" }}>
+          {reason === "no_key"
+            ? "이 앱 버전에서는 아직 알림이 준비되지 않았어요. 학습은 그대로 할 수 있어요."
+            : "이 브라우저에서는 알림을 지원하지 않아요."}
+        </p>
+      </>
+    );
+  }
   if (ui === "not_installed") {
     return (
       <>

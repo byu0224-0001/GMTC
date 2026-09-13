@@ -32,6 +32,32 @@ export function addDays(key: string, days: number): string {
   return `${yy}-${mm}-${dd}`;
 }
 
+/** 두 한국 날짜 키 사이의 일수. 형식이 아니면 null. */
+export function daysBetweenKeys(from: string, to: string): number | null {
+  const a = Date.parse(`${from}T00:00:00Z`);
+  const b = Date.parse(`${to}T00:00:00Z`);
+  if (Number.isNaN(a) || Number.isNaN(b)) return null;
+  return Math.max(0, Math.round((b - a) / 86_400_000));
+}
+
+/**
+ * 지금 시점에서 유효한 연속 일수.
+ *
+ * `streakDays`는 마지막 학습 순간에만 갱신된다. 쉬는 날에는 줄어들지 않으므로
+ * 저장된 값을 그대로 보여 주면 수요일에 4일이던 값이 일요일에도 4일로 남는다.
+ * 어제나 오늘 배웠으면 그 값을 쓰고, 이틀 이상 비었으면 0이다.
+ */
+export function liveStreakDays(
+  lastStudyDate: string | null,
+  stored: number,
+  now = new Date(),
+): number {
+  if (!lastStudyDate || stored <= 0) return 0;
+  const gap = daysBetweenKeys(lastStudyDate, kstDateKey(now));
+  if (gap === null || gap > 1) return 0;
+  return stored;
+}
+
 /**
  * 복습 사다리와 졸업.
  *

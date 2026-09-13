@@ -101,10 +101,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       skipped += 1;
       continue;
     }
+    const since = daysBetween(rec.lastStudyDate, today);
     const copy = nudgeFor({
-      daysSinceStudy: daysBetween(rec.lastStudyDate, today),
+      daysSinceStudy: since,
       doneToday: false,
-      streakDays: rec.streakDays,
+      streakDays: since !== null && since <= 1 ? rec.streakDays : 0,
       seed: `${today}-${rec.learnerId}`,
     });
     if (!copy) {

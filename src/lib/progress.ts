@@ -1,7 +1,7 @@
 import type { ProgressState, GradeLabel, BriefingAttempt, RetrievalForm, SrsCard } from "../types";
 import { REPORT_BOK_CANON, canonBokId } from "../content/reportLexicon";
 import { clearEvents } from "./events";
-import { addDays, clampCardSchedule, grade, isFamiliar, kstDateKey, newCard } from "./srs";
+import { addDays, clampCardSchedule, grade, isFamiliar, kstDateKey, liveStreakDays, newCard } from "./srs";
 
 export const STORAGE_KEY = "voca:progress:v2";
 const LEGACY_KEY = "voca:progress:v1";
@@ -324,7 +324,7 @@ export function stats(state: ProgressState, coreIds: string[], now = new Date())
     due,
     coreTotal: coreIds.length,
     masteryPct: coreIds.length ? Math.round((known / coreIds.length) * 100) : 0,
-    streakDays: state.streakDays,
+    streakDays: liveStreakDays(state.lastStudyDate, state.streakDays, now),
     contextAcc: ctxSeen ? Math.round((ctxOk / ctxSeen) * 100) : 0,
     contextSeen: ctxSeen,
   };

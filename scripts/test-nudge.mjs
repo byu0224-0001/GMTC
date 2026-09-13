@@ -79,6 +79,27 @@ const settings = /export const PUSH_SETTINGS[\s\S]*?} as const/.exec(src)?.[0] ?
 check("설정 시트에 미완료만 발송이라고 적음", settings.includes("하지 않은 날에만") && settings.includes("보내지 않아요"));
 check("시험 알림 버튼 문구", settings.includes("시험 알림 받기"));
 
+const prompt = readFileSync("src/components/PushPrompt.tsx", "utf8");
+check("세션을 끝까지 안 마쳐도 알림을 묻는다", prompt.includes("!state.lastStudyDate && state.doneSessions < 1"));
+check("지원 안 되어도 시트에서 이유를 말한다", prompt.includes('ui === "unsupported"') && prompt.includes("지금은 알림을 켤 수 없어요"));
+
+const push = readFileSync("src/lib/push.ts", "utf8");
+check("벨을 지원 여부로 숨기지 않는다", push.includes("학습을 시작한 뒤에는") && push.includes("onboardedAt"));
+check("키 없음을 구분한다", push.includes('return "no_key"'));
+
+const health = readFileSync("api/health.ts", "utf8");
+check("health가 클라이언트 VAPID를 본다", health.includes("viteVapid") && health.includes("VITE_VAPID_PUBLIC_KEY"));
+
+const progress = readFileSync("src/lib/progress.ts", "utf8");
+check("통계의 연속 일수는 지금 계산", progress.includes("liveStreakDays(state.lastStudyDate, state.streakDays"));
+
+check("쉬는 날의 연속은 크론에서도 0", cron.includes("since <= 1 ? rec.streakDays : 0"));
+
+const home = readFileSync("src/pages/HomePage.tsx", "utf8");
+check("끊긴 연속을 4일로 남기지 않는다", home.includes('s.streakDays > 0 ? `${s.streakDays}일 연속` : "기록"'));
+
+check("온보딩이 홈 알림 입구를 가리킨다", onboarding.includes("홈 오른쪽 위"));
+
 console.table(checks);
 const failed = checks.filter((c) => c.결과 === "실패");
 if (failed.length) {

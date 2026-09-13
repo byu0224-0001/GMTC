@@ -30,6 +30,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     vapidPublic: set(process.env.VAPID_PUBLIC_KEY, 40),
     vapidPrivate: set(process.env.VAPID_PRIVATE_KEY, 20),
     vapidSubject: set(process.env.VAPID_SUBJECT, 7),
+    /**
+     * 서버 키만 있고 빌드에 `VITE_VAPID_PUBLIC_KEY`가 없으면 구독이 생기지 않는다.
+     * 발송도 0건이다.
+     */
+    viteVapid: set(process.env.VITE_VAPID_PUBLIC_KEY, 40),
   };
 
   let events: number | null = null;
@@ -49,7 +54,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
    */
   const collecting = checks.store && checks.exportToken;
   const notifying =
-    checks.cronSecret && checks.vapidPublic && checks.vapidPrivate && checks.vapidSubject;
+    checks.cronSecret &&
+    checks.vapidPublic &&
+    checks.vapidPrivate &&
+    checks.vapidSubject &&
+    checks.viteVapid;
   const missing = Object.entries(checks)
     .filter(([, ok]) => !ok)
     .map(([k]) => k);

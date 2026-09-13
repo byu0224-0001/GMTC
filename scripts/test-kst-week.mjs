@@ -61,6 +61,27 @@ const sundayNight = new Date("2026-09-06T14:00:00Z");
 check("일요일 밤도 일요일", kstDateKey(sundayNight) === "2026-09-06", kstDateKey(sundayNight));
 check("일요일의 주 시작은 그 전 월요일", startOfKstWeek(sundayNight) === "2026-08-31");
 
+function daysBetweenKeys(from, to) {
+  const a = Date.parse(`${from}T00:00:00Z`);
+  const b = Date.parse(`${to}T00:00:00Z`);
+  if (Number.isNaN(a) || Number.isNaN(b)) return null;
+  return Math.max(0, Math.round((b - a) / 86_400_000));
+}
+
+function liveStreakDays(lastStudyDate, stored, now) {
+  if (!lastStudyDate || stored <= 0) return 0;
+  const gap = daysBetweenKeys(lastStudyDate, kstDateKey(now));
+  if (gap === null || gap > 1) return 0;
+  return stored;
+}
+
+/** 2026-09-13 일 10:08 KST. 수요일에 4일이던 연속이 쉬는 날에도 4로 남으면 안 된다. */
+const sundayMorning = new Date("2026-09-13T01:08:00Z");
+check("수요일 학습 후 일요일 연속은 0", liveStreakDays("2026-09-09", 4, sundayMorning) === 0);
+check("어제 학습이면 연속은 유지", liveStreakDays("2026-09-12", 4, sundayMorning) === 4);
+check("오늘 학습이면 연속은 유지", liveStreakDays("2026-09-13", 4, sundayMorning) === 4);
+check("표시 연속은 저장값이 아니라 지금 계산", src.includes("export function liveStreakDays") && src.includes("이틀 이상 비었으면 0"));
+
 const failed = checks.filter((c) => c.결과 === "실패");
 console.log(JSON.stringify({ ok: failed.length === 0, checks }, null, 2));
 if (failed.length) process.exit(1);

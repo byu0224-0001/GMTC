@@ -25,6 +25,16 @@ export function pushSupported(): boolean {
   );
 }
 
+/** 알림을 켤 수 없는 이유. 지원되면 null. */
+export function pushUnavailableReason(): "no_key" | "no_api" | null {
+  if (typeof window === "undefined") return "no_api";
+  const api =
+    "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+  if (!api) return "no_api";
+  if (!VAPID_PUBLIC_KEY) return "no_key";
+  return null;
+}
+
 /**
  * 지금 이 화면에서 구독이 가능한지.
  *
@@ -90,10 +100,15 @@ export function pushUiState(progress: ProgressState, subscribed?: boolean): Push
   return "permission_default";
 }
 
-/** 벨 아이콘을 그릴지. 지원 안 되면 없는 기능을 보여 주지 않는다. */
+/**
+ * 벨을 그릴지.
+ *
+ * 예전에는 지원되지 않으면 숨겼다. 그러면 키가 빠진 배포에서 설정 입구 자체가
+ * 사라져, 알림이 없는 이유를 사용자가 전혀 볼 수 없다. 학습을 시작한 뒤에는
+ * 항상 보여 주고, 켤 수 없으면 시트에서 이유를 말한다.
+ */
 export function showPushEntry(progress: ProgressState): boolean {
-  const ui = pushUiState(progress);
-  return ui !== "unsupported";
+  return Boolean(progress.onboardedAt || progress.lastStudyDate || progress.doneSessions);
 }
 
 function urlBase64ToUint8Array(base64: string): Uint8Array {

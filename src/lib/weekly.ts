@@ -25,20 +25,36 @@ export function weekDateKeys(now = new Date()): string[] {
  * `lastStudyDate`는 마지막 하루만 남는다. 주간 점을 그리려면 여러 날이 필요하다.
  * 저장된 `studyDates`를 우선하고, 예전 기록은 맞힌 날·읽기·추가 세션에서 복원한다.
  */
+const DATE_KEY = /^\d{4}-\d{2}-\d{2}$/;
+
+function asDateKey(value: string | null | undefined): string | null {
+  if (!value) return null;
+  if (DATE_KEY.test(value)) return value;
+  const t = Date.parse(value);
+  if (Number.isNaN(t)) return null;
+  return kstDateKey(new Date(t));
+}
+
+function addStudyDay(dates: Set<string>, value: string | null | undefined): void {
+  const key = asDateKey(value);
+  if (key) dates.add(key);
+}
+
 export function studyDateSet(state: ProgressState): Set<string> {
-  const dates = new Set<string>(state.studyDates ?? []);
-  if (state.lastStudyDate) dates.add(state.lastStudyDate);
-  if (state.defaultDoneDate) dates.add(state.defaultDoneDate);
-  for (const key of Object.keys(state.extraSessions ?? {})) dates.add(key);
+  const dates = new Set<string>();
+  for (const day of state.studyDates ?? []) addStudyDay(dates, day);
+  addStudyDay(dates, state.lastStudyDate);
+  addStudyDay(dates, state.defaultDoneDate);
+  for (const key of Object.keys(state.extraSessions ?? {})) addStudyDay(dates, key);
   for (const card of Object.values(state.cards)) {
-    for (const day of card.successDates) dates.add(day);
-    if (card.familiarAt) dates.add(card.familiarAt);
+    for (const day of card.successDates) addStudyDay(dates, day);
+    addStudyDay(dates, card.familiarAt);
   }
   for (const attempt of state.briefingAttempts ?? []) {
-    if (attempt.completedAt) dates.add(kstDateKey(new Date(attempt.completedAt)));
+    if (attempt.completedAt) addStudyDay(dates, kstDateKey(new Date(attempt.completedAt)));
   }
   for (const stat of Object.values(state.contextStats)) {
-    if (stat.lastAt) dates.add(kstDateKey(new Date(stat.lastAt)));
+    if (stat.lastAt) addStudyDay(dates, kstDateKey(new Date(stat.lastAt)));
   }
   return dates;
 }

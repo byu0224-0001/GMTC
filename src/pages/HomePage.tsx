@@ -48,7 +48,7 @@ export function HomePage({
     : nudgeFor({
         daysSinceStudy: daysSinceStudy(progress),
         doneToday: false,
-        streakDays: progress.streakDays,
+        streakDays: s.streakDays,
         seed: kstDateKey(),
       });
   const map = mapForBriefing(reading.today.id);
@@ -85,7 +85,7 @@ export function HomePage({
           <div className="topbar-end">
             {showPushEntry(progress) ? <PushBell tick={Number(pushOpen)} onOpen={() => setPushOpen(true)} /> : null}
             <Link to="/report" className="streak">
-              {s.streakDays}일 연속
+              {s.streakDays > 0 ? `${s.streakDays}일 연속` : "기록"}
             </Link>
           </div>
         }
@@ -174,6 +174,8 @@ export function HomePage({
           </Link>
         )}
 
+        {offerPush ? <PushPrompt onClose={() => setHideHomePush(true)} /> : null}
+
         {reading.todayCompleted ? (
           reading.next ? (
           <Link
@@ -218,9 +220,7 @@ export function HomePage({
           </Link>
         )}
 
-        {offerPush ? (
-          <PushPrompt onClose={() => setHideHomePush(true)} />
-        ) : shouldShowInstallNudge(progress.doneSessions) ? (
+        {offerPush ? null : shouldShowInstallNudge(progress.doneSessions) ? (
           <InstallNudge />
         ) : null}
 
