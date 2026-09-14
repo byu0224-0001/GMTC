@@ -5,7 +5,9 @@ import { ReadingAsk, askKindFromDepth } from "../components/ReadingAsk";
 import { TermPeek, type PeekQuery } from "../components/TermPeek";
 import { resolveTermPreview } from "../lib/termPreview";
 import { briefingById } from "../content/briefings";
-import { READING_DISCLAIMER, READING_EXAMPLE_LABEL, READING_KIND_LONG } from "../content/brand";
+import { BRIEFING_FIGURES } from "../content/briefingFigures";
+import { CompareBars, FlowDiagram, MetricCard } from "../components/ReadingFigures";
+import { READING_DISCLAIMER } from "../content/brand";
 import { mapForBriefing } from "../content/learningMaps";
 import { logEvent } from "../lib/events";
 import { chipClass } from "../lib/chipTone";
@@ -104,6 +106,7 @@ export function BriefingReader({
   const answered = interactive.filter((x) => picked[x.i]).length;
   const allDone =
     primaries.length === 0 || primaries.every((x) => resolved(x.i, picked, skipped));
+  const answeredAny = interactive.some((x) => picked[x.i]);
   const relatedMap = mapForBriefing(briefing.id);
 
   function openPeek(label: string, context: PeekQuery["context"] = "in_article", id?: string) {
@@ -218,50 +221,63 @@ export function BriefingReader({
   }
 
   return (
-    <div className="page stack briefing editorial">
-      <div>
-        <div className="eyebrow">{READING_KIND_LONG}</div>
-        <span className="caption">
-          {READING_EXAMPLE_LABEL} · {briefing.kicker}
-          {briefing.asOf ? ` · ${briefing.asOf}` : ""}
-          {` · ${briefing.minutes}분`}
-        </span>
+    <div className="page stack briefing editorial article">
+      <div className="article-kicker">
+        <span>학습용 기사</span>
+        <span>{briefing.kicker}</span>
+        <span>약 {briefing.minutes}분</span>
       </div>
       <h2 className="read-headline">{briefing.headline}</h2>
-      {briefing.subtitle ? <p className="muted" style={{ margin: 0 }}>{briefing.subtitle}</p> : null}
-      {briefing.sourceMode === "synthetic" ? (
-        <p className="caption" style={{ margin: 0 }}>{READING_DISCLAIMER}</p>
-      ) : null}
+      {briefing.subtitle ? <p className="read-deck">{briefing.subtitle}</p> : null}
 
       {briefing.blocks.map((block, i) => {
         if (!blockVisible(briefing.blocks, i, picked, skipped)) return null;
         const primary = isQuestion(block) && isPrimaryQuestion(block, briefing.blocks);
         const pIndex = primaries.findIndex((x) => x.i === i);
+        const lead = block.type === "p" && briefing.blocks.findIndex((b) => b.type === "p") === i;
+        const figures = lead ? (BRIEFING_FIGURES[briefing.id] ?? []) : [];
+        const shownFigures = figures.filter(
+          (fig) => !("revealAfterAnswer" in fig && fig.revealAfterAnswer) || answeredAny,
+        );
         return (
-          <BriefingBlockView
-            key={i}
-            block={block}
-            terms={terms}
-            picked={picked[i] ?? null}
-            skipped={skipped.includes(i)}
-            optional={isQuestion(block) && !primary}
-            optionalOpen={Boolean(optionalOpen[i])}
-            onOpenOptional={() => setOptionalOpen((o) => ({ ...o, [i]: true }))}
-            onPick={(id) => gradeBlock(i, id)}
-            onSkip={() => skipBlock(i)}
-            onPeek={(label, id) =>
-              openPeek(label, block.type === "causal" ? "flow" : "in_article", id)
-            }
-            askStep={pIndex >= 0 ? pIndex + 1 : 1}
-            askTotal={pIndex >= 0 ? primaries.length : 1}
-            followIds={
-              block.type === "choice" && block.depth === "next" && picked[i]
-                ? briefing.supportTermIds
-                : undefined
-            }
-          />
+          <div key={i}>
+            <BriefingBlockView
+              block={block}
+              terms={terms}
+              lead={lead}
+              picked={picked[i] ?? null}
+              skipped={skipped.includes(i)}
+              optional={isQuestion(block) && !primary}
+              optionalOpen={Boolean(optionalOpen[i])}
+              onOpenOptional={() => setOptionalOpen((o) => ({ ...o, [i]: true }))}
+              onPick={(id) => gradeBlock(i, id)}
+              onSkip={() => skipBlock(i)}
+              onPeek={(label, id) =>
+                openPeek(label, block.type === "causal" || block.type === "flow" ? "flow" : "in_article", id)
+              }
+              askStep={pIndex >= 0 ? pIndex + 1 : 1}
+              askTotal={pIndex >= 0 ? primaries.length : 1}
+              followIds={
+                block.type === "choice" && block.depth === "next" && picked[i]
+                  ? briefing.supportTermIds
+                  : undefined
+              }
+            />
+            {shownFigures.map((fig, fi) => (
+              <BriefingBlockView
+                key={`fig-${fi}`}
+                block={fig}
+                terms={terms}
+                onPeek={(label, id) => openPeek(label, "flow", id)}
+              />
+            ))}
+          </div>
         );
       })}
+
+      {allDone ? (
+        <p className="caption article-source">{READING_DISCLAIMER}</p>
+      ) : null}
 
       {allDone && relatedMap ? (
         <Link
@@ -315,6 +331,7 @@ function ConceptChips({
 function BriefingBlockView({
   block,
   terms,
+  lead = false,
   picked = null,
   skipped = false,
   optional = false,
@@ -329,6 +346,7 @@ function BriefingBlockView({
 }: {
   block: BriefingBlock;
   terms: Term[];
+  lead?: boolean;
   picked?: string | null;
   skipped?: boolean;
   optional?: boolean;
@@ -343,11 +361,23 @@ function BriefingBlockView({
 }) {
   const [revive, setRevive] = useState(false);
   if (block.type === "p") {
-    return <p className="briefing-p">{block.text}</p>;
+    return <p className={lead ? "briefing-p lead" : "briefing-p"}>{block.text}</p>;
+  }
+  if (block.type === "h") {
+    return <h3 className="read-sub">{block.text}</h3>;
+  }
+  if (block.type === "metric") {
+    return <MetricCard items={block.items} note={block.note} />;
+  }
+  if (block.type === "compare") {
+    return <CompareBars rows={block.rows} note={block.note} />;
+  }
+  if (block.type === "flow") {
+    return <FlowDiagram steps={block.steps} note={block.note} />;
   }
   if (block.type === "causal") {
     return (
-      <div className="card insight">
+      <div className="read-insight">
         <div className="caption">{block.title}</div>
         <ConceptFlowView steps={block.chain} terms={terms} onPeek={onPeek} />
         {block.extra ? <p className="muted" style={{ margin: "10px 0 0" }}>{block.extra}</p> : null}

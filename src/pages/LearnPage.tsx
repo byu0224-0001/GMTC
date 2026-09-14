@@ -48,17 +48,10 @@ export function LearnPage({
     lockTodayLesson(todayPlan ?? fallbackPlan(), loadProgress()),
   );
 
-  const queue = useMemo<SessionStep[]>(
-    () =>
-      source === "extra"
-        ? extraQueue(terms, loadProgress())
-        : todayQueue(terms, loadProgress(), plan),
-    [terms, source, plan],
-  );
   const resumeKey = source === "extra" ? "learn-extra" : "learn-session";
-  const queueSig = queue.map((s) => `${s.kind}:${s.term.id}`).join("|");
   const boot = loadUiResume<{
-    sig: string;
+    sig?: string;
+    steps?: { kind: SessionStep["kind"]; termId: string }[];
     i: number;
     picked: string | null;
     lastDue: string | null;
@@ -66,7 +59,21 @@ export function LearnPage({
     viewedNew: string[];
     graded: string[];
   }>(resumeKey);
-  const resume = boot?.sig === queueSig ? boot : null;
+  const [queue] = useState<SessionStep[]>(() => {
+    const fresh =
+      source === "extra"
+        ? extraQueue(terms, loadProgress())
+        : todayQueue(terms, loadProgress(), plan);
+    if (!boot?.steps?.length) return fresh;
+    const restored: SessionStep[] = [];
+    for (const snap of boot.steps) {
+      const term = terms.find((t) => t.id === snap.termId);
+      if (term) restored.push({ kind: snap.kind, term });
+    }
+    return restored.length ? restored : fresh;
+  });
+  const queueSig = queue.map((s) => `${s.kind}:${s.term.id}`).join("|");
+  const resume = boot;
 
   const [i, setI] = useState(resume?.i ?? 0);
   const [picked, setPicked] = useState<string | null>(resume?.picked ?? null);
@@ -95,6 +102,7 @@ export function LearnPage({
     }
     saveUiResume(resumeKey, {
       sig: queueSig,
+      steps: queue.map((s) => ({ kind: s.kind, termId: s.term.id })),
       i,
       picked,
       lastDue,
@@ -102,7 +110,7 @@ export function LearnPage({
       viewedNew: [...viewedNew.current],
       graded: [...gradedKeys.current],
     });
-  }, [resumeKey, queueSig, i, picked, lastDue, familiarId, done]);
+  }, [resumeKey, queueSig, queue, i, picked, lastDue, familiarId, done]);
 
   /** 세션을 끝까지 본 것만 완료로 센다. 중간에 닫으면 홈은 여전히 미완료다. */
   useEffect(() => {

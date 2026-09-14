@@ -64,7 +64,7 @@ export function CurriculumPage({
   return (
     <>
       <TopBar title="학습" />
-      <div className="page stack">
+      <div className="page page-learn stack">
         <div className="card pad-lg">
           <div className="caption">{done ? "조금 더 익혀볼까요?" : "이어서 학습하기"}</div>
           {done ? (

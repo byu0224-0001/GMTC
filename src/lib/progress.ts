@@ -37,10 +37,6 @@ function empty(): ProgressState {
  */
 function backfillSuccessLog(card: SrsCard): SrsCard {
   if (Array.isArray(card.successDates) && Array.isArray(card.successForms)) {
-    if (isFamiliar(card) && !card.familiarAt) {
-      const last = card.successDates[card.successDates.length - 1];
-      return { ...card, familiarAt: last };
-    }
     return card;
   }
   const last = card.updatedAt ? kstDateKey(new Date(card.updatedAt)) : kstDateKey();
@@ -61,7 +57,7 @@ function backfillSuccessLog(card: SrsCard): SrsCard {
         : card.repetitions >= 1
           ? ["recognition"]
           : [],
-    familiarAt: card.familiarAt ?? (earned ? last : undefined),
+    familiarAt: card.familiarAt,
   };
 }
 
@@ -113,7 +109,7 @@ export function loadProgress(): ProgressState {
         next.lastStudyDate,
         next.defaultDoneDate,
         ...Object.keys(next.extraSessions),
-      ].filter((d): d is string => Boolean(d)))].sort().slice(-21);
+      ].filter((d): d is string => Boolean(d)))].sort().slice(-90);
     }
     if (!parsed.celebratedFamiliarIds) {
       next.celebratedFamiliarIds = Object.values(migrated)
@@ -155,7 +151,7 @@ export function storageWritable(): boolean {
 function rememberStudyDay(state: ProgressState, today: string): string[] {
   const prev = state.studyDates ?? [];
   if (prev.includes(today)) return prev;
-  return [...prev, today].slice(-21);
+  return [...prev, today].slice(-90);
 }
 
 function bumpStreak(state: ProgressState, now: Date): Pick<ProgressState, "streakDays" | "lastStudyDate" | "studyDates"> {
@@ -186,7 +182,6 @@ export function applyGrade(
   const next = grade(prev, label, now, form);
   return {
     ...state,
-    ...bumpStreak(state, now),
     cards: { ...state.cards, [termId]: next },
   };
 }
@@ -219,6 +214,18 @@ export function markPushLater(state: ProgressState, now = new Date()): ProgressS
 
 export function setPushDisabled(state: ProgressState, disabled: boolean): ProgressState {
   return { ...state, pushDisabled: disabled };
+}
+
+/**
+ * 권장 세션이나 추가 세션을 끝까지 마친 날.
+ * 문항 하나만 풀고 나온 날은 연속·주간 점에 넣지 않는다.
+ */
+export function lastCompletedStudyDate(state: ProgressState): string | null {
+  const days = [state.defaultDoneDate, ...Object.keys(state.extraSessions ?? {})].filter(
+    (d): d is string => Boolean(d),
+  );
+  if (!days.length) return null;
+  return days.sort()[days.length - 1];
 }
 
 export function defaultDoneToday(state: ProgressState, now = new Date()): boolean {
@@ -259,7 +266,6 @@ export function recordContext(
     : [...state.seenContextIds, caseId];
   return {
     ...state,
-    ...bumpStreak(state, now),
     seenContextIds,
     contextStats: {
       ...state.contextStats,
@@ -284,7 +290,7 @@ export function recordBriefingAttempt(
       : state.seenContextIds;
   return {
     ...state,
-    ...bumpStreak(state, now),
+    ...(attempt.completedAt ? bumpStreak(state, now) : {}),
     seenContextIds,
     lastBriefingDate: attempt.completedAt ? kstDateKey(now) : state.lastBriefingDate,
     briefingAttempts: attempts,
@@ -324,7 +330,7 @@ export function stats(state: ProgressState, coreIds: string[], now = new Date())
     due,
     coreTotal: coreIds.length,
     masteryPct: coreIds.length ? Math.round((known / coreIds.length) * 100) : 0,
-    streakDays: liveStreakDays(state.lastStudyDate, state.streakDays, now),
+    streakDays: liveStreakDays(lastCompletedStudyDate(state), state.streakDays, now),
     contextAcc: ctxSeen ? Math.round((ctxOk / ctxSeen) * 100) : 0,
     contextSeen: ctxSeen,
   };

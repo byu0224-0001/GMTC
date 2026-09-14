@@ -12,7 +12,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     kicker: "물가·금리",
     minutes: 4,
     headline: "예상 웃돈 물가에 장기금리 상승…금리 인하 기대는 뒤로",
-    subtitle: "물가 상승세가 예상보다 오래 이어질 수 있다는 해석이 나오면서 채권시장이 먼저 반응했어요.",
+    subtitle: "물가 상승세가 예상보다 오래 이어질 수 있다는 해석이 나오면서 채권시장이 먼저 반응했습니다.",
     primaryTermIds: ["소비자물가지수-cpi", "기준금리", "듀레이션"],
     supportTermIds: ["근원인플레이션율", "기대인플레이션"],
     sourceMode: "synthetic",
@@ -25,16 +25,16 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "소비자물가 상승률이 시장 예상보다 높게 나왔어요. 발표 직후 장기 국채금리는 오르고, 이미 발행된 채권 가격은 하락했어요.",
+        text: "소비자물가 상승률이 시장 예상보다 높게 나왔습니다. 발표 직후 장기 국채금리는 오르고, 이미 발행된 채권 가격은 하락했습니다.",
       },
       {
         type: "p",
-        text: "시장은 물가 압력이 예상보다 오래 이어지면 중앙은행이 기준금리를 빠르게 내리기 어려울 수 있다고 해석했어요.",
+        text: "시장은 물가 압력이 예상보다 오래 이어지면 중앙은행이 기준금리를 빠르게 내리기 어려울 수 있다고 해석했습니다.",
       },
       {
         type: "cloze",
         before: "물가 상승률이 예상보다 높게 나오면서 시장에서는 기준금리 인하 시점이 예상보다 ",
-        after: " 수 있다는 전망이 커졌어요.",
+        after: " 수 있다는 전망이 커졌습니다.",
         question: "물가가 예상보다 높게 나오면 기준금리 인하 시점은 어떻게 읽힐까요?",
         answerId: "late",
         choices: [
@@ -47,7 +47,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
       },
       {
         type: "p",
-        text: "다만 한 달의 소비자물가만으로 흐름을 단정하기는 어려워요. 식품·에너지처럼 변동이 큰 항목을 제외한 근원물가와 기대인플레이션도 함께 봐야 해요. 같은 폭으로 금리가 올라도 만기가 긴 채권일수록 가격이 더 크게 움직이는데, 이 차이를 듀레이션으로 설명해요.",
+        text: "다만 한 달의 소비자물가만으로 흐름을 단정하기는 어렵습니다. 식품·에너지처럼 변동이 큰 항목을 제외한 근원물가와 기대인플레이션도 함께 봐야 합니다. 같은 폭으로 금리가 올라도 만기가 긴 채권일수록 가격이 더 크게 움직이는데, 이 차이를 듀레이션으로 설명합니다.",
       },
       {
         type: "choice",
@@ -87,8 +87,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-earnings-down",
     kicker: "실적·주가",
     minutes: 3,
-    headline: "실적은 늘었는데 주가는 하락…시장은 기대와 비교했어요",
-    subtitle: "지난 분기 숫자는 확인된 사실이고, 주가는 앞으로의 기대를 먼저 반영할 수 있어요.",
+    headline: "실적은 늘었는데 주가는 하락…시장은 기대와 비교했습니다",
+    subtitle: "지난 분기 숫자는 확인된 사실이고, 주가는 앞으로의 기대를 먼저 반영할 수 있습니다.",
     primaryTermIds: ["주당순이익-eps", "주가수익비율-per", "rpt-consensus"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -100,15 +100,15 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "한 기업의 지난 분기 영업이익이 전년보다 18% 늘었어요. 그런데 시장 예상치는 그보다 높았고, 실적 발표 당일 주가는 하락했어요.",
+        text: "한 기업의 지난 분기 영업이익이 전년보다 18% 늘었습니다. 그런데 시장 예상치는 그보다 높았고, 실적 발표 당일 주가는 하락했습니다.",
       },
       {
         type: "p",
-        text: "시장은 주당순이익을 컨센서스와 먼저 비교했어요. 전년보다 좋아져도 기대에 못 미치면 실망 매물이 나올 수 있어요. 금리가 오르면 같은 이익에도 주가수익비율이 낮아질 수 있다는 해석도 붙었어요.",
+        text: "시장은 주당순이익을 컨센서스와 먼저 비교했습니다. 전년보다 좋아져도 기대에 못 미치면 실망 매물이 나올 수 있습니다. 금리가 오르면 같은 이익에도 주가수익비율이 낮아질 수 있다는 해석도 붙었습니다.",
       },
       {
         type: "p",
-        text: "다만 당일 주가 한 줄만으로 실적 숫자가 틀렸다고 볼 수는 없어요. 확인된 것은 지난 분기 실적이고, 내년 이익과 목표주가는 아직 전망이에요.",
+        text: "다만 당일 주가 한 줄만으로 실적 숫자가 틀렸다고 볼 수는 없습니다. 확인된 것은 지난 분기 실적이고, 내년 이익과 목표주가는 아직 전망입니다.",
       },
       {
         type: "choice",
@@ -148,8 +148,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-yoy-ytd",
     kicker: "숫자 읽기",
     minutes: 3,
-    headline: "한 달은 +45%, 올해 누적은 +18%…비교 기간이 달랐어요",
-    subtitle: "전년 동월 대비와 연초 누적은 같은 속도를 가리키지 않아요.",
+    headline: "한 달은 +45%, 올해 누적은 +18%…비교 기간이 달랐습니다",
+    subtitle: "전년 동월 대비와 연초 누적은 같은 속도를 가리키지 않습니다.",
     primaryTermIds: ["rpt-yoy", "rpt-ytd", "rpt-base"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -161,15 +161,15 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "한 기업의 월 수출액이 전년 같은 달보다 45% 늘었어요. 반면 1월부터 현재까지의 누적 수출액은 전년 같은 기간보다 18% 늘었어요.",
+        text: "한 기업의 월 수출액이 전년 같은 달보다 45% 늘었습니다. 반면 1월부터 현재까지의 누적 수출액은 전년 같은 기간보다 18% 늘었습니다.",
       },
       {
         type: "p",
-        text: "시장 일부는 한 달의 +45%만 보고 올해 내내 그 속도로 성장했다고 읽었어요. 그런데 전년 동월 대비와 연초 누적은 비교 기간이 달라요. 최근 한 달이 좋아도 앞선 달이 부진했다면 누적 증가율은 더 낮게 나와요.",
+        text: "시장 일부는 한 달의 +45%만 보고 올해 내내 그 속도로 성장했다고 읽었습니다. 그런데 전년 동월 대비와 연초 누적은 비교 기간이 다릅니다. 최근 한 달이 좋아도 앞선 달이 부진했다면 누적 증가율은 더 낮게 나옵니다.",
       },
       {
         type: "p",
-        text: "다만 비율만으로 단정하기는 어려워요. 절대 금액이 작은지, 작년 같은 기간이 유난히 나빴는지 같은 기저효과도 함께 봐야 해요.",
+        text: "다만 비율만으로 단정하기는 어렵습니다. 절대 금액이 작은지, 작년 같은 기간이 유난히 나빴는지 같은 기저효과도 함께 봐야 합니다.",
       },
       {
         type: "choice",
@@ -209,8 +209,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-fx-export",
     kicker: "환율·수출",
     minutes: 3,
-    headline: "원화 약세에 수출 환산액은 늘었지만, 수입 비용도 같이 커졌어요",
-    subtitle: "환율만으로 수출 기업 실적을 단정하기는 어려워요.",
+    headline: "원화 약세에 수출 환산액은 늘었지만, 수입 비용도 같이 커졌습니다",
+    subtitle: "환율만으로 수출 기업 실적을 단정하기는 어렵습니다.",
     primaryTermIds: ["평가절상", "경상수지"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -222,28 +222,28 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "원화가 약해지자 같은 달러 수출이 원화로 환산되며 더 커 보였어요. 동시에 수입 원자재 비용도 늘었다는 반응이 나왔어요.",
+        text: "원화가 약해지자 같은 달러 수출이 원화로 환산되며 더 커 보였습니다. 동시에 수입 원자재 비용도 늘었다는 반응이 나왔습니다.",
       },
       {
         type: "p",
-        text: "시장은 수출 단가 효과와 물량을 나눠 봤어요. 환율이 유리해 보여도 해외 수요가 줄면 수출 물량이 빠질 수 있어요. 반대로 원화가 강해지는 평가절상은 수출 가격 경쟁력에는 부담이 되고 수입 물가 부담은 줄어들 수 있어요.",
+        text: "시장은 환산액이 늘었다고 실적이 좋아진 것은 아니라고 봤습니다. 해외 수요가 줄면 수출 물량이 빠질 수 있고, 수입 원자재 비용이 커지면 마진이 깎일 수 있습니다.",
       },
       {
         type: "p",
-        text: "다만 환율 숫자 하나만으로 실적을 확정할 수는 없어요. 수출 물량과 수입 비용, 경상수지가 실제로 어떻게 움직였는지를 함께 확인해야 해요.",
+        text: "다만 환율 숫자 하나만으로 실적을 확정할 수는 없습니다. 수출 물량과 수입 비용, 경상수지가 실제로 어떻게 움직였는지를 함께 확인해야 합니다. 이번은 원화가 약해진 국면이라, 원화가 강해지는 평가절상 때와는 반대 방향으로 읽힙니다.",
       },
       {
         type: "choice",
-        depth: "term",
-        question: "자국 통화의 가치가 다른 통화보다 높아지는 것을 무엇이라고 할까요?",
-        answerId: "평가절상",
+        depth: "cause",
+        question: "원화 약세에 수출 환산액이 늘었는데도 실적을 단정하기 어려운 이유는 무엇일까요?",
+        answerId: "cost",
         choices: [
-          { id: "평가절상", label: "평가절상" },
-          { id: "기준금리", label: "기준금리" },
-          { id: "경상수지", label: "경상수지" },
-          { id: "외환보유액", label: "외환보유액" },
+          { id: "cost", label: "수입 비용이 같이 늘고, 수출 물량은 따로 움직일 수 있기 때문" },
+          { id: "always", label: "원화가 약해지면 수출 기업 실적은 항상 좋아지기 때문" },
+          { id: "fxonly", label: "환율 숫자 하나면 마진이 확정되기 때문" },
+          { id: "ignore", label: "수입 원자재 비용은 환율과 무관하기 때문" },
         ],
-        note: "평가절상은 자국 통화의 가치가 다른 통화보다 높아지는 것이에요. 수출 가격 경쟁력에는 부담이 되고, 수입 물가 부담은 줄어들 수 있어요.",
+        note: "원화 약세는 달러 수출을 원화로 더 크게 보이게 할 수 있어요. 동시에 수입 비용도 커지고, 해외 수요가 줄면 물량이 빠질 수 있어요.",
       },
       {
         type: "choice",
@@ -270,8 +270,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-jobs",
     kicker: "고용·금리",
     minutes: 3,
-    headline: "실업률 오르자 금리 인하 기대가 커졌어요",
-    subtitle: "일자리가 약해지면 성장과 물가 압력도 낮아질 수 있다는 해석이 나왔어요.",
+    headline: "실업률 오르자 금리 인하 기대가 커졌습니다",
+    subtitle: "일자리가 약해지면 성장과 물가 압력도 낮아질 수 있다는 해석이 나왔습니다.",
     primaryTermIds: ["실업률", "고용률", "기준금리"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -283,12 +283,12 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "실업률이 오르자 고용 여건이 약해지고 있다는 신호가 먼저 읽혔어요.",
+        text: "실업률이 3.8%에서 4.2%로 올랐습니다. 발표 직후 국채 금리는 내렸고, 연내 기준금리 인하를 점치는 시각이 늘었습니다.",
       },
       {
         type: "cloze",
         before: "발표 뒤 시장에서는 기준금리 인하 시점이 예상보다 ",
-        after: " 수 있다는 전망이 커졌어요.",
+        after: " 수 있다는 전망이 커졌습니다.",
         question: "실업률이 오르면 기준금리 인하 시점은 어떻게 읽힐까요?",
         answerId: "early",
         choices: [
@@ -301,11 +301,11 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
       },
       {
         type: "p",
-        text: "시장은 경기와 물가 압력이 함께 낮아질 수 있다고 해석했어요. 다만 실업률은 구직을 포기한 사람을 빼기 때문에, 일자리 사정은 고용률을 같이 봐야 더 잘 보여요.",
+        text: "시장은 경기와 물가 압력이 함께 낮아질 수 있다고 해석했습니다. 다만 실업률은 구직을 포기한 사람을 빼기 때문에, 일자리 사정은 고용률을 같이 봐야 더 잘 보입니다.",
       },
       {
         type: "p",
-        text: "고용이 약해도 임금과 물가가 단단하면 중앙은행은 쉽게 금리를 내리지 않을 수 있어요. 한 달의 실업률만으로 금리 경로를 단정하기는 어려워요.",
+        text: "고용이 약해도 임금과 물가가 단단하면 중앙은행은 쉽게 금리를 내리지 않을 수 있습니다. 한 달의 실업률만으로 금리 경로를 단정하기는 어렵습니다.",
       },
       {
         type: "choice",
@@ -345,8 +345,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-capex",
     kicker: "투자·생산",
     minutes: 4,
-    headline: "설비투자는 늘었는데 이익은 당장 안 늘었어요",
-    subtitle: "공장과 장비에 돈이 먼저 나가고, 생산과 수요는 그다음에 따라와요.",
+    headline: "설비투자는 늘었는데 이익은 당장 안 늘었습니다",
+    subtitle: "공장과 장비에 돈이 먼저 나가고, 생산과 수요는 그다음에 따라옵니다.",
     primaryTermIds: ["자본적지출", "rpt-capa", "rpt-util"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -358,15 +358,41 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "한 기업이 공장과 장비에 대한 자본적지출을 늘렸다는 소식이 나왔어요. 현금은 먼저 나갔는데, 같은 분기 이익은 바로 늘지 않았어요.",
+        text: "한 기업이 공장과 장비를 늘리겠다고 발표했습니다. 현금은 같은 분기에 먼저 나갔는데, 영업이익은 바로 늘지 않았습니다.",
       },
       {
         type: "p",
-        text: "장비 업체 쪽에서는 일감이 늘어날 것이라는 기대가 나왔어요. 다만 투자가 낡은 설비를 바꾸는 것인지, 생산능력을 늘리는 것인지에 따라 결과가 달라요. 설비가 늘어도 가동률이 낮으면 감가상각만 커질 수 있어요.",
+        text: "장비 업체 쪽에서는 일감이 늘어날 것이라는 기대가 나왔습니다. 다만 낡은 설비를 바꾸는 투자인지, 생산 규모를 키우는 투자인지에 따라 이후 실적이 갈릴 수 있다는 해석이 붙었습니다.",
       },
       {
         type: "p",
-        text: "다만 투자 한 줄만으로 실적이 좋아진다고 단정할 수는 없어요. 생산능력이 실제로 늘었는지, 그 능력을 얼마나 돌리고 있는지를 함께 봐야 해요.",
+        text: "투자가 실제 생산으로 이어지려면 설비가 얼마나 늘었는지, 그 설비를 얼마나 돌리는지를 같이 봐야 합니다. 설비만 늘고 가동이 낮으면 감가상각만 커질 수 있습니다.",
+      },
+      {
+        type: "choice",
+        depth: "cause",
+        question: "설비투자가 늘었는데 같은 분기 이익이 바로 안 늘어난 이유로 가장 가까운 것은 무엇일까요?",
+        answerId: "lag",
+        choices: [
+          { id: "lag", label: "현금이 먼저 나가고, 생산과 수요는 그다음에 따라오기 때문" },
+          { id: "now", label: "투자를 늘리면 같은 분기 이익이 반드시 같이 늘어나기 때문" },
+          { id: "eps", label: "주당순이익이 설비투자와 같은 숫자이기 때문" },
+          { id: "sales", label: "소매판매가 늘면 설비투자는 바로 이익이 되기 때문" },
+        ],
+        note: "공장·장비에 쓴 돈은 현금이 먼저 나가요. 생산능력이 늘고 실제로 돌아가 매출이 되기까지는 시차가 있어요.",
+      },
+      {
+        type: "choice",
+        depth: "next",
+        question: "이 투자가 실적으로 이어지는지 보려면 다음에 무엇을 보는 게 좋을까요?",
+        answerId: "util",
+        choices: [
+          { id: "util", label: "생산능력이 늘었는지, 가동률이 따라왔는지" },
+          { id: "word", label: "투자 발표 문장만 보면 이익이 확정된다" },
+          { id: "always", label: "자본적지출이 늘면 가동률은 보지 않아도 된다" },
+          { id: "ignore", label: "설비가 늘어도 감가상각은 실적과 무관하다" },
+        ],
+        note: "생산능력(CAPA)이 늘어도 가동률이 낮으면 실적으로 바로 이어지지 않을 수 있어요. 둘을 같이 봐요.",
       },
       {
         type: "choice",
@@ -379,33 +405,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
           { id: "rpt-capa", label: "생산능력 (CAPA)" },
           { id: "rpt-util", label: "가동률" },
         ],
-        note: "자본적지출(CAPEX)은 공장·서버·장비처럼 장기간 사용하는 자산에 쓰는 투자 지출이에요.",
-      },
-      {
-        type: "choice",
-        depth: "term",
-        question: "설비투자로 생산할 수 있는 양이 얼마나 늘었는지 확인할 때 보는 개념은 무엇일까요?",
-        answerId: "rpt-capa",
-        choices: [
-          { id: "rpt-capa", label: "생산능력 (CAPA)" },
-          { id: "자본적지출", label: "자본적지출 (CAPEX)" },
-          { id: "rpt-util", label: "가동률" },
-          { id: "주당순이익-eps", label: "주당순이익 (EPS)" },
-        ],
-        note: "생산능력(CAPA)은 설비가 최대로 만들 수 있는 양이에요. 투자가 늘어도 생산능력이 바로 늘지는 않을 수 있어요.",
-      },
-      {
-        type: "choice",
-        depth: "term",
-        question: "늘어난 생산능력이 실제 생산으로 이어지고 있는지 확인할 때 보는 지표는 무엇일까요?",
-        answerId: "rpt-util",
-        choices: [
-          { id: "rpt-util", label: "가동률" },
-          { id: "rpt-capa", label: "생산능력 (CAPA)" },
-          { id: "자본적지출", label: "자본적지출 (CAPEX)" },
-          { id: "소매판매", label: "소매판매" },
-        ],
-        note: "가동률은 가진 생산능력 가운데 실제로 얼마나 돌리고 있는지의 비율이에요. 설비가 늘어도 가동률이 낮으면 실적으로 바로 이어지지 않을 수 있어요.",
+        note: "자본적지출(CAPEX)은 장기간 쓰는 자산에 대한 투자 지출이에요. 발표만 보고 같은 분기 이익이 늘어났다고 읽지는 않아요.",
       },
       {
         type: "causal",
@@ -419,8 +419,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-gdp-retail",
     kicker: "경기",
     minutes: 3,
-    headline: "성장률은 올랐는데 체감경기는 달랐어요",
-    subtitle: "국내총생산이 수출과 투자로 늘면, 가계가 느끼는 속도와 어긋날 수 있어요.",
+    headline: "성장률은 올랐는데 체감경기는 달랐습니다",
+    subtitle: "국내총생산이 수출과 투자로 늘면, 가계가 느끼는 속도와 어긋날 수 있습니다.",
     primaryTermIds: ["국내총생산-gdp", "소매판매", "경기"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -432,41 +432,41 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "국내총생산 성장률이 전분기보다 높아졌다는 발표가 나왔어요. 그런데 같은 기간 소매판매는 크게 늘지 않았고, 체감경기 이야기와는 온도가 달랐어요.",
+        text: "국내총생산 성장률이 전분기보다 높아졌다는 발표가 나왔습니다. 그런데 같은 기간 소매판매는 크게 늘지 않았고, 체감경기 이야기와는 온도가 달랐습니다.",
       },
       {
         type: "p",
-        text: "수출이나 투자가 성장을 이끌면 생산 지표는 괜찮은데 가계 소비는 약할 수 있어요. 성장률 한 줄만 보면 그 구성이 가려져요.",
+        text: "수출이나 투자가 성장을 이끌면 생산 지표는 괜찮은데 가계 소비는 약할 수 있습니다. 성장률 한 줄만 보면 그 구성이 가려집니다.",
       },
       {
         type: "p",
-        text: "다만 체감이 나쁘다고 성장률 숫자가 틀린 것은 아니에요. 소비·투자·수출이 성장에 얼마나 기여했는지를 나눠 봐야 해요.",
+        text: "다만 체감이 나쁘다고 성장률 숫자가 틀린 것은 아닙니다. 소비·투자·수출이 성장에 얼마나 기여했는지를 나눠 봐야 합니다.",
       },
       {
         type: "choice",
-        depth: "term",
-        question: "한 나라 안에서 일정 기간 생산된 재화와 서비스의 가치를 합한 지표는 무엇일까요?",
-        answerId: "국내총생산-gdp",
-        choices: [
-          { id: "국내총생산-gdp", label: "국내총생산 (GDP)" },
-          { id: "국민총소득-gni", label: "국민총소득 (GNI)" },
-          { id: "경상수지", label: "경상수지" },
-          { id: "외환보유액", label: "외환보유액" },
-        ],
-        note: "GDP는 국내에서 생산된 재화와 서비스의 가치를 합한 지표예요. GNI는 그 나라 국민이 국내외에서 벌어들인 소득의 합에 가까워요.",
-      },
-      {
-        type: "choice",
-        depth: "next",
-        question: "GDP가 늘어난 이유를 확인하려면 무엇을 나눠 봐야 할까요?",
+        depth: "cause",
+        question: "성장률은 올랐는데 체감경기가 달랐던 이유로 가장 가까운 것은 무엇일까요?",
         answerId: "mix",
         choices: [
-          { id: "mix", label: "소비·투자·수출 등이 성장에 얼마나 기여했는지" },
+          { id: "mix", label: "수출·투자가 성장을 이끌면 생산은 괜찮은데 가계 소비는 약할 수 있다" },
           { id: "one", label: "성장률 한 줄이면 구성은 볼 필요가 없다" },
           { id: "same", label: "GDP와 소매판매는 항상 같은 속도를 가리킨다" },
           { id: "feel", label: "체감이 나쁘면 성장률 숫자는 틀린 것이다" },
         ],
         note: "같은 성장률이라도 무엇이 성장을 이끌었는지에 따라 가계의 체감경기와 기업 실적은 다르게 나타날 수 있어요.",
+      },
+      {
+        type: "choice",
+        depth: "next",
+        question: "GDP가 늘어난 이유를 확인하려면 무엇을 나눠 봐야 할까요?",
+        answerId: "parts",
+        choices: [
+          { id: "parts", label: "소비·투자·수출 등이 성장에 얼마나 기여했는지" },
+          { id: "only", label: "성장률 숫자 하나면 충분하다" },
+          { id: "retail", label: "소매판매만 보면 GDP는 보지 않아도 된다" },
+          { id: "wrong", label: "체감이 다르면 발표 숫자는 폐기한다" },
+        ],
+        note: "성장의 구성을 나눠 봐야 가계가 느끼는 속도와 발표 성장률이 왜 어긋났는지 보여요.",
       },
       {
         type: "causal",
@@ -480,8 +480,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-shareholder",
     kicker: "주주환원",
     minutes: 3,
-    headline: "배당 확대 발표가 나왔지만, 주주환원은 아직 계획이었어요",
-    subtitle: "발표와 실제 집행, 이익과 현금흐름은 나눠서 봐야 해요.",
+    headline: "배당 확대 발표가 나왔지만, 주주환원은 아직 계획이었습니다",
+    subtitle: "발표와 실제 집행, 이익과 현금흐름은 나눠서 봐야 합니다.",
     primaryTermIds: ["주주환원정책", "주당순이익-eps", "rpt-guidance"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -493,28 +493,28 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "한 회사가 배당 확대와 자사주 매입 계획을 발표했어요. 발표 당일 주가는 올랐지만, 실제 집행 규모와 시기는 아직 나오지 않았어요.",
+        text: "한 회사가 배당 확대와 자사주 매입 계획을 발표했습니다. 발표 당일 주가는 올랐지만, 실제 집행 규모와 시기는 아직 나오지 않았습니다.",
       },
       {
         type: "p",
-        text: "발표 직후 시장은 환원 확대로 읽었어요. 하지만 아직 실제 배당이나 자사주 매입이 나간 것은 아니고, 회사가 앞으로 하겠다는 가이던스에 가까워요.",
+        text: "발표 직후 시장은 환원 확대로 읽었습니다. 하지만 아직 실제 배당이나 자사주 매입이 나간 것은 아니고, 회사가 앞으로 하겠다는 가이던스에 가깝습니다.",
       },
       {
         type: "p",
-        text: "지속 여부를 보려면 실제 배당·자사주 집행과 주당순이익, 현금흐름을 확인해야 해요. 이익이 줄어들면 같은 환원 규모를 오래 유지하기 어려울 수 있어요.",
+        text: "지속 여부를 보려면 실제 배당·자사주 집행과 주당순이익, 현금흐름을 확인해야 합니다. 이익이 줄어들면 같은 환원 규모를 오래 유지하기 어려울 수 있습니다.",
       },
       {
         type: "choice",
-        depth: "term",
-        question: "배당·자사주 매입 등으로 이익을 주주에게 돌리는 정책은 무엇일까요?",
-        answerId: "주주환원정책",
+        depth: "cause",
+        question: "배당 확대 발표 당일 주가가 올랐어도 환원은 아직 계획이었어요. 이 구분이 중요한 이유는 무엇일까요?",
+        answerId: "plan",
         choices: [
-          { id: "주주환원정책", label: "주주환원정책" },
-          { id: "유상증자", label: "유상증자" },
-          { id: "기업공개", label: "기업공개" },
-          { id: "rpt-guidance", label: "가이던스" },
+          { id: "plan", label: "발표와 실제 집행은 다르고, 이익·현금흐름이 받쳐 줘야 지속된다" },
+          { id: "word", label: "발표 문장만 보면 환원은 끝난 것이다" },
+          { id: "once", label: "환원 비율을 올리면 이익이 줄어도 지속된다" },
+          { id: "price", label: "발표 당일 주가가 오르면 환원은 끝난 것이다" },
         ],
-        note: "주주환원은 배당과 자사주 매입 등으로 이익을 주주에게 돌리는 정책이에요. 발표와 실제 집행은 구분해서 봐요.",
+        note: "계획이 발표돼도 실제 배당·자사주 집행과 이익·현금흐름을 확인해야 지속 여부를 판단할 수 있어요.",
       },
       {
         type: "choice",
@@ -530,6 +530,19 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
         note: "계획이 발표돼도 실제 배당·자사주 집행과 이익·현금흐름을 확인해야 지속 여부를 판단할 수 있어요.",
       },
       {
+        type: "choice",
+        depth: "term",
+        question: "배당·자사주 매입 등으로 이익을 주주에게 돌리는 정책은 무엇일까요?",
+        answerId: "주주환원정책",
+        choices: [
+          { id: "주주환원정책", label: "주주환원정책" },
+          { id: "유상증자", label: "유상증자" },
+          { id: "기업공개", label: "기업공개" },
+          { id: "rpt-guidance", label: "가이던스" },
+        ],
+        note: "주주환원은 배당과 자사주 매입 등으로 이익을 주주에게 돌리는 정책이에요. 발표와 실제 집행은 구분해서 봐요.",
+      },
+      {
         type: "causal",
         title: "한 번에 연결하면",
         chain: ["이익", "주주환원 계획", "실제 배당·자사주", "주가"],
@@ -541,8 +554,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-bond-rates",
     kicker: "국채·금리",
     minutes: 3,
-    headline: "국채금리가 오르자 기존 채권 가격이 내렸어요",
-    subtitle: "이미 발행된 채권의 이자는 고정돼 있어, 시장금리가 오르면 가격이 조정돼요.",
+    headline: "국채금리가 오르자 기존 채권 가격이 내렸습니다",
+    subtitle: "이미 발행된 채권의 이자는 고정돼 있어, 시장금리가 오르면 가격이 조정됩니다.",
     primaryTermIds: ["국채", "만기수익률", "신용스프레드"],
     supportTermIds: ["듀레이션"],
     sourceMode: "synthetic",
@@ -555,15 +568,41 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "국채금리가 오르자 이미 발행된 채권 가격이 하락했어요. 새 채권은 더 높은 이자를 줄 수 있는데, 기존 채권의 표면금리는 그대로이기 때문이에요.",
+        text: "물가 지표 발표 직후 국채 10년물 금리가 올랐습니다. 이미 보유하던 3년물 평가가격은 1% 안팎 내렸고, 10년물은 그보다 크게 하락했습니다.",
       },
       {
         type: "p",
-        text: "시장은 현재 가격으로 만기까지 보유할 때 기대하는 만기수익률로 그 조정을 읽었어요. 같은 폭으로 금리가 올라도 만기가 긴 채권의 가격이 더 크게 움직일 수 있어요.",
+        text: "시장에서는 금리 인하 기대가 한발 물러난 영향으로 해석했습니다. 같은 날 일부 회사채 금리는 국채보다 더 올랐다는 지적도 나왔습니다.",
       },
       {
         type: "p",
-        text: "국채금리는 거의 그대로인데 회사채금리만 올랐다면 신용스프레드가 벌어진 것이에요. 기업의 신용위험에 대해 더 높은 금리를 요구한다는 해석이 붙어요. 다만 환율만으로 그 차이를 단정할 수는 없어요.",
+        text: "만기가 긴 채권일수록 같은 금리 움직임에도 가격 낙폭이 컸습니다. 국채는 거의 그대로인데 회사채만 더 올랐다면, 기업 신용에 대해 시장이 요구하는 가산 폭이 벌어진 것으로 읽힙니다.",
+      },
+      {
+        type: "choice",
+        depth: "cause",
+        question: "같은 금리 상승인데 10년물 가격이 3년물보다 더 내린 이유로 가까운 것은 무엇일까요?",
+        answerId: "long",
+        choices: [
+          { id: "long", label: "만기가 길수록 금리 변화에 가격이 더 크게 반응하기 때문" },
+          { id: "same", label: "만기와 상관없이 모든 채권 가격은 같은 폭으로 움직이기 때문" },
+          { id: "fx", label: "환율만 보면 채권 가격 차이가 결정되기 때문" },
+          { id: "div", label: "배당을 늘리면 장기채 가격은 내리지 않기 때문" },
+        ],
+        note: "먼 미래에 받을 현금흐름은 금리 변화에 더 크게 반응해요. 그래서 만기가 긴 채권의 가격 낙폭이 더 커질 수 있어요.",
+      },
+      {
+        type: "choice",
+        depth: "next",
+        question: "국채와 회사채 금리가 다르게 움직이면 다음에 무엇을 보는 게 좋을까요?",
+        answerId: "spread",
+        choices: [
+          { id: "spread", label: "신용위험에 대해 요구되는 추가 금리가 커졌는지" },
+          { id: "same", label: "국채와 회사채 금리는 항상 같이 움직이므로 차이는 의미가 없다" },
+          { id: "div", label: "배당을 늘리면 회사채 스프레드는 반드시 줄어든다" },
+          { id: "fx", label: "환율만 보면 신용 스프레드는 결정된다" },
+        ],
+        note: "국채금리는 비교적 신용위험이 낮은 금리에 가깝고, 회사채에는 기업의 신용위험이 더해져요.",
       },
       {
         type: "choice",
@@ -579,19 +618,6 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
         note: "표면금리는 채권 발행 시 정해진 이자율이에요. 만기수익률은 현재 가격으로 매수해 만기까지 보유할 때 기대하는 수익률이에요.",
       },
       {
-        type: "choice",
-        depth: "cause",
-        question: "국채와 회사채 금리 차이가 벌어진다는 것은 무엇을 뜻할까요?",
-        answerId: "spread",
-        choices: [
-          { id: "spread", label: "신용위험에 대해 요구되는 추가 금리가 커진 것" },
-          { id: "same", label: "국채와 회사채 금리는 항상 같이 움직이므로 차이는 의미가 없다" },
-          { id: "div", label: "배당을 늘리면 회사채 스프레드는 반드시 줄어든다" },
-          { id: "fx", label: "환율만 보면 신용 스프레드는 결정된다" },
-        ],
-        note: "국채금리는 비교적 신용위험이 낮은 금리에 가깝고, 회사채에는 기업의 신용위험이 더해져요.",
-      },
-      {
         type: "causal",
         title: "한 번에 연결하면",
         chain: ["시장금리 상승", "만기수익률", "채권가격 하락", "신용스프레드"],
@@ -603,8 +629,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-supply-price",
     kicker: "공급·물가",
     minutes: 3,
-    headline: "공급이 줄자 생산자 가격이 먼저 올랐어요",
-    subtitle: "수요가 그대로여도 원자재와 부품이 막히면 물가 압력이 생길 수 있어요.",
+    headline: "공급이 줄자 생산자 가격이 먼저 올랐습니다",
+    subtitle: "수요가 그대로여도 원자재와 부품이 막히면 물가 압력이 생길 수 있습니다.",
     primaryTermIds: ["인플레이션", "생산자물가지수-ppi", "스태그플레이션"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -616,15 +642,41 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "원자재와 부품 공급이 줄자 생산자물가지수가 먼저 올랐어요. 수요가 크게 늘지 않았는데도 생산 단계 가격이 움직인 것이에요.",
+        text: "원자재와 부품 공급이 줄자 생산자물가지수가 먼저 올랐습니다. 수요가 크게 늘지 않았는데도 생산 단계 가격이 움직인 것입니다.",
       },
       {
         type: "p",
-        text: "이 비용이 소비자 가격에 전가되면 인플레이션 압력으로 이어질 수 있어요. 다만 전가되는 폭은 업종과 재고에 따라 달라요.",
+        text: "이 비용이 소비자 가격에 전가되면 인플레이션 압력으로 이어질 수 있습니다. 다만 전가되는 폭은 업종과 재고에 따라 다릅니다.",
       },
       {
         type: "p",
-        text: "성장은 약한데 물가만 오르는 구간도 있어요. 그때를 스태그플레이션으로 부르며, 금리만 내려서 해결된다고 보기 어려워요. 공급 제약이 남아 있는지를 함께 봐야 해요.",
+        text: "성장은 약한데 물가만 오르는 구간도 있습니다. 그때를 스태그플레이션으로 부르며, 금리만 내려서 해결된다고 보기 어렵습니다. 공급 제약이 남아 있는지를 함께 봐야 합니다.",
+      },
+      {
+        type: "choice",
+        depth: "cause",
+        question: "수요가 크게 늘지 않았는데 생산자 가격이 먼저 오른 이유로 가까운 것은 무엇일까요?",
+        answerId: "supply",
+        choices: [
+          { id: "supply", label: "원자재·부품 공급이 줄어 생산 단계 비용이 올랐기 때문" },
+          { id: "demand", label: "소비가 급증해 모든 가격이 같은 속도로 올랐기 때문" },
+          { id: "jobs", label: "실업률이 올라 생산자 가격이 따라 오르기 때문" },
+          { id: "fx", label: "환율만 보면 생산자 가격은 결정되기 때문" },
+        ],
+        note: "수요가 그대로여도 공급이 막히면 생산 단계 가격이 먼저 움직일 수 있어요. 소비자 가격에 얼마나 전가되는지는 별도로 봐요.",
+      },
+      {
+        type: "choice",
+        depth: "next",
+        question: "생산 단계 가격이 오른 뒤 물가 압력을 보려면 다음에 무엇을 보는 게 좋을까요?",
+        answerId: "pass",
+        choices: [
+          { id: "pass", label: "소비자 가격 전가 폭과 공급 제약이 남아 있는지" },
+          { id: "always", label: "성장이 약하면 물가는 반드시 내려간다" },
+          { id: "cpi-only", label: "생산자 가격은 볼 필요 없이 소비자물가 한 줄이면 충분하다" },
+          { id: "ignore", label: "공급 제약은 물가와 무관하다" },
+        ],
+        note: "수요가 줄어도 공급이 막혀 있으면 물가가 오를 수 있어요. 전가 폭과 제약이 남았는지를 같이 봐요.",
       },
       {
         type: "choice",
@@ -640,19 +692,6 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
         note: "생산자물가지수(PPI)는 생산자가 거래하는 상품과 서비스의 가격 변화를 보여줘요. 생산 단계의 가격 상승이 소비자 가격에 얼마나 전가되는지는 별도로 확인해야 해요.",
       },
       {
-        type: "choice",
-        depth: "next",
-        question: "경기 둔화와 물가 상승이 동시에 나타나는 상황을 무엇이라고 할까요?",
-        answerId: "stag",
-        choices: [
-          { id: "stag", label: "스태그플레이션" },
-          { id: "always", label: "성장이 약하면 물가는 반드시 내려간다" },
-          { id: "cpi-only", label: "PPI는 볼 필요 없이 CPI 한 줄이면 충분하다" },
-          { id: "ignore", label: "공급 제약은 물가와 무관하다" },
-        ],
-        note: "수요가 줄어도 공급이 막혀 있으면 물가가 오를 수 있어요. 성장과 물가를 한 방향으로만 묶지 않아요.",
-      },
-      {
         type: "causal",
         title: "한 번에 연결하면",
         chain: ["공급 제약", "생산자 가격", "소비자 물가", "성장"],
@@ -664,8 +703,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-credit-spread",
     kicker: "신용·금리",
     minutes: 3,
-    headline: "국채 금리는 내렸는데 회사채 금리는 더 올랐어요",
-    subtitle: "기준이 되는 금리와 기업이 실제로 빌리는 금리는 같이 움직이지 않을 수 있어요.",
+    headline: "국채 금리는 내렸는데 회사채 금리는 더 올랐습니다",
+    subtitle: "기준이 되는 금리와 기업이 실제로 빌리는 금리는 같이 움직이지 않을 수 있습니다.",
     primaryTermIds: ["신용스프레드", "회사채", "국채"],
     supportTermIds: ["신용위험"],
     sourceMode: "synthetic",
@@ -678,16 +717,16 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "국채 금리는 내렸는데, 같은 만기 회사채 금리는 오히려 올랐어요. 시장 일부는 금리가 내려 자금 조달이 쉬워졌다고 읽었어요.",
+        text: "국채 금리는 내렸는데, 같은 만기 회사채 금리는 오히려 올랐습니다. 시장 일부는 금리가 내려 자금 조달이 쉬워졌다고 읽었습니다.",
       },
       {
         type: "p",
-        text: "그런데 기업이 빌리는 금리는 국채 금리에 신용위험을 더한 값이에요. 국채는 내렸어도 그 가산 폭이 커지면 회사채 금리는 오를 수 있어요. 이 차이를 신용스프레드로 봐요.",
+        text: "일부에서는 기준이 되는 금리가 내려 조달이 쉬워졌다고 읽었습니다. 하지만 기업이 실제로 발행하는 금리는 올랐고, 등급이 낮은 회사채일수록 상승 폭이 컸습니다.",
       },
       {
         type: "cloze",
         before: "국채 금리는 내렸는데 회사채 금리가 올랐다면, 둘의 차이인 ",
-        after: "가 벌어진 것으로 읽혀요.",
+        after: "가 벌어진 것으로 읽힙니다.",
         question: "국채와 회사채 금리 차이가 커진 상황을 무엇으로 읽을까요?",
         answerId: "spread",
         choices: [
@@ -700,7 +739,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
       },
       {
         type: "p",
-        text: "다만 스프레드가 벌어졌다고 모든 기업의 신용이 나빠진 것은 아니에요. 특정 업종·등급만 움직였는지, 채권 수급이 꼬였는지도 같이 봐야 해요.",
+        text: "다만 스프레드가 벌어졌다고 모든 기업의 신용이 나빠진 것은 아닙니다. 특정 업종·등급만 움직였는지, 채권 수급이 꼬였는지도 같이 봐야 합니다.",
       },
       {
         type: "choice",
@@ -727,8 +766,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-nominal-price",
     kicker: "금리·물가",
     minutes: 3,
-    headline: "금리는 내렸는데, 물가를 감안하면 돈의 값은 덜 싸졌어요",
-    subtitle: "표시된 금리만 보면 싸진 것 같아도, 물가가 같이 낮아지지 않으면 실질 부담은 다를 수 있어요.",
+    headline: "금리는 내렸는데, 물가를 감안하면 돈의 값은 덜 싸졌습니다",
+    subtitle: "표시된 금리만 보면 싸진 것 같아도, 물가가 같이 낮아지지 않으면 실질 부담은 다를 수 있습니다.",
     primaryTermIds: ["명목금리", "인플레이션", "기준금리"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -740,16 +779,16 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "기준금리가 내리자 예금·대출에 붙는 명목금리도 따라 내렸어요. 일부는 이제 돈을 빌리기 쉬워졌다고 읽었어요.",
+        text: "기준금리가 내리자 예금·대출에 붙는 명목금리도 따라 내렸습니다. 일부는 이제 돈을 빌리기 쉬워졌다고 읽었습니다.",
       },
       {
         type: "p",
-        text: "그런데 물가 상승세가 금리만큼 빨리 낮아지지 않으면, 표시된 금리가 내려도 물가를 감안한 돈의 값은 덜 싸질 수 있어요. 명목금리는 물가를 빼기 전의 숫자예요.",
+        text: "예금·대출 화면에 찍힌 숫자는 내려 보였습니다. 그런데 같은 기간 물가 상승세는 금리만큼 빨리 꺾이지 않아, 체감 부담이 얼마나 줄었는지를 두고 해석이 갈렸습니다.",
       },
       {
         type: "cloze",
         before: "물가 변화를 빼기 전에 화면에 적히는 금리를 ",
-        after: "라고 불러요.",
+        after: "라고 부릅니다.",
         question: "물가를 감안하기 전의 금리를 무엇이라고 할까요?",
         answerId: "nominal",
         choices: [
@@ -762,7 +801,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
       },
       {
         type: "p",
-        text: "그래서 금리 인하 한 줄만으로 ‘돈 값이 싸졌다’고 단정하기는 어려워요. 같은 기간 인플레이션이 얼마나 낮아졌는지도 같이 봐야 해요.",
+        text: "그래서 금리 인하 한 줄만으로 ‘돈 값이 싸졌다’고 단정하기는 어렵습니다. 같은 기간 인플레이션이 얼마나 낮아졌는지도 같이 봐야 합니다.",
       },
       {
         type: "choice",
@@ -789,8 +828,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-dsr-home",
     kicker: "가계·부동산",
     minutes: 3,
-    headline: "집값은 꺾였는데 원리금 부담은 바로 줄지 않았어요",
-    subtitle: "담보 가치와 갚아야 할 원리금은 같은 속도로 움직이지 않아요.",
+    headline: "집값은 꺾였는데 원리금 부담은 바로 줄지 않았습니다",
+    subtitle: "담보 가치와 갚아야 할 원리금은 같은 속도로 움직이지 않습니다.",
     primaryTermIds: ["총부채원리금상환비율-dsr", "담보인정비율-ltv", "모기지대출"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -802,16 +841,16 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "주택 가격이 내리자 담보인정비율(LTV)로 본 대출 여력은 줄어 보였어요. 그런데 이미 받은 모기지대출의 원리금은 바로 줄지 않았어요.",
+        text: "주택 가격이 내리자 담보인정비율(LTV)로 본 대출 여력은 줄어 보였습니다. 그런데 이미 받은 모기지대출의 원리금은 바로 줄지 않았습니다.",
       },
       {
         type: "p",
-        text: "집값은 담보의 크기이고, 매달 나가는 원리금은 소득 대비 상환 부담이에요. 후자는 총부채원리금상환비율(DSR)로 봐요. 가격이 꺾여도 금리가 높거나 만기가 짧으면 상환 부담은 남을 수 있어요.",
+        text: "새로 집을 사려는 쪽에서는 담보 가치가 줄어 대출 한도가 빠듯해졌다는 이야기가 나왔습니다. 이미 대출을 받은 가구는 집값이 내려도 매달 나가는 원리금이 그대로라 숨통이 트이지 않았다는 반응입니다.",
       },
       {
         type: "cloze",
         before: "소득에서 원리금이 차지하는 비중은 ",
-        after: "로 봐요.",
+        after: "로 봅니다.",
         question: "갚아야 할 원리금이 소득에서 얼마나 차지하는지 보는 비율은 무엇일까요?",
         answerId: "dsr",
         choices: [
@@ -824,7 +863,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
       },
       {
         type: "p",
-        text: "그래서 집값 한 줄만으로 가계 부담이 줄었다고 보기 어려워요. 변동금리인지, 만기를 늘렸는지, 소득이 같이 움직였는지도 봐야 해요.",
+        text: "그래서 집값 한 줄만으로 가계 부담이 줄었다고 보기 어렵습니다. 변동금리인지, 만기를 늘렸는지, 소득이 같이 움직였는지도 봐야 합니다.",
       },
       {
         type: "choice",
@@ -851,8 +890,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-yield-curve",
     kicker: "금리 곡선",
     minutes: 3,
-    headline: "단기금리는 내렸는데 장기금리는 거의 안 움직였어요",
-    subtitle: "만기가 다른 금리는 같은 뉴스를 다르게 반영할 수 있어요.",
+    headline: "단기금리는 내렸는데 장기금리는 거의 안 움직였습니다",
+    subtitle: "만기가 다른 금리는 같은 뉴스를 다르게 반영할 수 있습니다.",
     primaryTermIds: ["장단기금리차", "수익률곡선", "국채"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -864,16 +903,16 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "정책금리 인하 기대가 커지자 만기가 짧은 국채 금리는 내렸어요. 그런데 만기가 긴 국채 금리는 거의 그대로였어요.",
+        text: "정책금리 인하 기대가 커지자 만기가 짧은 국채 금리는 내렸습니다. 그런데 만기가 긴 국채 금리는 거의 그대로였습니다.",
       },
       {
         type: "p",
-        text: "만기별 금리를 이은 그림이 수익률곡선이에요. 짧은 금리와 긴 금리의 차이를 장단기금리차로 봐요. 짧은 쪽만 내리면 그 차이가 줄어들거나 뒤집힐 수 있어요.",
+        text: "인하 기대는 짧은 만기에 먼저 반영됐습니다. 긴 만기 쪽은 물가와 성장 전망이 아직 남아 있다는 해석이 나왔고, 만기별 금리 간격은 줄어든 모습이었습니다.",
       },
       {
         type: "cloze",
         before: "만기가 짧은 금리와 긴 금리의 차이를 ",
-        after: "라고 불러요.",
+        after: "라고 부릅니다.",
         question: "단기 금리와 장기 금리의 차이를 무엇이라고 할까요?",
         answerId: "gap",
         choices: [
@@ -886,7 +925,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
       },
       {
         type: "p",
-        text: "곡선이 평평해졌다고 경기가 바로 꺾인 것은 아니에요. 수급, 물가 기대, 해외 금리가 장기물에 더 크게 남았을 수 있어요. 한 번의 기울기만으로 단정하지 않아요.",
+        text: "곡선이 평평해졌다고 경기가 바로 꺾인 것은 아닙니다. 수급, 물가 기대, 해외 금리가 장기물에 더 크게 남았을 수 있습니다. 한 번의 기울기만으로 단정하지 않습니다.",
       },
       {
         type: "choice",
@@ -913,8 +952,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-per-pbr",
     kicker: "배수 읽기",
     minutes: 3,
-    headline: "이익은 줄었는데 주가순자산비율은 올랐어요",
-    subtitle: "같은 주가도 나누는 숫자가 바뀌면 비싸 보이거나 싸 보여요.",
+    headline: "이익은 줄었는데 주가순자산비율은 올랐습니다",
+    subtitle: "같은 주가도 나누는 숫자가 바뀌면 비싸 보이거나 싸 보입니다.",
     primaryTermIds: ["주가수익비율-per", "주가순자산비율-pbr", "자기자본이익률-roe"],
     sourceMode: "synthetic",
     contentMode: "synthetic",
@@ -926,16 +965,16 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "한 기업의 주가는 거의 그대로인데, 주가수익비율(PER)은 높아 보이고 주가순자산비율(PBR)은 따로 움직였어요. 이익이 줄어 분모가 작아진 영향이 컸어요.",
+        text: "주가는 거의 그대로였는데 분기 이익이 줄었습니다. 같은 주가가 이익 대비로는 비싸 보이기 시작했습니다.",
       },
       {
         type: "p",
-        text: "PER은 주가를 이익으로 나눈 배수예요. 이익이 일시적으로 줄면 배수가 비싸 보일 수 있어요. PBR은 주가를 순자산으로 나누고, 자기자본이익률(ROE)이 낮아지면 같은 PBR도 다르게 읽혀요.",
+        text: "시장 일부는 배수가 올랐다고 고평가로 읽었습니다. 그런데 자산 대비 배수는 이익 배수와 따로 움직였습니다.",
       },
       {
         type: "cloze",
         before: "주가를 이익으로 나눈 배수가 높아 보일 때는, 분모인 이익이 ",
-        after: " 경우를 먼저 의심해요.",
+        after: " 경우를 먼저 의심합니다.",
         question: "주가는 비슷한데 PER이 높아 보일 때 먼저 의심할 일은 무엇일까요?",
         answerId: "earn",
         choices: [
@@ -948,7 +987,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
       },
       {
         type: "p",
-        text: "다만 PER만 보면 자산 가치와 수익성을 놓쳐요. PBR과 ROE를 같이 봐야, 지금 비싼 게 이익 부진 때문인지 자산 대비 기대 때문인지 갈려요.",
+        text: "다만 PER만 보면 자산 가치와 수익성을 놓칩니다. PBR과 ROE를 같이 봐야, 지금 비싼 게 이익 부진 때문인지 자산 대비 기대 때문인지 갈립니다.",
       },
       {
         type: "choice",
@@ -975,8 +1014,8 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     id: "bf-rate-fx",
     kicker: "환율·금리",
     minutes: 3,
-    headline: "원화가 빠르게 약해지자, 금리 인하 기대가 한발 물러났어요",
-    subtitle: "물가가 꺾여도 환율이 급하면 인하 속도에 제약이 붙을 수 있어요.",
+    headline: "원화가 빠르게 약해지자, 금리 인하 기대가 한발 물러났습니다",
+    subtitle: "물가가 꺾여도 환율이 급하면 인하 속도에 제약이 붙을 수 있습니다.",
     primaryTermIds: ["기준금리", "기준환율", "인플레이션"],
     supportTermIds: ["외환보유액"],
     sourceMode: "synthetic",
@@ -989,16 +1028,16 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
     blocks: [
       {
         type: "p",
-        text: "물가 상승세가 둔해지자 시장 일부는 기준금리 인하 시점이 앞당겨질 수 있다고 읽었어요. 그런데 같은 주 원/달러 기준환율이 빠르게 올랐어요.",
+        text: "물가 상승세가 둔해지자 시장 일부는 기준금리 인하 시점이 앞당겨질 수 있다고 읽었습니다. 그런데 같은 주 원/달러 기준환율이 빠르게 올랐습니다.",
       },
       {
         type: "p",
-        text: "원화가 약해지면 수입 물가 부담이 커질 수 있어요. 그래서 국내 물가가 조금 낮아져도, 환율이 급하면 중앙은행이 금리를 빠르게 내리기 어렵다는 해석이 나왔어요.",
+        text: "원화가 약해지면 수입 물가 부담이 커질 수 있습니다. 그래서 국내 물가가 조금 낮아져도, 환율이 급하면 중앙은행이 금리를 빠르게 내리기 어렵다는 해석이 나왔습니다.",
       },
       {
         type: "cloze",
         before: "환율이 빠르게 오르면 기준금리 인하 시점은 예상보다 ",
-        after: " 수 있어요.",
+        after: " 수 있습니다.",
         question: "원화가 빠르게 약해지면 금리 인하 기대는 어떻게 읽힐까요?",
         answerId: "late",
         choices: [
@@ -1011,7 +1050,7 @@ export const LEARNING_BRIEFINGS: LearningBriefing[] = [
       },
       {
         type: "p",
-        text: "다만 환율 한 줄만으로 금리 경로를 단정하기는 어려워요. 외환보유액, 수입 물가 전가, 자본 유출 우려를 같이 봐야 해요. 물가가 예상보다 높게 나온 날의 인하 후퇴와도, 고용이 약해진 날의 인하 확대와도 다른 제약이에요.",
+        text: "다만 환율 한 줄만으로 금리 경로를 단정하기는 어렵습니다. 외환보유액, 수입 물가 전가, 자본 유출 우려를 같이 봐야 합니다. 물가가 예상보다 높게 나온 날의 인하 후퇴와도, 고용이 약해진 날의 인하 확대와도 다른 제약입니다.",
       },
       {
         type: "choice",

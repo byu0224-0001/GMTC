@@ -198,6 +198,7 @@ export function grade(
   };
   if (!isFamiliar(card) && isFamiliar(next) && !next.familiarAt) {
     next.familiarAt = kstDateKey(now);
+    next.familiarAtRecorded = true;
   }
   return next;
 }

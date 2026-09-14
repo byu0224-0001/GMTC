@@ -33,6 +33,7 @@ check(
 const peekUi = readFileSync("src/components/TermPeek.tsx", "utf8");
 check("빈 시트 금지", peekUi.includes("if (!target || !preview) return null"));
 check("자세히 보기는 secondary", peekUi.includes("자세히 보기 〉") && peekUi.includes("text-link"));
+check("자세히 보기 전에 peek history를 비운다", peekUi.includes("history.back()") && peekUi.includes("navigate(route)"));
 check("큰 닫기 버튼 없음", !/>닫기</.test(peekUi));
 check("preview가 SRS를 안 바꿈", !peekUi.includes("applyGrade"));
 check("Android 뒤로가기는 시트를 닫음", peekUi.includes("popstate") && peekUi.includes("history.pushState"));
@@ -44,7 +45,7 @@ check("안 푼 문항은 건너뛸 수 있다", briefingPage.includes("그냥 �
 check("정답이 아니라 응답이 다음 본문을 연다", briefingPage.includes("isPrimaryQuestion") && briefingPage.includes("skipped"));
 check("읽기 시작·첫 판단을 남긴다", briefingPage.includes("reading_start") && briefingPage.includes("first_interaction"));
 check("읽기 이탈을 남긴다", briefingPage.includes("reading_exit"));
-check("긴 읽기 상세에 예시 고지", briefingPage.includes("READING_EXAMPLE_LABEL"));
+check("긴 읽기 상세에 예시 고지", briefingPage.includes("학습용 기사") && briefingPage.includes("READING_DISCLAIMER"));
 
 const news = readFileSync("src/pages/NewsQuizPage.tsx", "utf8");
 check("짧은 읽기 PeekQuery", news.includes("PeekQuery") && !news.includes("PeekTarget"));
@@ -113,6 +114,12 @@ check("오늘 읽기 selector가 한곳", todayPlan.includes("selectDailyReading
 check("편집 선택이 아니면 오늘 글을 강제하지 않는다", todayPlan.includes("editorial") && readingSelect.includes("plan.editorial"));
 check("홈이 읽기 탭과 같은 selector", readFileSync("src/pages/HomePage.tsx", "utf8").includes("selectDailyReading") && readFileSync("src/pages/NewsFeedPage.tsx", "utf8").includes("selectDailyReading"));
 check("읽기를 마치면 다른 글을 권한다", readFileSync("src/pages/HomePage.tsx", "utf8").includes("다른 글 한 편 더 보기"));
+check("홈 주간 기록이 상세로 간다", readFileSync("src/pages/HomePage.tsx", "utf8").includes('to="/report"') && readFileSync("src/pages/HomePage.tsx", "utf8").includes("금맹탈출 중"));
+check("기록 화면에 월간 달력", readFileSync("src/pages/ReportPage.tsx", "utf8").includes("month-cal") && readFileSync("src/pages/ReportPage.tsx", "utf8").includes("아직 헷갈리는 말"));
+check("기사 상단에 학습용 기사", readFileSync("src/pages/BriefingPage.tsx", "utf8").includes("학습용 기사"));
+check("읽기 도표는 데이터 블록", readFileSync("src/content/briefingFigures.ts", "utf8").includes("BRIEFING_FIGURES") && readFileSync("src/components/ReadingFigures.tsx", "utf8").includes("MetricCard"));
+check("도표가 정답을 미리 안 연다", readFileSync("src/pages/BriefingPage.tsx", "utf8").includes("revealAfterAnswer"));
+check("홈·기록이 같은 지표 함수", readFileSync("src/pages/HomePage.tsx", "utf8").includes("progressEvidence") && readFileSync("src/pages/ReportPage.tsx", "utf8").includes("progressEvidence"));
 
 const sheet = readFileSync("src/components/PushPrompt.tsx", "utf8");
 check("알림 시트에 시험 발송", sheet.includes("requestTestPush") && sheet.includes("PUSH_SETTINGS"));

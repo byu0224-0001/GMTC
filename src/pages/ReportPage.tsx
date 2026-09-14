@@ -1,144 +1,215 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { TopBar } from "../components/Chrome";
-import { CORE100, TAXONOMY_LABEL } from "../content/literacy";
-import { resetProgress, stats } from "../lib/progress";
+import { resetProgress } from "../lib/progress";
 import { exportStudyDump } from "../lib/events";
-import { displayTitle } from "../lib/hangul";
+import { formatDayHeading, progressEvidence } from "../lib/evidence";
 import { analyticsOptedOut, resetLearner, setAnalyticsOptOut } from "../lib/learner";
 import { unsubscribePush } from "../lib/push";
-import { GRADUATE_REPETITIONS, isDue } from "../lib/srs";
-import { planCounts } from "../lib/today";
-import { fallbackPlan } from "../lib/todayPlan";
 import type { ProgressState, Term } from "../types";
-import { useState } from "react";
 
 export function ReportPage({ terms, progress }: { terms: Term[]; progress: ProgressState }) {
   const [p, setP] = useState(progress);
   const [optOut, setOptOut] = useState(() => analyticsOptedOut());
-  const coreIds = CORE100.map((c) => c.id);
-  const s = stats(p, coreIds);
-  const plan = planCounts(terms, p, fallbackPlan());
-  const weak = terms
-    .filter((t) => t.priority === "core" && p.cards[t.id]?.lastQuality === 1)
-    .slice(0, 8);
-  const due = terms.filter((t) => t.priority === "core" && p.cards[t.id] && isDue(p.cards[t.id])).length;
-  const byTax = new Map<string, { seen: number; total: number }>();
-  for (const t of terms.filter((x) => x.priority === "core")) {
-    const k = t.taxonomy ?? "기타";
-    const cur = byTax.get(k) ?? { seen: 0, total: 0 };
-    cur.total += 1;
-    if (p.cards[t.id]) cur.seen += 1;
-    byTax.set(k, cur);
-  }
-  const weakField = [...byTax.entries()]
-    .map(([k, v]) => ({ k, pct: v.total ? v.seen / v.total : 0 }))
-    .sort((a, b) => a.pct - b.pct)[0];
+  const [openDay, setOpenDay] = useState<string | null>(null);
+  const e = progressEvidence(p, terms);
+  const day = openDay ? e.dayRecord(openDay) : null;
 
   return (
     <>
       <TopBar title="학습 기록" back />
-      <div className="page stack">
-        <div className="report-hero">
-          <div className="label">핵심 용어</div>
-          <div className="display">{s.seen} / {s.coreTotal}</div>
-          <div className="muted">학습한 용어 {s.seen}개 · 익숙해진 용어 {s.known}개</div>
+      <div className="page page-progress stack">
+        <p className="caption" style={{ margin: 0 }}>이번 주 탈출 기록</p>
+        <div className="progress-hero">
+          <h2>{e.heroTitle}</h2>
+          <p>{e.viewportLine}</p>
+          <p className="caption" style={{ margin: "8px 0 0" }}>{e.heroSub}</p>
         </div>
-        <div className="stats-3">
-          <div className="stat-box">
-            <strong>{s.streakDays}</strong>
-            <span>연속 학습</span>
-          </div>
-          <div className="stat-box">
-            <strong>{s.known}</strong>
-            <span>익숙해진 용어</span>
-          </div>
-          <div className="stat-box">
-            <strong>{s.contextSeen >= 5 ? `${s.contextAcc}%` : s.contextSeen}</strong>
-            <span>읽기</span>
-          </div>
+
+        <div className="week-dots" role="list" aria-label="이번 주 학습한 날">
+          {e.weekDays.map((d) => (
+            <button
+              key={d.date}
+              type="button"
+              className={d.done ? "week-dot on" : "week-dot"}
+              onClick={() => setOpenDay(d.date)}
+              aria-label={d.done ? `${d.label}요일, 학습함` : `${d.label}요일`}
+            >
+              <span>{d.label}</span>
+              <i aria-hidden />
+            </button>
+          ))}
         </div>
-        <div className="card">
-          <div className="caption">익숙해진 기준</div>
-          <p className="muted" style={{ margin: "8px 0 0", lineHeight: 1.6 }}>
-            서로 다른 날에 {GRADUATE_REPETITIONS}번 맞히고, 묻는 방식도 두 가지 이상 통과한
-            용어를 익숙해진 것으로 세요.
+
+        {e.learningTotal || e.familiarTotal ? (
+          <p className="caption" style={{ margin: 0 }}>
+            익히는 중 {e.learningTotal}개
+            {e.familiarTotal ? ` · 지금 익숙한 말 ${e.familiarTotal}개` : ""}
           </p>
-          <div className="term-row" style={{ cursor: "default" }}>
-            <strong>일반 기준</strong>
-            <span>{plan.familiarFull}개</span>
-          </div>
-          <div className="term-row" style={{ cursor: "default" }}>
-            <strong>면제 기준</strong>
-            <span>{plan.familiarFallback}개</span>
-          </div>
-          <p className="caption" style={{ marginTop: 10, marginBottom: 0 }}>
-            면제 기준은 묻는 방식을 하나만 만들 수 있는 용어에만 적용해요. 전체 후보{" "}
-            {plan.candidateTotal}개 중 {plan.fallbackEligible}개가 해당해요.
-          </p>
-        </div>
-        {weakField ? (
-          <div className="card">
-            <div className="caption">아직 많이 보지 않은 분야</div>
-            <div style={{ marginTop: 6 }}>{TAXONOMY_LABEL[weakField.k as keyof typeof TAXONOMY_LABEL] ?? weakField.k} · {Math.round(weakField.pct * 100)}%</div>
-            <div className="muted" style={{ marginTop: 4 }}>오늘 복습 {due}개</div>
-          </div>
         ) : null}
-        {weak.length > 0 ? (
-          <div>
-            <div className="caption">다시 볼 용어</div>
-            {weak.map((t) => (
-              <Link key={t.id} to={`/terms/${encodeURIComponent(t.id)}`} className="term-row">
-                <strong>{displayTitle(t)}</strong>
-                <span>{t.easyExplanation}</span>
-              </Link>
+
+        {e.reviewThisWeek ? (
+          <section>
+            <div className="caption">다시 본 말 {e.reviewThisWeek}</div>
+            <p className="muted" style={{ margin: "6px 0 0" }}>
+              이전에 배운 뒤 이번 주 다시 만난 고유 용어예요.
+            </p>
+          </section>
+        ) : null}
+
+        {e.recentFamiliar.length ? (
+          <section>
+            <div className="caption">이번 주 새로 익숙해진 말</div>
+            <div className="chip-row" style={{ marginTop: 8 }}>
+              {e.recentFamiliar.map((t) => (
+                <Link key={t.id} to={`/terms/${encodeURIComponent(t.id)}`} className="chip known">
+                  {t.label}
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {e.confused.length ? (
+          <section>
+            <div className="caption">아직 헷갈리는 말</div>
+            <ul className="progress-pairs">
+              {e.confused.map((c) => (
+                <li key={c.id}>
+                  <Link to={`/terms/${encodeURIComponent(c.id)}`}>{c.label}</Link>
+                  {c.vsLabel ? (
+                    <>
+                      <span> ↔ </span>
+                      {c.vsId ? (
+                        <Link to={`/terms/${encodeURIComponent(c.vsId)}`}>{c.vsLabel}</Link>
+                      ) : (
+                        c.vsLabel
+                      )}
+                    </>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {e.encounters.length ? (
+          <section>
+            <div className="caption">읽기에서 다시 만난 말</div>
+            <p className="progress-encounters">
+              {e.encounters.map((x) => (
+                <Link key={x.id} to={`/terms/${encodeURIComponent(x.id)}`}>
+                  {x.label} {x.count}회
+                </Link>
+              ))}
+            </p>
+          </section>
+        ) : null}
+
+        <section>
+          <div className="caption">{e.monthLabel}</div>
+          <div className="month-cal" role="grid" aria-label="이번 달 학습한 날">
+            {["월", "화", "수", "목", "금", "토", "일"].map((d) => (
+              <span key={d} className="month-dow">{d}</span>
             ))}
+            {e.monthCells.map((cell, i) =>
+              cell ? (
+                <button
+                  key={cell.date}
+                  type="button"
+                  className={cell.done ? "month-day on" : "month-day"}
+                  onClick={() => setOpenDay(cell.date)}
+                >
+                  {Number(cell.date.slice(8))}
+                </button>
+              ) : (
+                <span key={`e-${i}`} />
+              ),
+            )}
           </div>
+          <p className="caption">표시된 날을 누르면 그날 만난 말과 읽기를 볼 수 있어요.</p>
+        </section>
+
+        {day ? (
+          <section className="day-sheet">
+            <div className="caption">
+              {formatDayHeading(day.date)} — 새로 본 말 {day.newTerms.length} · 복습 {day.reviewTerms.length} · 읽기 {day.readings.length}
+            </div>
+            {day.newTerms.length || day.reviewTerms.length || day.readings.length ? (
+              <>
+                {day.newTerms.length ? (
+                  <p>
+                    <span className="caption">새로 만난 말</span>
+                    {day.newTerms.map((t) => t.label).join(" · ")}
+                  </p>
+                ) : null}
+                {day.reviewTerms.length ? (
+                  <p>
+                    <span className="caption">다시 본 말</span>
+                    {day.reviewTerms.map((t) => t.label).join(" · ")}
+                  </p>
+                ) : null}
+                {day.readings.length ? (
+                  <p>
+                    <span className="caption">읽기</span>
+                    {day.readings.map((r) => r.title).join(" · ")}
+                  </p>
+                ) : null}
+              </>
+            ) : (
+              <p className="muted">이 날의 학습 기록이 없어요.</p>
+            )}
+          </section>
         ) : null}
+
         <Link className="btn btn-primary" to="/learn/session" style={{ display: "grid", placeItems: "center" }}>
           이어서 학습하기
         </Link>
-        <button
-          className="btn btn-ghost"
-          onClick={() => {
-            const blob = new Blob([exportStudyDump(p)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "voca-study-log.json";
-            a.click();
-            URL.revokeObjectURL(url);
-          }}
-        >
-          학습 기록 내보내기
-        </button>
-        <button
-          className="btn btn-ghost"
-          onClick={async () => {
-            if (!confirm("이 기기의 학습 기록을 모두 지울까요? 서버에 보관된 기록도 함께 지워요."))
-              return;
-            await unsubscribePush(p);
-            await resetLearner();
-            setAnalyticsOptOut(false);
-            setP(resetProgress());
-          }}
-        >
-          기록 지우기
-        </button>
-        <button
-          className="btn btn-ghost"
-          onClick={() => {
-            const next = !optOut;
-            setAnalyticsOptOut(next);
-            setOptOut(next);
-          }}
-        >
-          {optOut ? "파일럿 기록 보내기 켜기" : "파일럿 기록 보내지 않기"}
-        </button>
-        <p className="notice">
-          학습 진도는 이 기기에만 저장돼요. 브라우저 데이터를 지우거나 기기를 바꾸면
-          기록도 함께 사라질 수 있어요. 파일럿 기간에는 어떤 문제에서 얼마나 걸렸는지 같은
-          익명 기록만 서버로 보내요. 용어별 진도는 보내지 않아요.
-        </p>
+
+        <details className="progress-manage">
+          <summary>기록 관리</summary>
+          <button
+            className="btn btn-ghost"
+            onClick={() => {
+              const blob = new Blob([exportStudyDump(p)], { type: "application/json" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "voca-study-log.json";
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+          >
+            학습 기록 내보내기
+          </button>
+          <button
+            className="btn btn-ghost"
+            onClick={async () => {
+              if (!confirm("이 기기의 학습 기록을 모두 지울까요? 서버에 보관된 기록도 함께 지워요."))
+                return;
+              await unsubscribePush(p);
+              await resetLearner();
+              setAnalyticsOptOut(false);
+              setP(resetProgress());
+            }}
+          >
+            기록 지우기
+          </button>
+          <button
+            className="btn btn-ghost"
+            onClick={() => {
+              const next = !optOut;
+              setAnalyticsOptOut(next);
+              setOptOut(next);
+            }}
+          >
+            {optOut ? "파일럿 기록 보내기 켜기" : "파일럿 기록 보내지 않기"}
+          </button>
+          <p className="notice">
+            학습 진도는 이 기기에만 저장돼요. 브라우저 데이터를 지우거나 기기를 바꾸면
+            기록도 함께 사라질 수 있어요.
+          </p>
+        </details>
       </div>
     </>
   );

@@ -13,6 +13,10 @@ const check = (name, pass, detail = "") =>
 check("KST는 Asia/Seoul", src.includes('timeZone: "Asia/Seoul"'));
 check("로컬 setHours 자정에 의존하지 않음", !src.includes("setHours(0, 0, 0, 0)"));
 check("주는 월요일 시작", weekSrc.includes("월요일을 주의 시작"));
+check("미완료 오늘은 주간 점에서 뺀다", weekSrc.includes("오늘 권장 세션을 아직 안 마쳤으면"));
+const progress = readFileSync("src/lib/progress.ts", "utf8");
+const apply = /export function applyGrade[\s\S]*?^export function /m.exec(progress)?.[0] ?? "";
+check("문항 채점은 연속을 올리지 않는다", apply.includes("applyGrade") && !apply.includes("bumpStreak"));
 
 function kstDateKey(d) {
   return new Intl.DateTimeFormat("en-CA", {

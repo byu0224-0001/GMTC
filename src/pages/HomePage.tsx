@@ -13,7 +13,7 @@ import { daysSinceStudy } from "../lib/learner";
 import { defaultDoneToday, extraSessionsToday, stats, storageWritable } from "../lib/progress";
 import { isFamiliar, kstDateKey } from "../lib/srs";
 import { extraQueue, planCounts } from "../lib/today";
-import { todayStudyCounts, weeklyStats } from "../lib/weekly";
+import { progressEvidence } from "../lib/evidence";
 import { selectDailyReading, type TodayPlanFile } from "../lib/todayPlan";
 import type { ProgressState, Term } from "../types";
 
@@ -61,9 +61,9 @@ export function HomePage({
   const cards = Object.values(progress.cards);
   const seenAll = cards.length;
   const knownAll = cards.filter(isFamiliar).length;
-  const todayCounts = todayStudyCounts(progress, terms);
-  const week = weeklyStats(progress, terms);
-  const showWeek = Boolean(progress.lastStudyDate || seenAll || week.studyDays);
+  const evidence = progressEvidence(progress, terms);
+  const todayCounts = evidence.dayRecord(kstDateKey());
+  const showWeek = Boolean(progress.lastStudyDate || seenAll || evidence.studyDays);
   const [pushOpen, setPushOpen] = useState(false);
   const [hideHomePush, setHideHomePush] = useState(false);
   const [params, setParams] = useSearchParams();
@@ -91,7 +91,7 @@ export function HomePage({
         }
       />
       {pushOpen ? <PushSheet onClose={() => setPushOpen(false)} /> : null}
-      <div className="page stack">
+      <div className="page page-home stack">
         <div className="card pad-lg featured">
           {done ? (
             <>
@@ -100,8 +100,8 @@ export function HomePage({
               </div>
               <p className="muted" style={{ margin: "10px 0 0" }}>
                 {[
-                  todayCounts.neu ? `새로 본 용어 ${todayCounts.neu}개` : null,
-                  todayCounts.review ? `다시 본 용어 ${todayCounts.review}개` : null,
+                  todayCounts.newTerms.length ? `새로 본 용어 ${todayCounts.newTerms.length}개` : null,
+                  todayCounts.reviewTerms.length ? `다시 본 용어 ${todayCounts.reviewTerms.length}개` : null,
                   extras ? `오늘은 ${extras}번 더 했어요` : null,
                 ]
                   .filter(Boolean)
@@ -250,10 +250,18 @@ export function HomePage({
         ) : null}
 
         {showWeek ? (
-          <div className="card">
+          <Link to="/report" className="week-card" style={{ color: "inherit", display: "block" }}>
             <div className="caption">이번 주 기록</div>
+            <p className="week-card-title">
+              {evidence.studyDays
+                ? `이번 주 ${evidence.studyDays}일째 금맹탈출 중`
+                : "이번 주 탈출 기록"}
+            </p>
+            <p className="muted" style={{ margin: "6px 0 0" }}>
+              {evidence.viewportLine}
+            </p>
             <div className="week-dots" role="list" aria-label="이번 주 학습한 날">
-              {week.days.map((d) => (
+              {evidence.weekDays.map((d) => (
                 <div
                   key={d.date}
                   className={d.done ? "week-dot on" : "week-dot"}
@@ -265,28 +273,23 @@ export function HomePage({
                 </div>
               ))}
             </div>
-            <p style={{ margin: "12px 0 0", fontWeight: 600, lineHeight: 1.45 }}>
-              {week.studyDays}일 학습
-              {week.familiarThisWeek ? ` · 익숙해진 용어 ${week.familiarThisWeek}개` : ""}
-              {week.readingsThisWeek ? ` · 읽기 ${week.readingsThisWeek}편` : ""}
-            </p>
-            {week.recentFamiliar.length ? (
+            {evidence.recentFamiliar.length ? (
               <>
-                <div className="caption" style={{ marginTop: 16 }}>최근 익숙해진 용어</div>
-                <div className="chip-row" style={{ marginTop: 8 }}>
-                  {week.recentFamiliar.map((t) => (
-                    <Link key={t.id} to={`/terms/${encodeURIComponent(t.id)}`} className="chip known">
-                      {t.label}
-                    </Link>
-                  ))}
-                </div>
+                <div className="caption" style={{ marginTop: 16 }}>이번 주 새로 익숙해진 말</div>
+                <p style={{ margin: "6px 0 0", fontWeight: 600 }}>
+                  {evidence.recentFamiliar.slice(0, 3).map((t) => t.label).join(" · ")}
+                </p>
               </>
-            ) : knownAll === 0 && seenAll === 0 ? (
+            ) : evidence.emptyFamiliar ? (
               <p className="caption" style={{ margin: "12px 0 0" }}>
-                아직 익히는 중이에요. 며칠 뒤 다시 만나면서 익숙한 용어가 생겨요.
+                아직 익히는 중이에요. 며칠 뒤 다시 만나면서 익숙한 말이 생겨요.
+              </p>
+            ) : evidence.familiarTotal ? (
+              <p className="caption" style={{ margin: "12px 0 0" }}>
+                지금 익숙한 말 {evidence.familiarTotal}개 · 언제 익숙해졌는지는 이번 기록부터 남아요.
               </p>
             ) : null}
-          </div>
+          </Link>
         ) : null}
 
         {/*

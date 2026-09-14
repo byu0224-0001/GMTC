@@ -40,21 +40,19 @@ function addStudyDay(dates: Set<string>, value: string | null | undefined): void
   if (key) dates.add(key);
 }
 
-export function studyDateSet(state: ProgressState): Set<string> {
+export function studyDateSet(state: ProgressState, now = new Date()): Set<string> {
   const dates = new Set<string>();
   for (const day of state.studyDates ?? []) addStudyDay(dates, day);
   addStudyDay(dates, state.lastStudyDate);
   addStudyDay(dates, state.defaultDoneDate);
   for (const key of Object.keys(state.extraSessions ?? {})) addStudyDay(dates, key);
-  for (const card of Object.values(state.cards)) {
-    for (const day of card.successDates) addStudyDay(dates, day);
-    addStudyDay(dates, card.familiarAt);
-  }
-  for (const attempt of state.briefingAttempts ?? []) {
-    if (attempt.completedAt) addStudyDay(dates, kstDateKey(new Date(attempt.completedAt)));
-  }
-  for (const stat of Object.values(state.contextStats)) {
-    if (stat.lastAt) addStudyDay(dates, kstDateKey(new Date(stat.lastAt)));
+  /**
+   * 오늘 권장 세션을 아직 안 마쳤으면 오늘 점은 켜지 않는다.
+   * 한 문항만 풀고 나와도 lastStudyDate·맞힌 날이 오늘로 남을 수 있다.
+   */
+  const today = kstDateKey(now);
+  if (state.defaultDoneDate !== today && !state.extraSessions?.[today]) {
+    dates.delete(today);
   }
   return dates;
 }
@@ -93,7 +91,7 @@ export function weeklyStats(state: ProgressState, terms: Term[], now = new Date(
   for (const term of studyCandidates(terms)) {
     const card = state.cards[term.id];
     if (!card || !isFamiliar(card)) continue;
-    const at = card.familiarAt ?? card.successDates[card.successDates.length - 1] ?? "";
+    const at = card.familiarAtRecorded ? card.familiarAt ?? "" : "";
     if (at && inWeek(at, week)) familiarThisWeek += 1;
     recentFamiliar.push({ id: term.id, label: displayTitle(term), at: at || card.updatedAt });
   }

@@ -61,8 +61,13 @@ export interface SrsCard {
   successDates: string[];
   /** 맞힌 문제 형태. 한 형태만 반복해서 맞힌 것을 익숙함으로 세지 않기 위해 쓴다. */
   successForms: RetrievalForm[];
-  /** 익숙해진 날(KST). 기준을 처음 통과한 뒤에만 채운다. */
+  /** 익숙해진 날(KST). `grade()`가 기준을 처음 통과한 뒤에만 채운다. */
   familiarAt?: string;
+  /**
+   * 익숙해진 날이 학습 순간에 기록됐는지.
+   * 없으면 예전에 익숙해진 말은 세되, ‘이번 주 새로 익숙해진 말’에는 넣지 않는다.
+   */
+  familiarAtRecorded?: boolean;
 }
 
 export interface ContextStat {
@@ -96,7 +101,7 @@ export interface ProgressState {
   pushDisabled?: boolean;
   /** 권장 분량을 마친 날의 수. 알림을 물어볼 시점을 정하는 데 쓴다. */
   doneSessions: number;
-  /** 학습한 날(KST). 주간 점을 그릴 때 쓴다. 최근 21일만 둔다. */
+  /** 학습한 날(KST). 주간 점과 월간 달력을 그릴 때 쓴다. 최근 90일만 둔다. */
   studyDates?: string[];
   /** 익숙해짐 안내를 이미 보여 준 용어. 같은 안내를 반복하지 않는다. */
   celebratedFamiliarIds?: string[];
@@ -189,6 +194,21 @@ export interface DrillItem {
 
 export type BriefingBlock =
   | { type: "p"; text: string }
+  | { type: "h"; text: string }
+  | {
+      type: "metric";
+      items: { label: string; value: string }[];
+      note?: string;
+      /** 정답 뒤에만 보여 해석을 미리 주지 않는다. */
+      revealAfterAnswer?: boolean;
+    }
+  | {
+      type: "compare";
+      rows: { label: string; value: number; display?: string }[];
+      note?: string;
+      revealAfterAnswer?: boolean;
+    }
+  | { type: "flow"; steps: string[]; note?: string; revealAfterAnswer?: boolean }
   | {
       type: "cloze";
       before: string;

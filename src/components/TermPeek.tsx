@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { logEvent } from "../lib/events";
 import { resolveTermPreview, type PeekQuery } from "../lib/termPreview";
 import type { Term } from "../types";
@@ -21,6 +21,7 @@ export function TermPeek({
 }) {
   const preview = target ? resolveTermPreview(target, terms) : null;
   const open = Boolean(target && preview);
+  const navigate = useNavigate();
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
   const pushed = useRef(false);
@@ -102,18 +103,32 @@ export function TermPeek({
             <p className="muted" style={{ margin: "6px 0 0" }}>{preview.relationReason}</p>
           </>
         ) : null}
-        <Link
+        <button
+          type="button"
           className="text-link"
-          to={preview.detailRoute}
           onClick={() => {
+            const route = preview.detailRoute;
             skipHistory.current = true;
-            pushed.current = false;
-            onClose();
+            const go = () => {
+              onClose();
+              navigate(route);
+            };
+            if (pushed.current) {
+              pushed.current = false;
+              const once = () => {
+                window.removeEventListener("popstate", once);
+                go();
+              };
+              window.addEventListener("popstate", once);
+              history.back();
+              return;
+            }
+            go();
           }}
           style={{ display: "inline-flex", marginTop: 16, minHeight: "var(--touch-min)", alignItems: "center" }}
         >
           자세히 보기 〉
-        </Link>
+        </button>
       </div>
     </div>
   );

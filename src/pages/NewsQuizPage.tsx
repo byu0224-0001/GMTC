@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ConceptFlowView } from "../components/Chrome";
 import { ReadingAsk, askKindFromDepth } from "../components/ReadingAsk";
 import { TermPeek, type PeekQuery } from "../components/TermPeek";
-import { READING_DISCLAIMER, READING_EXAMPLE_LABEL, READING_KIND_SHORT } from "../content/brand";
+import { READING_DISCLAIMER, READING_KIND_SHORT } from "../content/brand";
 import { CONTEXT_CASES } from "../content/literacy";
 import { beginTodaySession, endTodaySession, logEvent } from "../lib/events";
 import { chipClass } from "../lib/chipTone";
@@ -134,23 +133,20 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
         <h1>읽기</h1>
         <span />
       </header>
-      <div className="page session stack briefing editorial">
-        <div>
-          <div className="eyebrow">{READING_KIND_SHORT}</div>
-          <span className="caption">
-            {READING_EXAMPLE_LABEL} · {cse.era}
-          </span>
+      <div className="page session stack briefing editorial insight-page">
+        <div className="article-kicker">
+          <span>{READING_KIND_SHORT}</span>
+          <span>{cse.era}</span>
+          <span>약 1분</span>
         </div>
 
-        <div>
-          <h2 className="read-headline">{cse.title}</h2>
-          {bodyParagraphs(cse.situation).map((p) => (
-            <p key={p.slice(0, 24)} className="briefing-p" style={{ margin: "0 0 12px" }}>{p}</p>
-          ))}
-          <p className="caption" style={{ margin: "0 0 8px" }}>
-            {READING_DISCLAIMER}
-          </p>
-        </div>
+        <h2 className="read-headline">{cse.title}</h2>
+        {bodyParagraphs(cse.situation).map((p) => (
+          <p key={p.slice(0, 24)} className="briefing-p lead" style={{ margin: "0 0 12px" }}>{p}</p>
+        ))}
+        <p className="caption" style={{ margin: "0 0 8px" }}>
+          {READING_DISCLAIMER}
+        </p>
 
         {cse.fact && !factOpen && !factPick && !factSkipped ? (
           <button type="button" className="text-link read-skip" onClick={() => setFactOpen(true)}>
@@ -268,6 +264,9 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
                 {picked === cse.answerTermId ? "맞았어요" : "초록으로 표시한 쪽이 정답이에요"}
               </p>
               <p className="why" style={{ marginTop: 8 }}>{cse.why}</p>
+              {cse.chain.length ? (
+                <p className="insight-visual">{cse.chain.slice(0, 4).join(" → ")}</p>
+              ) : null}
             </>
           ) : conceptSkipped ? (
             <p className="caption" style={{ marginTop: 10 }}>이 질문은 건너뛰고 글을 이어 읽어요</p>
@@ -293,23 +292,14 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
 
         {conceptResolved ? (
           <>
-            <div className="card">
-              <div className="caption">이렇게 이어져요</div>
-              {/* 읽기 사례의 chain은 사례마다 손으로 적은 순서다. 화살표를 쓴다. */}
-              <ConceptFlowView
-                steps={cse.chain}
-                terms={terms}
-                onPeek={(label) => openPeek(label, "flow")}
-              />
-              {cse.nextToCheck?.length ? (
-                <>
-                  <div className="caption" style={{ marginTop: 14 }}>다음에 볼 것</div>
-                  <ul className="point-list">
-                    {cse.nextToCheck.map((x) => <li key={x}>{x}</li>)}
-                  </ul>
-                </>
-              ) : null}
-            </div>
+            {cse.nextToCheck?.length ? (
+              <>
+                <div className="caption">다음에 볼 것</div>
+                <ul className="point-list">
+                  {cse.nextToCheck.map((x) => <li key={x}>{x}</li>)}
+                </ul>
+              </>
+            ) : null}
             {chips.length > 0 ? (
               <div>
                 <div className="caption">이 글에 나온 용어</div>

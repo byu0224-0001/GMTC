@@ -32,7 +32,7 @@ export function ContextFeedPage({
   return (
     <>
       <TopBar title="읽기" />
-      <div className="page stack">
+      <div className="page page-read stack">
         <p className="muted" style={{ margin: 0, display: "flex", alignItems: "center", gap: 10 }}>
           <LearningVisual type="context" />
           <strong style={{ fontWeight: 600, color: "var(--color-ink-strong)" }}>
@@ -64,12 +64,13 @@ export function ContextFeedPage({
 
         {shelf === "long" ? (
           <>
-            <Link to={`/briefing/${featured.id}`} className="card pad-lg featured" style={{ color: "inherit" }}>
-              <div className="eyebrow">{reading.todayCompleted ? "다음 글" : "오늘"}</div>
-              <div className="caption" style={{ marginTop: 6 }}>
-                {featured.kicker} · {featured.minutes}분
+            <Link to={`/briefing/${featured.id}`} className="read-featured">
+              <div className="article-kicker">
+                <span>{reading.todayCompleted ? "다음 글" : "오늘"}</span>
+                <span>{featured.kicker}</span>
+                <span>약 {featured.minutes}분</span>
               </div>
-              <strong style={{ display: "block", margin: "8px 0 6px", fontSize: 20, lineHeight: 1.4 }}>
+              <strong className="read-headline" style={{ display: "block" }}>
                 {featured.headline}
               </strong>
               {featured.subtitle ? <span className="muted">{featured.subtitle}</span> : null}

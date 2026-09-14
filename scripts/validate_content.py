@@ -64,7 +64,7 @@ def validate_briefing_obj(obj: dict, errors: list[str], known: set[str], term_ma
 
 
 READING_Q = {"cloze", "choice"}
-READING_BODY = {"p", "causal"}
+READING_BODY = {"p", "causal", "h", "metric", "compare", "flow"}
 
 
 def scored_count(flags: list[str]) -> int:
@@ -87,7 +87,7 @@ def rhythm_from_blocks(blocks: list[dict]) -> tuple[list[str], int]:
 
 
 def rhythm_from_chunk(chunk: str) -> tuple[list[str], int]:
-    types = re.findall(r'\n        type: "(p|cloze|choice|causal|concepts)"', chunk)
+    types = re.findall(r'\n        type: "(p|h|cloze|choice|causal|concepts|metric|compare|flow)"', chunk)
     flags: list[str] = []
     for m in re.finditer(
         r'type: "(cloze|choice)"([\s\S]*?)(?=\n      \{\n|\n    \],\n)',
@@ -214,7 +214,14 @@ def check_own_copy(core_ids: set, terms: set, report_ids: set) -> list[str]:
     ]
     for name in own_files:
         src = (root / name).read_text(encoding="utf-8")
-        for lit in re.findall(r'"((?:[^"\\]|\\.)*)"', src):
+        # 기사 본문은 의도적으로 습니다체다. 해설·문항 문구만 해요체로 본다.
+        scan = src
+        if name == "briefings.ts":
+            scan = "\n".join(
+                m.group(0)
+                for m in re.finditer(r'(?:note|question):\s*"(?:[^"\\]|\\.)*"', src)
+            )
+        for lit in re.findall(r'"((?:[^"\\]|\\.)*)"', scan):
             for m in re.finditer(r"[가-힣]{1,8}니다(?=[.」\s]|$)", lit):
                 errors.append(f"{name}: 해요체가 아닌 어미 `{m.group(0)}`")
 
@@ -234,6 +241,10 @@ def check_own_copy(core_ids: set, terms: set, report_ids: set) -> list[str]:
         body = re.sub(r"/\*.*?\*/", "", raw, flags=re.S)
         body = re.sub(r"^\s*//.*$", "", body, flags=re.M)
         for m in re.finditer(r"[가-힣]{1,8}니다(?=[.」\s<{]|$)", body):
+            window = body[max(0, m.start() - 24) : m.end()]
+            # 기사 도표 고지는 판형에 맞춰 습니다체를 쓴다.
+            if "예시 수치입" in window:
+                continue
             errors.append(f"{path.name}: 화면 문구가 해요체가 아니다 `{m.group(0)}`")
 
     # `X에요`가 맞는 경우는 X가 `이`(책이에요) 또는 `니`(아니에요)일 때뿐이다.
@@ -516,6 +527,7 @@ def main() -> int:
             errors.append(f"REPORT_BOK_CANON missing BOK: {bok}")
 
     reading_src = (ROOT / "src/content/readingCases.ts").read_text(encoding="utf-8")
+    pilot_short = set(re.findall(r'"(cx-[^"]+)"', reading_src.split("export const READING_CASES")[0]))
     reading_ids = re.findall(r'\n    id: "(cx-[^"]+)"', reading_src)
     if len(reading_ids) < 32:
         errors.append(f"reading cases {len(reading_ids)} < 32")
@@ -538,13 +550,21 @@ def main() -> int:
         else:
             text = body.group(1)
             n = len(text)
-            if not 150 <= n <= 400:
-                errors.append(f"{cid} situation {n} chars, want 150-400")
-            # 문장이 두세 개면 상황문이지 읽을 거리가 아니다.
-            # 우리 원고는 해요체이므로 `다.`만 세면 한 문장도 못 센다.
-            n = len(re.findall(r"[다요]\.", text))
-            if n < 4:
-                errors.append(f"{cid} situation has only {n} sentences, want >=4")
+            sentences = len(re.findall(r"[다요]\.", text))
+            if cid in pilot_short:
+                if not 80 <= n <= 280:
+                    errors.append(f"{cid} pilot situation {n} chars, want 80-280")
+                if not 2 <= sentences <= 4:
+                    errors.append(f"{cid} pilot situation has {sentences} sentences, want 2-3")
+                if re.search(r"\n    fact:", chunk):
+                    errors.append(f"{cid} pilot short should not have a fact question")
+            else:
+                if not 150 <= n <= 400:
+                    errors.append(f"{cid} situation {n} chars, want 150-400")
+                # 문장이 두세 개면 상황문이지 읽을 거리가 아니다.
+                # 우리 원고는 해요체이므로 `다.`만 세면 한 문장도 못 센다.
+                if sentences < 4:
+                    errors.append(f"{cid} situation has only {sentences} sentences, want >=4")
             errors.extend(check_reading_body(cid, text))
         ans = re.search(r'answerTermId: "([^"]+)"', chunk)
         raw = re.search(r'choiceIds: \[([^\]]+)\]', chunk)
@@ -663,6 +683,12 @@ def main() -> int:
             errors.append(f"{bid} paragraphs ({n_p}) < questions ({n_q})")
         if n_cloze > 1:
             errors.append(f"{bid} cloze should be at most 1, got {n_cloze}")
+        n_term = len(re.findall(r'depth: "term"', chunk))
+        n_context = n_cloze + len(re.findall(r'depth: "(?:number|cause|next)"', chunk))
+        if n_term > 1:
+            errors.append(f"{bid} definition questions {n_term} > 1")
+        if n_context < 1:
+            errors.append(f"{bid} needs at least 1 context/cause/compare/next question")
         types, scored_n = rhythm_from_chunk(chunk)
         warn_briefing_rhythm(bid, types, scored_n)
         if 'contentMode: "synthetic"' in chunk or 'sourceMode: "synthetic"' in chunk:
