@@ -63,6 +63,8 @@ export interface LearnerRecord {
   /** 마지막으로 학습 행동이 있었던 날. 공백 일수를 재는 데 쓴다. */
   lastStudyDate: string | null;
   streakDays: number;
+  /** `HH:mm` (KST). 없으면 20:00. */
+  nudgeSlot?: string;
   /** 마지막으로 알림을 보낸 날과 종류. 같은 공백에서 반복 발송을 막는다. */
   lastNotificationSentDate: string | null;
   lastNotificationKind: string | null;

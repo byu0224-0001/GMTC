@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { clientKey, originAllowed, rateLimited, validLearnerId } from "./_guard.js";
 import { getLearner, putLearner, deleteLearner, storeReady, type LearnerRecord } from "./_store.js";
 import { validSubscription } from "./_push.js";
+import { isNudgeSlot } from "../src/content/notifications.js";
 
 /**
  * 알림 판단에 필요한 최소 상태만 받는다.
@@ -58,6 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       timezone: str("timezone", prev?.timezone ?? "Asia/Seoul") ?? "Asia/Seoul",
       lastDefaultDoneDate: pickDate(body?.lastDefaultDoneDate, prev?.lastDefaultDoneDate ?? null),
       lastStudyDate: pickDate(body?.lastStudyDate, prev?.lastStudyDate ?? null),
+      nudgeSlot: isNudgeSlot(body?.nudgeSlot) ? body.nudgeSlot : (prev?.nudgeSlot ?? "20:00"),
       streakDays:
         typeof body?.streakDays === "number" && body.streakDays >= 0
           ? Math.min(9999, Math.round(body.streakDays))

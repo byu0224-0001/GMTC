@@ -137,6 +137,7 @@ export async function syncDailyStatus(
     lastDefaultDoneDate: progress.defaultDoneDate,
     lastStudyDate: lastCompletedStudyDate(progress),
     streakDays: liveStreakDays(lastCompletedStudyDate(progress), progress.streakDays),
+    nudgeSlot: progress.nudgeSlot,
     ...(extra ? { pushSubscription: extra.pushSubscription } : {}),
   };
   const ok = await postStatus(body);

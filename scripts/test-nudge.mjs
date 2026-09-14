@@ -78,8 +78,14 @@ check("시험 발송은 하루 기록을 안 남김", cron.includes("test: true"
 const settings = /export const PUSH_SETTINGS[\s\S]*?} as const/.exec(src)?.[0] ?? "";
 check("설정 시트에 미완료만 발송이라고 적음", settings.includes("하지 않은 날에만") && settings.includes("보내지 않아요"));
 check("시험 알림 버튼 문구", settings.includes("시험 알림 받기"));
+check("알림 시각을 직접 고른다", src.includes("timeHint") && src.includes("한 시간 안에"));
+check("알림 시각이 한국 시간이라고 적음", settings.includes("한국 시간") && settings.includes("7시 12분"));
+check("크론이 고른 시각만 보낸다", cron.includes("matchesNudgeSlot"));
+const vercel = readFileSync("vercel.json", "utf8");
+check("크론이 매시에 돈다", (vercel.match(/cron-nudge/g) ?? []).length === 24);
 
 const prompt = readFileSync("src/components/PushPrompt.tsx", "utf8");
+check("알림 시각이 네이티브 타임피커다", prompt.includes('type="time"'));
 check("세션을 끝까지 안 마쳐도 알림을 묻는다", prompt.includes("!state.lastStudyDate && state.doneSessions < 1"));
 check("지원 안 되어도 시트에서 이유를 말한다", prompt.includes('ui === "unsupported"') && prompt.includes("지금은 알림을 켤 수 없어요"));
 
@@ -91,7 +97,7 @@ const health = readFileSync("api/health.ts", "utf8");
 check("health가 클라이언트 VAPID를 본다", health.includes("viteVapid") && health.includes("VITE_VAPID_PUBLIC_KEY"));
 
 const progress = readFileSync("src/lib/progress.ts", "utf8");
-check("통계의 연속 일수는 지금 계산", progress.includes("liveStreakDays(state.lastStudyDate, state.streakDays"));
+check("통계의 연속 일수는 지금 계산", progress.includes("liveStreakDays(lastCompletedStudyDate(state), state.streakDays"));
 
 check("쉬는 날의 연속은 크론에서도 0", cron.includes("since <= 1 ? rec.streakDays : 0"));
 

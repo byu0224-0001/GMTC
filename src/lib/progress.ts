@@ -1,6 +1,7 @@
 import type { ProgressState, GradeLabel, BriefingAttempt, RetrievalForm, SrsCard } from "../types";
 import { REPORT_BOK_CANON, canonBokId } from "../content/reportLexicon";
 import { clearEvents } from "./events";
+import { DEFAULT_NUDGE_SLOT, isNudgeSlot } from "../content/notifications";
 import { addDays, clampCardSchedule, grade, isFamiliar, kstDateKey, liveStreakDays, newCard } from "./srs";
 
 export const STORAGE_KEY = "voca:progress:v2";
@@ -24,6 +25,7 @@ function empty(): ProgressState {
     pushAskedAt: null,
     pushLaterAt: null,
     pushDisabled: false,
+    nudgeSlot: DEFAULT_NUDGE_SLOT,
     doneSessions: 0,
     studyDates: [],
     celebratedFamiliarIds: [],
@@ -99,6 +101,7 @@ export function loadProgress(): ProgressState {
       pushAskedAt: parsed.pushAskedAt ?? null,
       pushLaterAt: parsed.pushLaterAt ?? null,
       pushDisabled: parsed.pushDisabled ?? false,
+      nudgeSlot: isNudgeSlot(parsed.nudgeSlot) ? parsed.nudgeSlot : DEFAULT_NUDGE_SLOT,
       doneSessions: parsed.doneSessions ?? 0,
       studyDates: parsed.studyDates ?? [],
       celebratedFamiliarIds: parsed.celebratedFamiliarIds,
@@ -214,6 +217,10 @@ export function markPushLater(state: ProgressState, now = new Date()): ProgressS
 
 export function setPushDisabled(state: ProgressState, disabled: boolean): ProgressState {
   return { ...state, pushDisabled: disabled };
+}
+
+export function setNudgeSlot(state: ProgressState, slot: string): ProgressState {
+  return { ...state, nudgeSlot: isNudgeSlot(slot) ? slot : DEFAULT_NUDGE_SLOT };
 }
 
 /**

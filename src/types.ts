@@ -99,6 +99,8 @@ export interface ProgressState {
   pushLaterAt?: string | null;
   /** 권한은 있는데 앱에서 끈 상태. */
   pushDisabled?: boolean;
+  /** 알림을 받을 시각. `HH:mm` (KST). */
+  nudgeSlot?: string;
   /** 권장 분량을 마친 날의 수. 알림을 물어볼 시점을 정하는 데 쓴다. */
   doneSessions: number;
   /** 학습한 날(KST). 주간 점과 월간 달력을 그릴 때 쓴다. 최근 90일만 둔다. */

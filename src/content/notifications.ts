@@ -129,9 +129,39 @@ export const PUSH_PROMPT = {
 export const PUSH_SETTINGS = {
   onTitle: "알림 켜짐",
   onBody: "오늘 학습을 아직 하지 않은 날에만 알려드려요. 이미 학습을 마쳤다면 알림은 보내지 않아요.",
-  onWhen: "보통 저녁 8시쯤 한 번 확인해요.",
+  onWhen: "한국 시간 기준으로, 고른 시각이 있는 한 시간 안에 하루 한 번 확인해요.",
+  timeLabel: "알림 시각",
+  timeHint: "한국 시간 기준이에요. 고른 시각이 있는 한 시간 안에 하루 한 번 와요. 7시 12분을 골라도 7시에서 8시 사이에 옵니다.",
   test: "시험 알림 받기",
   testHint: "지금 이 기기로 오는지 바로 확인해 볼 수 있어요. 오늘 학습과 상관없어요.",
   testSent: "보냈어요. 알림이 보이면 이 기기로 푸시가 도착한 거예요.",
   testFail: "지금은 보내지 못했어요. 잠시 후 다시 시도해 주세요.",
 } as const;
+
+export const DEFAULT_NUDGE_SLOT = "20:00";
+
+export function isNudgeSlot(v: unknown): v is string {
+  if (typeof v !== "string" || !/^\d{2}:\d{2}$/.test(v)) return false;
+  const [h, m] = v.split(":").map(Number);
+  return h >= 0 && h <= 23 && m >= 0 && m <= 59;
+}
+
+/** 오전 6시, 오후 8시 30분. */
+export function nudgeSlotLabel(id: string): string {
+  const slot = isNudgeSlot(id) ? id : DEFAULT_NUDGE_SLOT;
+  const [h, m] = slot.split(":").map(Number);
+  const ap = h < 12 ? "오전" : "오후";
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return m === 0 ? `${ap} ${h12}시` : `${ap} ${h12}시 ${String(m).padStart(2, "0")}분`;
+}
+
+/**
+ * Hobby 크론은 하루에 한 번, 그 시각이 있는 한 시간 안에 온다.
+ * 분은 기억하되 발송은 고른 시(時)가 같은지만 본다.
+ */
+export function matchesNudgeSlot(slot: string, now = new Date()): boolean {
+  const id = isNudgeSlot(slot) ? slot : DEFAULT_NUDGE_SLOT;
+  const hour = Number(id.slice(0, 2));
+  const d = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  return d.getUTCHours() === hour;
+}

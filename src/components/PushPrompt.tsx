@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
-import { PUSH_PROMPT, PUSH_SETTINGS } from "../content/notifications";
+import {
+  DEFAULT_NUDGE_SLOT,
+  PUSH_PROMPT,
+  PUSH_SETTINGS,
+  isNudgeSlot,
+} from "../content/notifications";
 import { logEvent } from "../lib/events";
+import { syncDailyStatus } from "../lib/learner";
 import {
   loadProgress,
   markPushAsked,
   markPushLater,
   saveProgress,
+  setNudgeSlot,
   setPushDisabled,
 } from "../lib/progress";
 import {
@@ -161,6 +168,7 @@ export function PushSheet({ onClose }: { onClose: () => void }) {
   const [subscribed, setSubscribed] = useState<boolean | undefined>(undefined);
   const state = loadProgress();
   const ui = pushUiState(state, subscribed);
+  const slot = isNudgeSlot(state.nudgeSlot) ? state.nudgeSlot : DEFAULT_NUDGE_SLOT;
 
   useEffect(() => {
     let cancel = false;
@@ -217,6 +225,13 @@ export function PushSheet({ onClose }: { onClose: () => void }) {
           ui={ui}
           busy={busy}
           testState={testState}
+          slot={slot}
+          onSlot={(next) => {
+            const saved = setNudgeSlot(loadProgress(), next);
+            saveProgress(saved);
+            void syncDailyStatus(saved);
+            refresh();
+          }}
           onOn={() => void turnOn()}
           onOff={() => void turnOff()}
           onTest={() => void sendTest()}
@@ -229,10 +244,40 @@ export function PushSheet({ onClose }: { onClose: () => void }) {
   );
 }
 
+function NudgeTimePicker({
+  slot,
+  onSlot,
+}: {
+  slot: string;
+  onSlot: (id: string) => void;
+}) {
+  return (
+    <div className="nudge-time">
+      <label className="caption" htmlFor="nudge-time-input">
+        {PUSH_SETTINGS.timeLabel}
+      </label>
+      <input
+        id="nudge-time-input"
+        className="nudge-time-input"
+        type="time"
+        value={slot}
+        onChange={(e) => {
+          if (e.target.value) onSlot(e.target.value);
+        }}
+      />
+      <p className="caption" style={{ margin: "8px 0 0" }}>
+        {PUSH_SETTINGS.timeHint}
+      </p>
+    </div>
+  );
+}
+
 function SheetBody({
   ui,
   busy,
   testState,
+  slot,
+  onSlot,
   onOn,
   onOff,
   onTest,
@@ -240,6 +285,8 @@ function SheetBody({
   ui: PushUiState;
   busy: boolean;
   testState: "idle" | "sent" | "fail";
+  slot: string;
+  onSlot: (id: string) => void;
   onOn: () => void;
   onOff: () => void;
   onTest: () => void;
@@ -284,7 +331,10 @@ function SheetBody({
       <>
         <p style={{ margin: "10px 0 0", fontWeight: 600 }}>{PUSH_SETTINGS.onTitle}</p>
         <p className="muted" style={{ margin: "8px 0 0" }}>{PUSH_SETTINGS.onBody}</p>
-        <p className="caption" style={{ margin: "8px 0 0" }}>{PUSH_SETTINGS.onWhen}</p>
+        <p className="caption" style={{ margin: "8px 0 0" }}>
+          {PUSH_SETTINGS.onWhen}
+        </p>
+        <NudgeTimePicker slot={slot} onSlot={onSlot} />
         <button className="btn btn-ghost" style={{ marginTop: 14 }} disabled={busy} onClick={onTest}>
           {PUSH_SETTINGS.test}
         </button>
@@ -307,6 +357,7 @@ function SheetBody({
       <p className="muted" style={{ margin: "8px 0 0" }}>
         원하는 경우 다시 받을 수 있어요. 오늘 학습을 마치지 않은 날에만 하루 한 번 알려드려요.
       </p>
+      <NudgeTimePicker slot={slot} onSlot={onSlot} />
       <button className="btn btn-primary" style={{ marginTop: 14 }} disabled={busy} onClick={onOn}>
         알림 받기
       </button>

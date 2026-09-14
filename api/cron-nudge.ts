@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { adminAuthorized, validLearnerId } from "./_guard.js";
 import { configureVapid, deliverPush, recordNudgeSent, validSubscription } from "./_push.js";
 import { allLearnerIds, getLearner, putLearner, storeReady } from "./_store.js";
-import { nudgeFor } from "../src/content/notifications.js";
+import { DEFAULT_NUDGE_SLOT, matchesNudgeSlot, nudgeFor } from "../src/content/notifications.js";
 
 /**
  * 하루 한 번 도는 알림 스케줄러.
@@ -98,6 +98,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       continue;
     }
     if (rec.lastNotificationSentDate === today) {
+      skipped += 1;
+      continue;
+    }
+    if (!matchesNudgeSlot(rec.nudgeSlot ?? DEFAULT_NUDGE_SLOT)) {
       skipped += 1;
       continue;
     }
