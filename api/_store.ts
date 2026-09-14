@@ -11,8 +11,14 @@
  * 앱이 죽지 않아야 한다.
  */
 
-const URL_ENV = process.env.KV_REST_API_URL;
-const TOKEN_ENV = process.env.KV_REST_API_TOKEN;
+const URL_ENV =
+  process.env.KV_REST_API_URL ||
+  process.env.UPSTASH_REDIS_REST_URL ||
+  process.env.UPSTASH_REDIS_REST_KV_REST_API_URL;
+const TOKEN_ENV =
+  process.env.KV_REST_API_TOKEN ||
+  process.env.UPSTASH_REDIS_REST_TOKEN ||
+  process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN;
 
 export function storeReady(): boolean {
   return Boolean(URL_ENV && TOKEN_ENV);

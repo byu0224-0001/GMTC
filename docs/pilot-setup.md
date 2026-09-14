@@ -48,11 +48,13 @@ Authorization: Bearer $EXPORT_TOKEN
 
 ## 1. 저장소 (Upstash Redis / Vercel KV)
 
-Vercel 프로젝트에 Upstash Redis를 연결하면 아래 두 값이 자동으로 주입된다.
+Vercel KV 메뉴는 없어졌다. Marketplace에서 Upstash Redis를 이 프로젝트에 연결한다.
+연결 때 Custom Prefix를 붙이면 이름이 길어질 수 있다. 아래 중 들어오는 쪽을 쓴다.
 
 ```
-KV_REST_API_URL
-KV_REST_API_TOKEN
+KV_REST_API_URL / KV_REST_API_TOKEN
+UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN
+UPSTASH_REDIS_REST_KV_REST_API_URL / UPSTASH_REDIS_REST_KV_REST_API_TOKEN
 ```
 
 SDK를 설치하지 않고 REST로 호출한다. 파일럿 규모(수십 명)에서 이벤트는 하나의
