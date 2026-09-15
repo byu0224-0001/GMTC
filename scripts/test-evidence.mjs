@@ -15,6 +15,9 @@ const figUi = readFileSync("src/components/ReadingFigures.tsx", "utf8");
 const news = readFileSync("src/pages/NewsQuizPage.tsx", "utf8");
 const shorts = readFileSync("src/content/readingCases.ts", "utf8");
 const briefings = readFileSync("src/content/briefings.ts", "utf8");
+const learn = readFileSync("src/pages/LearnPage.tsx", "utf8");
+const asidesSrc = readFileSync("src/content/briefingAsides.ts", "utf8");
+const events = readFileSync("src/lib/events.ts", "utf8");
 
 check("기록 계산은 evidence 한곳", evidence.includes("export function progressEvidence"));
 check("홈이 progressEvidence만 쓴다", home.includes("progressEvidence") && !home.includes("weeklyStats"));
@@ -26,9 +29,9 @@ check("헷갈림은 반복 혼동", evidence.includes("lapses >= 2") && evidence
 check("grade가 familiarAt을 학습 순간에만 찍는다", srs.includes("next.familiarAtRecorded = true"));
 check("backfill이 familiarAt을 소급하지 않는다", !/familiarAt:\s*earned/.test(progress) && progress.includes("familiarAt: card.familiarAt"));
 check("주간 통계도 소급하지 않는다", weekly.includes("familiarAtRecorded"));
-check("첫 viewport에 큰 0을 안 넣는다", report.includes("viewportLine") && !report.includes("progress-stats"));
-check("날짜 상세는 입구만", report.includes("새로 본 말") && report.includes("복습") && !report.includes("일기"));
-check("익숙 0은 섹션을 숨긴다", report.includes("e.recentFamiliar.length") && home.includes("아직 익히는 중이에요"));
+check("첫 viewport에 큰 0을 안 넣는다", report.includes("lang-path") && !report.includes("progress-stats"));
+check("날짜 상세는 입구만", report.includes("새로 만난 말") && report.includes("다시 본 말") && !report.includes("일기"));
+check("익숙 0은 대시로 둔다", report.includes("dash(e.familiarThisWeek)") && !home.includes("아직 익히는 중이에요"));
 check("시각화 정답 후 reveal", briefingPage.includes("revealAfterAnswer") && figures.includes("revealAfterAnswer: true"));
 check("예시 수치 고지", figUi.includes("이해를 돕기 위해 구성한 예시 수치입니다"));
 check("짧은 읽기 체인은 정답 뒤", news.includes("insight-visual") && news.indexOf("insight-visual") > news.indexOf("cse.why"));
@@ -43,7 +46,9 @@ const noContext = briefingChunks.filter((c) => {
   return ctx < 1 && term >= 0;
 }).map((c) => c.split('"', 1)[0]);
 check("기사에 맥락 문항이 있다", noContext.length === 0, noContext.join(", "));
-check("기간·누적 익숙 라벨이 갈린다", report.includes("이번 주 새로 익숙해진 말") && report.includes("지금 익숙한 말"));
+check("기록 흐름이 처음-다시-익숙", report.includes("처음 만남") && report.includes("다시 만남") && report.includes("익숙해짐"));
+check("달력은 접힌 입구", report.includes("월간 기록 보기") && report.includes("monthOpen"));
+check("세션 완료 extra는 큐가 있을 때만", learn.includes("extraLeft") && learn.includes("source === \"extra\" ? 0"));
 
 function recordedFamiliarDate(card) {
   if (!card.familiarAtRecorded || !card.familiarAt) return null;
@@ -112,6 +117,43 @@ check(
 );
 check("evidence.ts가 같은 완료 가드를 쓴다", evidence.includes("if (!attempt.completedAt) continue"));
 check("evidence.ts가 familiarAtRecorded 없이 소급하지 않는다", evidence.includes("if (!card.familiarAtRecorded || !card.familiarAt) return null"));
+check("annotation 이벤트를 남긴다", events.includes("reading_annotation_open"));
+check("기사 aside를 본문에 붙인다", briefingPage.includes("withReadingAsides"));
+
+const briefingIds = briefingChunks.map((c) => c.split('"', 1)[0]);
+function asideSlice(id) {
+  const start = asidesSrc.indexOf(`"${id}": [`);
+  if (start < 0) return "";
+  const next = asidesSrc.indexOf(`\n  "bf-`, start + 10);
+  return asidesSrc.slice(start, next === -1 ? asidesSrc.indexOf("\n};", start) : next);
+}
+const asideCounts = briefingIds.map((id) => (asideSlice(id).match(/match: "/g) || []).length);
+check(
+  "기사 aside는 편당 2개",
+  briefingIds.length === 16 && asideCounts.every((n) => n >= 1 && n <= 3) && asideCounts.every((n) => n === 2),
+  briefingIds.map((id, i) => `${id}:${asideCounts[i]}`).join(" "),
+);
+const miss = [];
+for (let i = 0; i < briefingIds.length; i++) {
+  const id = briefingIds[i];
+  const chunk = briefingChunks[i];
+  const matches = [...asideSlice(id).matchAll(/match: "((?:[^"\\]|\\.)*)"/g)].map((m) => m[1]);
+  for (const m of matches) {
+    if (!chunk.includes(m)) miss.push(`${id}:${m.slice(0, 28)}`);
+  }
+}
+check("aside 문장이 본문에 있다", miss.length === 0, miss.join(" | "));
+const shortChunks = shorts.split(/\n  \{\n    id: "/).slice(1);
+const shortOver = [];
+let shortWith = 0;
+for (const c of shortChunks) {
+  const id = c.split('"', 1)[0];
+  const n = (c.match(/\n    aside: \{/g) || []).length;
+  if (n > 1) shortOver.push(id);
+  if (n) shortWith += 1;
+}
+check("짧은 읽기 aside는 편당 0~1", shortOver.length === 0, shortOver.join(", "));
+check("짧은 읽기 aside는 소수만", shortWith >= 1 && shortWith <= 12, String(shortWith));
 
 console.table(checks);
 const failed = checks.filter((c) => c.결과 === "실패");

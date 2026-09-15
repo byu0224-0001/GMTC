@@ -163,6 +163,7 @@ export function LearnPage({
     const reading = briefingForPlan(plan, loadProgress());
     const map = mapForBriefing(reading.id);
     const emptyExtra = source === "extra" && queue.length === 0;
+    const extraLeft = source === "extra" ? 0 : extraQueue(terms, loadProgress()).length;
     return (
       <div className="page session">
         <div className="empty">
@@ -212,13 +213,15 @@ export function LearnPage({
           >
             읽기 보러 가기
           </Link>
-          <Link
-            className="btn btn-ghost"
-            to="/learn/extra"
-            style={{ display: "grid", placeItems: "center", marginTop: 8, textDecoration: "none" }}
-          >
-            5분 더 익히기
-          </Link>
+          {extraLeft ? (
+            <Link
+              className="btn btn-ghost"
+              to="/learn/extra"
+              style={{ display: "grid", placeItems: "center", marginTop: 8, textDecoration: "none" }}
+            >
+              5분 더 익히기
+            </Link>
+          ) : null}
           {map ? (
             <Link
               className="btn btn-ghost"

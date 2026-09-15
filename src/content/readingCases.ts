@@ -45,6 +45,10 @@ export const READING_CASES: ContextCase[] = [
     termIds: ["소비자물가지수-cpi", "근원인플레이션율", "기준금리", "국채"],
     nextToCheck: ["근원물가 추이", "기대인플레이션", "임금 상승률"],
     freshness: "evergreen",
+    aside: {
+      kind: "why",
+      body: "물가가 예상보다 높으면 중앙은행이 금리를 빨리 내리기 어렵다고 봐요. 그래서 인하 기대가 줄고 시장금리가 오를 수 있어요.",
+    },
   },
   {
     id: "cx-hike-duration",
@@ -127,6 +131,10 @@ export const READING_CASES: ContextCase[] = [
     termIds: ["테이퍼링", "양적완화정책", "기준금리", "국채"],
     nextToCheck: ["매입 축소 속도", "장단기금리차", "중앙은행 발언"],
     freshness: "evergreen",
+    aside: {
+      kind: "why",
+      body: "사들이는 양을 줄이면 장기 국채 수요가 줄어들 수 있어요. 기준금리가 그대로여도 장기금리가 먼저 반응할 수 있어요.",
+    },
   },
   {
     id: "cx-current-account",
@@ -144,6 +152,10 @@ export const READING_CASES: ContextCase[] = [
     termIds: ["경상수지", "국제수지-bop", "기준환율", "외환보유액"],
     nextToCheck: ["금융계정 자금 흐름", "내외 금리차", "수출 단가와 물량"],
     freshness: "evergreen",
+    aside: {
+      kind: "condition",
+      body: "무역에서 외화가 들어와도, 금리 차로 투자자금이 빠져나가면 환율은 오를 수 있어요. 흑자 한 줄만으로 환율 방향을 단정하지 않아요.",
+    },
   },
   {
     id: "cx-ltv",

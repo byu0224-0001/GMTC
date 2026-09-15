@@ -194,8 +194,18 @@ export interface DrillItem {
   note: string;
 }
 
+/** 읽기 본문에서 궁금한 문장만 펼치는 맥락 주석. 용어 뜻(TermPeek)과 다르다. */
+export type ReadingAsideKind = "why" | "example" | "condition" | "number" | "next";
+
+export interface ReadingAside {
+  kind: ReadingAsideKind;
+  body: string;
+  flows?: { title: string; steps: string[] }[];
+  takeaway?: string;
+}
+
 export type BriefingBlock =
-  | { type: "p"; text: string }
+  | { type: "p"; text: string; aside?: ReadingAside }
   | { type: "h"; text: string }
   | {
       type: "metric";

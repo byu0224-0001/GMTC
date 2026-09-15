@@ -4,6 +4,7 @@ import { ReadingAsk, askKindFromDepth } from "../components/ReadingAsk";
 import { TermPeek, type PeekQuery } from "../components/TermPeek";
 import { READING_DISCLAIMER, READING_KIND_SHORT } from "../content/brand";
 import { CONTEXT_CASES } from "../content/literacy";
+import { ReadingAsideNote } from "../components/ReadingAside";
 import { beginTodaySession, endTodaySession, logEvent } from "../lib/events";
 import { chipClass } from "../lib/chipTone";
 import { flushEvents } from "../lib/learner";
@@ -144,6 +145,7 @@ export function ContextQuizPage({ terms }: { terms: Term[] }) {
         {bodyParagraphs(cse.situation).map((p) => (
           <p key={p.slice(0, 24)} className="briefing-p lead" style={{ margin: "0 0 12px" }}>{p}</p>
         ))}
+        {cse.aside ? <ReadingAsideNote aside={cse.aside} articleId={cse.id} /> : null}
         <p className="caption" style={{ margin: "0 0 8px" }}>
           {READING_DISCLAIMER}
         </p>

@@ -32,6 +32,7 @@ export interface ConfusedItem {
   label: string;
   vsId?: string;
   vsLabel?: string;
+  lapses: number;
 }
 
 export interface EncounterItem {
@@ -66,6 +67,7 @@ export interface ProgressEvidence {
   encounters: EncounterItem[];
   weekDays: { date: string; label: string; done: boolean }[];
   monthLabel: string;
+  monthStudyDays: number;
   monthCells: (MonthCell | null)[];
   heroTitle: string;
   heroSub: string;
@@ -188,6 +190,7 @@ export function progressEvidence(
         label: displayTitle(term),
         vsId,
         vsLabel: vsId ? labelOf(vsId, terms) : undefined,
+        lapses: card.lapses,
       });
     }
     if (!isFamiliar(card)) continue;
@@ -225,6 +228,7 @@ export function progressEvidence(
     monthCells.push({ date, done: studied.has(date) });
   }
 
+  const monthStudyDays = monthCells.filter((c) => c?.done).length;
   const newThisWeek = newIds.size;
   const reviewThisWeek = reviewIds.size;
   const familiarThisWeek = familiarWeekIds.size;
@@ -274,7 +278,8 @@ export function progressEvidence(
     confused: confused.slice(0, 6),
     encounters,
     weekDays,
-    monthLabel: `${y}년 ${m}월`,
+    monthLabel: `${m}월`,
+    monthStudyDays,
     monthCells,
     heroTitle,
     heroSub,

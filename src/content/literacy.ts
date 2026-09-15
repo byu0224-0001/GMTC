@@ -1,4 +1,4 @@
-import type { ReadingFormat, Term } from "../types";
+import type { ReadingAside, ReadingFormat, Term } from "../types";
 import { CORE_COPY } from "./coreCopy";
 
 export type Taxonomy =
@@ -252,6 +252,8 @@ export interface ContextCase {
   kind?: "recognize" | "interpret" | "number";
   nextToCheck?: string[];
   readingFormat?: ReadingFormat;
+  /** 짧은 읽기는 0~1개. 질문 답을 미리 주지 않는 문장에만 붙인다. */
+  aside?: ReadingAside;
 }
 
 /**

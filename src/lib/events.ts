@@ -18,6 +18,7 @@ export type EventName =
   | "reading_answer"
   | "reading_complete"
   | "reading_exit"
+  | "reading_annotation_open"
   | "push_prompt_result"
   | "push_soft_prompt_shown"
   | "push_soft_prompt_accept"

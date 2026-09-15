@@ -251,15 +251,7 @@ export function HomePage({
 
         {showWeek ? (
           <Link to="/report" className="week-card" style={{ color: "inherit", display: "block" }}>
-            <div className="caption">이번 주 기록</div>
-            <p className="week-card-title">
-              {evidence.studyDays
-                ? `이번 주 ${evidence.studyDays}일째 금맹탈출 중`
-                : "이번 주 탈출 기록"}
-            </p>
-            <p className="muted" style={{ margin: "6px 0 0" }}>
-              {evidence.viewportLine}
-            </p>
+            <div className="caption">이번 주</div>
             <div className="week-dots" role="list" aria-label="이번 주 학습한 날">
               {evidence.weekDays.map((d) => (
                 <div
@@ -273,22 +265,13 @@ export function HomePage({
                 </div>
               ))}
             </div>
-            {evidence.recentFamiliar.length ? (
-              <>
-                <div className="caption" style={{ marginTop: 16 }}>이번 주 새로 익숙해진 말</div>
-                <p style={{ margin: "6px 0 0", fontWeight: 600 }}>
-                  {evidence.recentFamiliar.slice(0, 3).map((t) => t.label).join(" · ")}
-                </p>
-              </>
-            ) : evidence.emptyFamiliar ? (
-              <p className="caption" style={{ margin: "12px 0 0" }}>
-                아직 익히는 중이에요. 며칠 뒤 다시 만나면서 익숙한 말이 생겨요.
-              </p>
-            ) : evidence.familiarTotal ? (
-              <p className="caption" style={{ margin: "12px 0 0" }}>
-                지금 익숙한 말 {evidence.familiarTotal}개 · 언제 익숙해졌는지는 이번 기록부터 남아요.
-              </p>
-            ) : null}
+            <p className="week-card-title">
+              {evidence.newThisWeek
+                ? `${evidence.newThisWeek}개 새로 만남`
+                : evidence.studyDays
+                  ? `${evidence.studyDays}일 학습`
+                  : "오늘 한 번 만나면 여기에 쌓여요"}
+            </p>
           </Link>
         ) : null}
 

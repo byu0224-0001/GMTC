@@ -6,7 +6,9 @@ import { TermPeek, type PeekQuery } from "../components/TermPeek";
 import { resolveTermPreview } from "../lib/termPreview";
 import { briefingById } from "../content/briefings";
 import { BRIEFING_FIGURES } from "../content/briefingFigures";
+import { withReadingAsides } from "../content/briefingAsides";
 import { CompareBars, FlowDiagram, MetricCard } from "../components/ReadingFigures";
+import { ReadingAsideNote } from "../components/ReadingAside";
 import { READING_DISCLAIMER } from "../content/brand";
 import { mapForBriefing } from "../content/learningMaps";
 import { logEvent } from "../lib/events";
@@ -78,7 +80,7 @@ function loadBriefingResume(key: string): BriefingResume {
 }
 
 export function BriefingReader({
-  briefing,
+  briefing: raw,
   terms,
   onFinish,
   onPause,
@@ -90,6 +92,7 @@ export function BriefingReader({
   onPause?: () => void;
   finishLabel?: string;
 }) {
+  const briefing = useMemo(() => withReadingAsides(raw), [raw]);
   const startedAt = useRef(new Date().toISOString()).current;
   const lastActionAt = useRef(Date.now());
   const resumeKey = `briefing:${briefing.id}`;
@@ -257,6 +260,7 @@ export function BriefingReader({
               }
               askStep={pIndex >= 0 ? pIndex + 1 : 1}
               askTotal={pIndex >= 0 ? primaries.length : 1}
+              articleId={briefing.id}
               followIds={
                 block.type === "choice" && block.depth === "next" && picked[i]
                   ? briefing.supportTermIds
@@ -343,6 +347,7 @@ function BriefingBlockView({
   askStep = 0,
   askTotal = 0,
   followIds,
+  articleId,
 }: {
   block: BriefingBlock;
   terms: Term[];
@@ -358,10 +363,16 @@ function BriefingBlockView({
   askStep?: number;
   askTotal?: number;
   followIds?: string[];
+  articleId?: string;
 }) {
   const [revive, setRevive] = useState(false);
   if (block.type === "p") {
-    return <p className={lead ? "briefing-p lead" : "briefing-p"}>{block.text}</p>;
+    return (
+      <div>
+        <p className={lead ? "briefing-p lead" : "briefing-p"}>{block.text}</p>
+        {block.aside && articleId ? <ReadingAsideNote aside={block.aside} articleId={articleId} /> : null}
+      </div>
+    );
   }
   if (block.type === "h") {
     return <h3 className="read-sub">{block.text}</h3>;

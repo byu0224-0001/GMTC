@@ -114,12 +114,15 @@ check("오늘 읽기 selector가 한곳", todayPlan.includes("selectDailyReading
 check("편집 선택이 아니면 오늘 글을 강제하지 않는다", todayPlan.includes("editorial") && readingSelect.includes("plan.editorial"));
 check("홈이 읽기 탭과 같은 selector", readFileSync("src/pages/HomePage.tsx", "utf8").includes("selectDailyReading") && readFileSync("src/pages/NewsFeedPage.tsx", "utf8").includes("selectDailyReading"));
 check("읽기를 마치면 다른 글을 권한다", readFileSync("src/pages/HomePage.tsx", "utf8").includes("다른 글 한 편 더 보기"));
-check("홈 주간 기록이 상세로 간다", readFileSync("src/pages/HomePage.tsx", "utf8").includes('to="/report"') && readFileSync("src/pages/HomePage.tsx", "utf8").includes("금맹탈출 중"));
-check("기록 화면에 월간 달력", readFileSync("src/pages/ReportPage.tsx", "utf8").includes("month-cal") && readFileSync("src/pages/ReportPage.tsx", "utf8").includes("아직 헷갈리는 말"));
+check("홈 주간 기록이 상세로 간다", readFileSync("src/pages/HomePage.tsx", "utf8").includes('to="/report"') && readFileSync("src/pages/HomePage.tsx", "utf8").includes("개 새로 만남"));
+check("기록 화면에 월간 달력", readFileSync("src/pages/ReportPage.tsx", "utf8").includes("month-cal") && readFileSync("src/pages/ReportPage.tsx", "utf8").includes("헷갈리는 개념"));
 check("기사 상단에 학습용 기사", readFileSync("src/pages/BriefingPage.tsx", "utf8").includes("학습용 기사"));
 check("읽기 도표는 데이터 블록", readFileSync("src/content/briefingFigures.ts", "utf8").includes("BRIEFING_FIGURES") && readFileSync("src/components/ReadingFigures.tsx", "utf8").includes("MetricCard"));
 check("도표가 정답을 미리 안 연다", readFileSync("src/pages/BriefingPage.tsx", "utf8").includes("revealAfterAnswer"));
 check("홈·기록이 같은 지표 함수", readFileSync("src/pages/HomePage.tsx", "utf8").includes("progressEvidence") && readFileSync("src/pages/ReportPage.tsx", "utf8").includes("progressEvidence"));
+check("추가 세션은 별도 인스턴스", readFileSync("src/App.tsx", "utf8").includes('key="session"') && readFileSync("src/App.tsx", "utf8").includes('key="extra"'));
+check("맥락 주석은 본문 안에서 연다", briefingPage.includes("ReadingAsideNote") && readFileSync("src/components/ReadingAside.tsx", "utf8").includes("reading_annotation_open"));
+check("맥락 주석은 시트와 다르다", !readFileSync("src/components/ReadingAside.tsx", "utf8").includes("TermPeek"));
 
 const sheet = readFileSync("src/components/PushPrompt.tsx", "utf8");
 check("알림 시트에 시험 발송", sheet.includes("requestTestPush") && sheet.includes("PUSH_SETTINGS"));

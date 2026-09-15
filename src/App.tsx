@@ -89,10 +89,15 @@ export default function App() {
         <Route path="/learn/map/:mapId" element={<LearnMapPage terms={terms} progress={progress} />} />
         <Route path="/learn/core" element={<CoreListPage terms={terms} progress={progress} />} />
         <Route path="/learn/report" element={<ReportHubPage progress={progress} />} />
-        <Route path="/learn/session" element={<LearnPage terms={terms} todayPlan={displayPlan} />} />
+        {/*
+          같은 LearnPage를 두 경로에 쓰면 React가 인스턴스를 재사용한다.
+          오늘 세션을 마친 뒤 `/learn/extra`로 가도 `done`이 그대로라
+          `5분 더`가 눌리지 않은 것처럼 보인다. 키로 강제로 다시 연다.
+        */}
+        <Route path="/learn/session" element={<LearnPage key="session" terms={terms} todayPlan={displayPlan} />} />
         <Route
           path="/learn/extra"
-          element={<LearnPage terms={terms} todayPlan={displayPlan} source="extra" />}
+          element={<LearnPage key="extra" terms={terms} todayPlan={displayPlan} source="extra" />}
         />
         <Route path="/context" element={<ContextFeedPage terms={terms} progress={progress} todayPlan={displayPlan} />} />
         <Route path="/briefing/:briefingId" element={<BriefingPage terms={terms} />} />
