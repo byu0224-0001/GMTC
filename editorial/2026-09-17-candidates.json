@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-09-17T08:44:19.605904+09:00",
+  "windowHours": 24,
+  "count": 3,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916b.htm",
+      "publishedAt": "2026-09-16T18:00:00+00:00",
+      "matchedTermIds": [
+        "시장평균환율-mar",
+        "기준금리"
+      ],
+      "termIds": [
+        "시장평균환율-mar",
+        "기준금리"
+      ],
+      "score": 8,
+      "fitness": "중간"
+    },
+    {
+      "id": "c2",
+      "title": "ECB wage tracker at 2.7% in H1 2027, pointing to a modest uptick in negotiated wage growth",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260916~7bc58ebef4.en.html",
+      "publishedAt": "2026-09-16T08:00:00+00:00",
+      "matchedTermIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "termIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "score": 6,
+      "fitness": "중간"
+    },
+    {
+      "id": "c3",
+      "title": "Federal Reserve issues FOMC statement",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+      "publishedAt": "2026-09-16T18:00:00+00:00",
+      "matchedTermIds": [
+        "기준금리"
+      ],
+      "termIds": [
+        "기준금리"
+      ],
+      "score": 5,
+      "fitness": "중간"
+    }
+  ]
+}
