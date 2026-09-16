@@ -507,16 +507,38 @@ def main() -> int:
             if f"{field}:" not in body:
                 errors.append(f"{sid} SESSION_COPY missing {field}")
         if "commonConfusions:" not in body:
-            WARNINGS.append(f"{sid} SESSION_COPY has no commonConfusions — 없어도 된다. 억지 비교인지 볼 것")
+            pass
+        confusion = re.search(r'commonConfusions:\s*\["((?:[^"\\]|\\.)*)"\]', body)
         one = re.search(r'oneLiner: "((?:[^"\\]|\\.)*)"', body)
         easy = re.search(r'easyExplanation: "((?:[^"\\]|\\.)*)"', body)
         why = re.search(r'whyItMatters: "((?:[^"\\]|\\.)*)"', body)
+        sit = re.search(r'typicalSituation: "((?:[^"\\]|\\.)*)"', body)
         if one and easy and one.group(1).strip() == easy.group(1).strip():
             WARNINGS.append(f"{sid} oneLiner == easyExplanation")
         if one and why and one.group(1).strip() == why.group(1).strip():
             WARNINGS.append(f"{sid} oneLiner == whyItMatters")
         if easy and why and easy.group(1).strip() == why.group(1).strip():
             WARNINGS.append(f"{sid} easyExplanation == whyItMatters")
+        if why and sit:
+            w, t = why.group(1).strip(), sit.group(1).strip()
+            if w == t or (len(w) > 24 and (w in t or t in w)):
+                WARNINGS.append(f"{sid} whyItMatters repeats typicalSituation")
+        if easy and "평편" in easy.group(1):
+            WARNINGS.append(f"{sid} easyExplanation has 평편 — 평균적으로")
+        if one and "정부가" in one.group(1) and re.search(r"중앙은행|통화정책", body):
+            WARNINGS.append(f"{sid} oneLiner says 정부 but copy includes 중앙은행/통화정책")
+        if confusion:
+            conf = confusion.group(1)
+            fxish = any(w in conf for w in ("환율", "절상", "절하"))
+            about_fx = any(w in sid or (one and w in one.group(1)) for w in ("환율", "외환", "평가절상", "평가절하"))
+            if fxish and not about_fx:
+                WARNINGS.append(f"{sid} confusion looks forced (환율/절상) — 비우는 편이 낫다")
+            kycish = "KYC" in conf or "신분증" in conf
+            about_kyc = "kyc" in sid.lower() or "고객확인" in sid or (one and "고객" in one.group(1) and "확인" in one.group(1))
+            if kycish and not about_kyc:
+                WARNINGS.append(f"{sid} confusion looks forced (KYC/신분증) — 인접 개념인지 볼 것")
+            if "전환사채" in conf and not any(k in sid.lower() for k in ("전환", "신주인수권", "bw", "cb", "사채")):
+                WARNINGS.append(f"{sid} confusion looks forced (전환사채) — 인접 개념인지 볼 것")
         if easy and len(easy.group(1)) > 240:
             WARNINGS.append(f"{sid} easyExplanation {len(easy.group(1))} chars > 240")
     if 'copyReview: "approved"' in session_src:
@@ -549,6 +571,10 @@ def main() -> int:
         errors.append("invariant: oneLiner/feedback overlap must be filtered")
     if "조금 더 보면" in card_src or "이렇게 읽어요" in card_src:
         errors.append("invariant: first learn card must not stack extra copy fields")
+    if "왜 알아두면 좋을까요?" in card_src or "헷갈리기 쉬워요" in card_src:
+        errors.append("invariant: learn card must not use why/confusion fold boxes")
+    if "조금 더 알아보기" not in card_src:
+        errors.append("invariant: learn card must send depth to term detail")
 
     stem_src = (ROOT / "src/content/learnStems.ts").read_text(encoding="utf-8")
     stem_ids = re.findall(r'^  "(cx-[^"]+)":', stem_src, re.M)

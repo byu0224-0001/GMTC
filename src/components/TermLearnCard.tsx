@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { RelatedConcepts } from "./Chrome";
 import { alsoCalled } from "../content/alsoCalled";
 import { TAXONOMY_LABEL, type Taxonomy } from "../content/literacy";
@@ -13,47 +14,39 @@ export function sourceLooksAligned(term: Pick<Term, "definition" | "headword" | 
   );
 }
 
-function Fold({ title, body }: { title: string; body: string }) {
-  return (
-    <details className="official-fold" style={{ marginTop: 12 }}>
-      <summary>{title}</summary>
-      <p className="muted" style={{ margin: 0 }}>{body}</p>
-    </details>
-  );
+function firstSentence(s: string): string {
+  return s.split(/(?<=[다요]\.)\s+/).filter(Boolean)[0]?.trim() ?? s.trim();
 }
 
 /**
- * 학습용 용어 카드.
- * 데이터는 깊어도 첫 화면은 한 줄만 연다. 원문은 접힌 근거다.
+ * 오늘 학습의 신규 카드.
+ * 한 줄 뜻과 짧은 보충만 연다. 사전 깊이는 `조금 더 알아보기`로 보낸다.
  */
 export function TermLearnCard({
   term,
   terms,
   topic,
   relatedPreview = true,
+  moreHref = true,
   children,
 }: {
   term: Term;
   terms: Term[];
   topic?: string | null;
   relatedPreview?: boolean;
+  moreHref?: boolean;
   children?: ReactNode;
 }) {
   const taxLabel = topic ? TAXONOMY_LABEL[topic as Taxonomy] ?? topic : null;
   const also = alsoCalled(term.id);
-  const confusion = term.commonConfusions[0];
   const official = term.definition?.trim();
   const aligned = sourceLooksAligned(term);
-  const pending = term.copyReview === "pending";
+  const support = term.whyItMatters ? firstSentence(term.whyItMatters) : "";
+  const showSupport = Boolean(support && support !== term.oneLiner.trim());
 
   return (
     <div className="card pad-lg">
       <div className="caption">{taxLabel ?? term.category}</div>
-      {pending ? (
-        <div className="caption" style={{ marginTop: 8, letterSpacing: 0 }}>
-          검수 전 원고
-        </div>
-      ) : null}
       <div className="term-title" style={{ marginTop: 12 }}>{displayTitle(term)}</div>
       {term.enName ? <div className="muted">{term.enName}</div> : null}
       {also.length ? (
@@ -64,9 +57,17 @@ export function TermLearnCard({
       {term.oneLiner ? (
         <p style={{ marginTop: 16, fontWeight: 500, lineHeight: 1.65 }}>{term.oneLiner}</p>
       ) : null}
-      {term.whyItMatters ? <Fold title="왜 알아두면 좋을까요?" body={term.whyItMatters} /> : null}
-      {confusion ? <Fold title="헷갈리기 쉬워요" body={confusion} /> : null}
+      {showSupport ? <p className="muted" style={{ marginTop: 12, lineHeight: 1.65 }}>{support}</p> : null}
       {relatedPreview ? <RelatedConcepts term={term} terms={terms} preview /> : <RelatedConcepts term={term} terms={terms} />}
+      {moreHref ? (
+        <Link
+          to={`/terms/${encodeURIComponent(term.id)}`}
+          className="text-link"
+          style={{ display: "inline-flex", minHeight: "var(--touch-min)", alignItems: "center", marginTop: 8 }}
+        >
+          조금 더 알아보기
+        </Link>
+      ) : null}
       {aligned && official ? (
         <details className="official-fold" style={{ marginTop: 12 }}>
           <summary>한국은행 원문 보기</summary>
@@ -107,7 +108,7 @@ export function AnswerFeedback({
       </p>
       {showExtra && identity ? <p className="why">{extra}</p> : null}
       {confusion && !confusionAlready && !showExtra ? (
-        <p className="why"><strong>헷갈리기 쉬워요</strong> {confusion}</p>
+        <p className="why"><strong>헷갈리기 쉬운 점</strong> {confusion}</p>
       ) : null}
     </>
   );

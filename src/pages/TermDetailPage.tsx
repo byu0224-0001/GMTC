@@ -43,15 +43,13 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
       <div className="page stack">
         {term.copyReview === "pending" && showLearn ? (
           <>
-            <p className="caption" style={{ margin: 0 }}>학습 카드에서 이렇게 보여요</p>
-            <TermLearnCard term={term} terms={terms} />
+            <p className="caption" style={{ margin: 0 }}>① 오늘 학습 카드 · 승인되면</p>
+            <TermLearnCard term={term} terms={terms} moreHref={false} />
+            <p className="caption" style={{ margin: 0 }}>② 사전 상세 · 승인되면</p>
           </>
         ) : null}
         <div className="card pad-lg">
           <div className="eyebrow">{core ? "핵심 용어" : showLearn ? "한국은행 · 리포트" : "한국은행"}</div>
-          {term.copyReview === "pending" && showLearn ? (
-            <div className="caption" style={{ marginTop: 8 }}>검수 전 원고</div>
-          ) : null}
           <h2 className="term-title" style={{ margin: "8px 0 4px" }}>{displayTitle(term)}</h2>
           {term.enName ? <div className="muted">{term.enName}</div> : null}
           {showLearn ? (
@@ -117,6 +115,21 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
             <summary>한국은행 원문 보기</summary>
             <p className="muted" style={{ margin: 0 }}>{term.definition}</p>
           </details>
+        ) : null}
+        {term.copyReview === "pending" && showLearn ? (
+          <div className="card pad-lg">
+            <div className="caption">③ 검수 필드 · 아직 pending</div>
+            <p className="muted" style={{ margin: "8px 0 0", lineHeight: 1.65 }}>
+              {[
+                ["한 줄 뜻", term.oneLiner],
+                ["쉬운 설명", term.easyExplanation],
+                ["이렇게 읽어요", term.typicalSituation],
+                ["알아두면 좋은 이유", term.whyItMatters],
+                ["핵심 포인트", term.keyPoints[0]],
+                ["헷갈리기 쉬운 점", term.commonConfusions[0]],
+              ].map(([label, value]) => `${label} ${value ? "있음" : "없음(생략 가능)"}`).join(" · ")}
+            </p>
+          </div>
         ) : null}
         {readings.length > 0 ? (
           <div>
