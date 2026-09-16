@@ -208,6 +208,28 @@ export function pendingDraftTerms(terms: Term[]): Term[] {
     .sort((a, b) => a.headword.localeCompare(b.headword, "ko"));
 }
 
+/** 한 번에 94개를 보지 않는다. 12개씩 묶어 같은 rubric으로 본다. */
+export const DRAFT_QA_BATCH = 12;
+
+export function draftQaBatch(terms: Term[], batch = 1): {
+  items: Term[];
+  batch: number;
+  total: number;
+} {
+  const all = pendingDraftTerms(terms);
+  const total = Math.max(1, Math.ceil(all.length / DRAFT_QA_BATCH));
+  const n = Math.min(total, Math.max(1, Number.isFinite(batch) ? batch : 1));
+  const start = (n - 1) * DRAFT_QA_BATCH;
+  return { items: all.slice(start, start + DRAFT_QA_BATCH), batch: n, total };
+}
+
+/** 사용자에게 보이는 유형. 출처는 원문 접기에 둔다. */
+export function termSurfaceLabel(term: Pick<Term, "id" | "priority">): string {
+  if (term.id.startsWith("rpt-")) return "리포트 표현";
+  if (term.priority === "core") return "핵심 용어";
+  return "경제·금융 용어";
+}
+
 export function coreIdSet(): Set<string> {
   return new Set(CORE100.map((c) => c.id));
 }

@@ -7,7 +7,7 @@ import { SOURCE_DISCLAIMER } from "../content/brand";
 import { readingsForTerm } from "../content/termReadings";
 import { BOK_REPORT_BRIDGE, reportTermById } from "../content/reportLexicon";
 import { logEvent } from "../lib/events";
-import { isDraftReady, isLearningReady } from "../content/literacy";
+import { isDraftReady, isLearningReady, termSurfaceLabel } from "../content/literacy";
 import { includeDraftTerms } from "../lib/qaMode";
 import type { Term } from "../types";
 
@@ -17,7 +17,6 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
   const term = terms.find((t) => t.id === termId);
   const related = term ? terms.filter((t) => term.relatedIds.includes(t.id)).slice(0, 5) : [];
   const readings = term ? readingsForTerm(term.id) : [];
-  const core = term?.priority === "core";
   const showLearn = Boolean(
     term && (isLearningReady(term) || (includeDraftTerms() && isDraftReady(term))),
   );
@@ -49,7 +48,7 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
           </>
         ) : null}
         <div className="card pad-lg">
-          <div className="eyebrow">{core ? "핵심 용어" : showLearn ? "한국은행 · 리포트" : "한국은행"}</div>
+          <div className="eyebrow">{termSurfaceLabel(term)}</div>
           <h2 className="term-title" style={{ margin: "8px 0 4px" }}>{displayTitle(term)}</h2>
           {term.enName ? <div className="muted">{term.enName}</div> : null}
           {showLearn ? (
@@ -128,6 +127,11 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
                 ["핵심 포인트", term.keyPoints[0]],
                 ["헷갈리기 쉬운 점", term.commonConfusions[0]],
               ].map(([label, value]) => `${label} ${value ? "있음" : "없음(생략 가능)"}`).join(" · ")}
+            </p>
+            <p className="muted" style={{ margin: "12px 0 0", lineHeight: 1.65 }}>
+              승인 전에: 한 줄이 맞는가 · 사례를 전체처럼 쓰지 않았는가 · 인과를 과장하지 않았는가 ·
+              필드가 같은 말을 반복하지 않는가 · 혼동은 진짜 인접 개념인가 · 뉴스에서 다시 만날 문장이 있는가.
+              하나라도 걸리면 pending.
             </p>
           </div>
         ) : null}

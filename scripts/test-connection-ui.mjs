@@ -65,6 +65,8 @@ check("신규 카드는 학습 템플릿", learn.includes("TermLearnCard") && !l
 check("정답 후 제목만 금지", learn.includes("AnswerFeedback"));
 check("첫 카드는 한 줄 + 같이 보면", learnCard.includes("조금 더 알아보기") && learnCard.includes("RelatedConcepts") && !learnCard.includes("왜 알아두면 좋을까요?") && !learnCard.includes("헷갈리기 쉬워요"));
 check("검수 화면은 학습·사전·필드를 나눈다", detail.includes("① 오늘 학습 카드") && detail.includes("② 사전 상세") && detail.includes("③ 검수 필드"));
+check("사전 유형 라벨은 출처 혼합이 아님", detail.includes("termSurfaceLabel") && !detail.includes("한국은행 · 리포트"));
+check("검수 홈은 묶음으로 본다", readFileSync("src/pages/HomePage.tsx", "utf8").includes("draftQaBatch") && readFileSync("src/pages/HomePage.tsx", "utf8").includes("다음 묶음"));
 check("이미 시작한 draft는 복습 유지", readFileSync("src/lib/today.ts", "utf8").includes("function reviewPool"));
 const quiz = readFileSync("src/lib/quiz.ts", "utf8");
 check("기사처럼 읽기 절단 금지", !quiz.includes("function shorten") && !quiz.includes("slice(0, 170)"));

@@ -575,6 +575,8 @@ def main() -> int:
         errors.append("invariant: learn card must not use why/confusion fold boxes")
     if "조금 더 알아보기" not in card_src:
         errors.append("invariant: learn card must send depth to term detail")
+    if "한국은행 · 리포트" in (ROOT / "src/pages/TermDetailPage.tsx").read_text(encoding="utf-8"):
+        errors.append("term detail must not mix BoK and report as one user label")
 
     stem_src = (ROOT / "src/content/learnStems.ts").read_text(encoding="utf-8")
     stem_ids = re.findall(r'^  "(cx-[^"]+)":', stem_src, re.M)

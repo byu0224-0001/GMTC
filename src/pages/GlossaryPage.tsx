@@ -108,10 +108,6 @@ export function GlossaryPage({ terms }: { terms: Term[] }) {
               ? "리포트"
               : showDraftCopy
                 ? "검수 전"
-              : mergedReportId
-                ? t.priority === "core"
-                  ? "핵심 · 리포트"
-                  : "한은 · 리포트"
                 : t.priority === "core"
                   ? "핵심"
                   : null;
