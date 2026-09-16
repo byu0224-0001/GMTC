@@ -484,6 +484,8 @@ export function reportToTerm(r: ReportTerm): Term {
     chain: r.chain,
     keyPoints: [r.reportUsage],
     commonConfusions: [],
-    learningReviewed: false,
+    typicalSituation: r.reportUsage,
+    learningReviewed: true,
+    copyReview: "approved",
   };
 }

@@ -1,5 +1,6 @@
 import type { ReadingAside, ReadingFormat, Term } from "../types";
 import { CORE_COPY } from "./coreCopy";
+import { SESSION_COPY } from "./sessionCopy";
 
 export type Taxonomy =
   | "경제기초"
@@ -169,7 +170,42 @@ export interface LearningLayer {
   chain: string[];
   keyPoints?: string[];
   commonConfusions?: string[];
+  typicalSituation?: string;
   reviewed: boolean;
+  copyReview: "pending" | "approved";
+}
+
+/** 우리 설명이 있다. 검수 전과 후를 가리지 않는다. */
+export function isDraftReady(term: {
+  oneLiner?: string;
+  easyExplanation?: string;
+  whyItMatters?: string;
+}): boolean {
+  return Boolean(
+    term.oneLiner?.trim() &&
+      term.easyExplanation?.trim() &&
+      term.whyItMatters?.trim(),
+  );
+}
+
+/**
+ * 오늘 큐에 넣으려면 우리 설명이 있고, 사람 검수가 끝나 있어야 한다.
+ * 원문만 있거나 검수 전 원고는 사전에서 찾고, 기본 세션 본문으로 쓰지 않는다.
+ */
+export function isLearningReady(term: {
+  oneLiner?: string;
+  easyExplanation?: string;
+  whyItMatters?: string;
+  copyReview?: "pending" | "approved";
+}): boolean {
+  return isDraftReady(term) && term.copyReview === "approved";
+}
+
+/** 우리 설명은 있지만 사람 검수가 끝나지 않은 용어. 기본 학습 큐에는 넣지 않는다. */
+export function pendingDraftTerms(terms: Term[]): Term[] {
+  return terms
+    .filter((t) => isDraftReady(t) && t.copyReview === "pending")
+    .sort((a, b) => a.headword.localeCompare(b.headword, "ko"));
 }
 
 export function coreIdSet(): Set<string> {
@@ -181,19 +217,26 @@ export function taxonomyOf(id: string): Taxonomy | undefined {
 }
 
 export function learningFor(term: { id: string; headword: string }): LearningLayer {
-  const hand = CORE_COPY[term.id];
+  const core = CORE_COPY[term.id];
+  const session = SESSION_COPY[term.id];
   /**
    * 자체 원고가 있다는 것과 검수 완료는 다른 플래그다.
-   * 손으로 쓴 문장도 한국어·금융 검수가 끝나기 전에는 false로 둔다.
-   * 파일럿 용어인지도 여기서 판단하지 않는다. 그건 `pilotCore.ts`의 일이다.
+   * Core100은 이미 서비스에 나가 있던 유지 원고라 approved로 둔다.
+   * 이번 스프린트에서 한꺼번에 쓴 SESSION_COPY는 pending이다.
    */
-  if (hand) return { ...hand, reviewed: false };
+  if (core) {
+    return { ...core, reviewed: true, copyReview: core.copyReview ?? "approved" };
+  }
+  if (session) {
+    return { ...session, reviewed: false, copyReview: session.copyReview ?? "pending" };
+  }
   return {
     oneLiner: "",
     easyExplanation: "",
     whyItMatters: "",
     chain: [term.headword],
     reviewed: false,
+    copyReview: "pending",
   };
 }
 

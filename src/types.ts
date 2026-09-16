@@ -36,6 +36,13 @@ export interface Term {
   keyPoints: string[];
   commonConfusions: string[];
   learningReviewed: boolean;
+  /** 정의가 아니라, 이 말이 등장하는 대표 상황. */
+  typicalSituation: string;
+  /**
+   * 사람 검수. 필드가 채워진 것과 별개다.
+   * pending 원고는 기본 학습 큐에 넣지 않는다.
+   */
+  copyReview: "pending" | "approved";
 }
 
 export interface TermsFile {
@@ -43,7 +50,7 @@ export interface TermsFile {
   source: string;
   sourceTitle: string;
   count: number;
-  terms: Omit<Term, "priority" | "taxonomy" | "oneLiner" | "easyExplanation" | "whyItMatters" | "chain" | "keyPoints" | "commonConfusions" | "learningReviewed">[];
+  terms: Omit<Term, "priority" | "taxonomy" | "oneLiner" | "easyExplanation" | "whyItMatters" | "chain" | "keyPoints" | "commonConfusions" | "learningReviewed" | "typicalSituation" | "copyReview">[];
 }
 
 export type GradeLabel = "again" | "hard" | "good";

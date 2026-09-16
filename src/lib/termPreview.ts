@@ -8,6 +8,8 @@ import {
   reportToTerm,
 } from "../content/reportLexicon";
 import { displayTitle, normalizeQuery } from "./hangul";
+import { includeDraftTerms } from "./qaMode";
+import { isLearningReady } from "../content/literacy";
 import type { Term } from "../types";
 
 export type PeekContext = "related" | "in_article" | "flow";
@@ -51,7 +53,10 @@ function keysMatch(query: string, keys: string[]): boolean {
 }
 
 function summaryOf(term: Term): string | null {
-  const s = term.oneLiner || term.easyExplanation || term.shortDef;
+  const copyOk = isLearningReady(term) || includeDraftTerms();
+  const s = copyOk
+    ? term.oneLiner || term.easyExplanation || term.shortDef
+    : term.shortDef;
   return s?.trim() ? s.trim() : null;
 }
 

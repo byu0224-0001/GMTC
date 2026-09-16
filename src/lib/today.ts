@@ -1,3 +1,5 @@
+import { isDraftReady, isLearningReady } from "../content/literacy";
+import { includeDraftTerms } from "./qaMode";
 import { REPORT_BOK_CANON, REPORT_ESSENTIALS, canonBokId, reportToTerm } from "../content/reportLexicon";
 import { briefingForPlan, type TodayPlanFile } from "./todayPlan";
 import { LEARNING_MAPS } from "../content/learningMaps";
@@ -91,33 +93,51 @@ interface Candidates {
   pool: Pool;
 }
 
-let candidateCache: { key: Term[]; value: Candidates } | null = null;
+let candidateCache: { key: Term[]; drafts: boolean; value: Candidates } | null = null;
 
 /**
  * 학습 세션에 들어갈 수 있는 용어.
- * 한국은행 787개 전부가 아니라 문항이 성립하는 것만 통과한다(lib/pool.ts).
- * 리포트 표현 30개는 자체 원고가 있어 전부 포함한다.
+ * 기본은 검수 완료(approved)만. 원문만 있거나 pending 원고는 넣지 않는다.
+ * `?qa=drafts`일 때만 검수 전 원고를 큐에 넣어 사람이 확인한다.
  */
 function candidatesOf(terms: Term[]): Candidates {
-  if (candidateCache && candidateCache.key === terms) return candidateCache.value;
+  const drafts = includeDraftTerms();
+  if (candidateCache && candidateCache.key === terms && candidateCache.drafts === drafts) {
+    return candidateCache.value;
+  }
   const pool = learningPool(terms);
   const byId = new Map(terms.map((t) => [t.id, t]));
   const out: Term[] = [];
   for (const id of pool.ids) {
     const t = byId.get(id);
-    if (t) out.push(t);
+    if (!t) continue;
+    if (isLearningReady(t) || (drafts && isDraftReady(t))) out.push(t);
   }
   for (const r of REPORT_ESSENTIALS) {
     if (REPORT_BOK_CANON[r.id]) continue;
     out.push({ ...reportToTerm(r), cho: choOf(r.headword) });
   }
   const value = { terms: out, pool };
-  candidateCache = { key: terms, value };
+  candidateCache = { key: terms, drafts, value };
   return value;
 }
 
 export function studyCandidates(terms: Term[]): Term[] {
   return candidatesOf(terms).terms;
+}
+
+/**
+ * 이미 시작한 검수 전 원고는 복습에서 빼지 않는다.
+ * 기본 큐에서 pending을 빼면, 이전 배포에서 시작된 카드가 고아처럼 남는다.
+ * 신규 시작은 studyCandidates가 막고, 복습만 여기로 연다.
+ */
+function reviewPool(terms: Term[], progress: ProgressState): Term[] {
+  const base = studyCandidates(terms);
+  const seen = new Set(base.map((t) => t.id));
+  const stranded = terms.filter(
+    (t) => progress.cards[t.id] && isDraftReady(t) && !seen.has(t.id),
+  );
+  return stranded.length ? [...base, ...stranded] : base;
 }
 
 function isReportTerm(id: string): boolean {
@@ -222,7 +242,7 @@ export function pickReviewTerms(
   freshIds: Set<string>,
   cap = reviewCap(NEW_PER_DAY),
 ): Term[] {
-  return studyCandidates(terms)
+  return reviewPool(terms, progress)
     .filter((t) => {
       const card = progress.cards[t.id];
       return card && !freshIds.has(t.id) && isDue(card);
@@ -233,7 +253,7 @@ export function pickReviewTerms(
 
 /** 오늘 예산으로 소화할 수 없어 넘긴 복습 수. 신규를 줄일지 판단하는 데 쓴다. */
 export function dueBacklog(terms: Term[], progress: ProgressState): number {
-  const due = studyCandidates(terms).filter((t) => {
+  const due = reviewPool(terms, progress).filter((t) => {
     const card = progress.cards[t.id];
     return card && isDue(card);
   }).length;
@@ -288,7 +308,7 @@ export function extraQueue(
   now = new Date(),
 ): SessionStep[] {
   const dateKey = kstDateKey(now);
-  const candidates = studyCandidates(terms);
+  const candidates = reviewPool(terms, progress);
   const out: SessionStep[] = [];
   let spent = 0;
   const push = (step: SessionStep): boolean => {

@@ -10,18 +10,20 @@ function enrich(data: TermsFile): Term[] {
   return mergeReportOntoBok(
     data.terms.map((raw) => {
       const core = isCore(raw.id);
-      const learn = core ? learningFor(raw) : null;
+      const learn = learningFor(raw);
       return {
         ...raw,
         priority: core ? "core" : "full",
         taxonomy: taxonomyOf(raw.id),
-        oneLiner: learn?.oneLiner ?? "",
-        easyExplanation: learn?.easyExplanation ?? "",
-        whyItMatters: learn?.whyItMatters ?? "",
-        chain: relatedOf(raw.id)?.chips ?? learn?.chain ?? [],
-        keyPoints: learn?.keyPoints ?? [],
-        commonConfusions: learn?.commonConfusions ?? [],
-        learningReviewed: learn?.reviewed ?? false,
+        oneLiner: learn.oneLiner,
+        easyExplanation: learn.easyExplanation,
+        whyItMatters: learn.whyItMatters,
+        chain: relatedOf(raw.id)?.chips ?? learn.chain,
+        keyPoints: learn.keyPoints ?? [],
+        commonConfusions: learn.commonConfusions ?? [],
+        typicalSituation: learn.typicalSituation ?? "",
+        learningReviewed: learn.reviewed,
+        copyReview: learn.copyReview,
       };
     }),
   );

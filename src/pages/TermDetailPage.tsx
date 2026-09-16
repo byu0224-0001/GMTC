@@ -1,11 +1,14 @@
 import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { RelatedConcepts, TopBar } from "../components/Chrome";
+import { TermLearnCard, sourceLooksAligned } from "../components/TermLearnCard";
 import { displayTitle } from "../lib/hangul";
 import { SOURCE_DISCLAIMER } from "../content/brand";
 import { readingsForTerm } from "../content/termReadings";
 import { BOK_REPORT_BRIDGE, reportTermById } from "../content/reportLexicon";
 import { logEvent } from "../lib/events";
+import { isDraftReady, isLearningReady } from "../content/literacy";
+import { includeDraftTerms } from "../lib/qaMode";
 import type { Term } from "../types";
 
 export function TermDetailPage({ terms }: { terms: Term[] }) {
@@ -15,7 +18,9 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
   const related = term ? terms.filter((t) => term.relatedIds.includes(t.id)).slice(0, 5) : [];
   const readings = term ? readingsForTerm(term.id) : [];
   const core = term?.priority === "core";
-  const showLearn = Boolean(term && (core || term.easyExplanation));
+  const showLearn = Boolean(
+    term && (isLearningReady(term) || (includeDraftTerms() && isDraftReady(term))),
+  );
   const bridge = term ? BOK_REPORT_BRIDGE[term.id] : undefined;
 
   useEffect(() => {
@@ -36,8 +41,17 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
     <>
       <TopBar title="용어" back />
       <div className="page stack">
+        {term.copyReview === "pending" && showLearn ? (
+          <>
+            <p className="caption" style={{ margin: 0 }}>학습 카드에서 이렇게 보여요</p>
+            <TermLearnCard term={term} terms={terms} />
+          </>
+        ) : null}
         <div className="card pad-lg">
           <div className="eyebrow">{core ? "핵심 용어" : showLearn ? "한국은행 · 리포트" : "한국은행"}</div>
+          {term.copyReview === "pending" && showLearn ? (
+            <div className="caption" style={{ marginTop: 8 }}>검수 전 원고</div>
+          ) : null}
           <h2 className="term-title" style={{ margin: "8px 0 4px" }}>{displayTitle(term)}</h2>
           {term.enName ? <div className="muted">{term.enName}</div> : null}
           {showLearn ? (
@@ -47,10 +61,15 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
                   {term.oneLiner}
                 </p>
               ) : null}
+              {term.easyExplanation ? (
               <div className="why" style={{ marginTop: 12 }}>
                 <strong>쉬운 설명</strong>
                 {term.easyExplanation}
               </div>
+              ) : null}
+              {term.typicalSituation ? (
+                <p className="why"><strong>이렇게 읽어요</strong> {term.typicalSituation}</p>
+              ) : null}
           <p className="why"><strong>알아두면 좋은 이유</strong> {term.whyItMatters}</p>
               {term.keyPoints.length > 0 ? (
                 <>
@@ -93,7 +112,7 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
             })}
           </div>
         ) : null}
-        {showLearn ? (
+        {showLearn && sourceLooksAligned(term) ? (
           <details className="official-fold">
             <summary>한국은행 원문 보기</summary>
             <p className="muted" style={{ margin: 0 }}>{term.definition}</p>
@@ -116,7 +135,7 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
             {related.map((t) => (
               <Link key={t.id} to={`/terms/${encodeURIComponent(t.id)}`} className="term-row">
                 <strong>{displayTitle(t)}</strong>
-                <span>{t.easyExplanation || t.shortDef}</span>
+                <span>{isLearningReady(t) || includeDraftTerms() ? t.easyExplanation || t.shortDef : t.shortDef}</span>
               </Link>
             ))}
           </div>

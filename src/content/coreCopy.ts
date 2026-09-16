@@ -5,7 +5,11 @@ export interface CoreCopy {
   whyItMatters: string;
   chain: string[];
   keyPoints: string[];
-  commonConfusions: string[];
+  /** 인접 개념이 실제로 있을 때만. 틀을 채우려고 만들지 않는다. */
+  commonConfusions?: string[];
+  /** 이 말이 실제로 등장하는 대표 상황. 정의의 다른 표현이 아니다. */
+  typicalSituation?: string;
+  copyReview?: "pending" | "approved";
 }
 
 export const CORE_COPY: Record<string, CoreCopy> = {
@@ -128,6 +132,7 @@ export const CORE_COPY: Record<string, CoreCopy> = {
     chain: ["기대인플레이션", "임금", "기준금리", "채권"],
     keyPoints: ["단기 기대와 장기 기대가 서로 다르게 움직일 수 있어요."],
     commonConfusions: ["기대인플레이션은 앞으로의 물가에 대한 예상이고, 소비자물가지수는 실제 가격 변화를 측정한 지표예요."],
+    typicalSituation: "물가 상승률이 예상보다 높게 나오면 앞으로 더 오를 것이라는 예상이 커지고, 금리 인하 기대는 약해질 수 있어요. 반대로 실제 물가는 둔화됐는데 기대만 오르면, 둘을 같은 방향으로 읽지 않아요.",
   },
   "디플레이션": {
     oneLiner: "물가가 전반적으로 계속 내려가는 현상이에요.",
@@ -360,6 +365,7 @@ export const CORE_COPY: Record<string, CoreCopy> = {
     chain: ["국채", "회사채", "신용스프레드", "신용위험"],
     keyPoints: ["등급(AA vs BBB)마다 스프레드가 달라요."],
     commonConfusions: ["스프레드가 벌어졌다고 기준금리가 올랐다는 뜻은 아니에요."],
+    typicalSituation: "국채 금리는 그대로인데 회사채 금리만 오르면 스프레드가 벌어져요. 국채 금리가 급하게 빠져 회사채보다 더 내리면, 회사채 금리가 내려도 스프레드는 벌어질 수 있어요.",
   },
   "장단기금리차": {
     oneLiner: "장기 금리에서 단기 금리를 뺀 차이예요.",
@@ -408,6 +414,7 @@ export const CORE_COPY: Record<string, CoreCopy> = {
     chain: ["이익", "PER", "성장 기대", "금리"],
     keyPoints: ["과거 이익 PER과 12개월 전망 PER을 섞어 읽지 않아요."],
     commonConfusions: ["PER이 낮다고 무조건 싸거나 사라는 뜻은 아니에요."],
+    typicalSituation: "PER이 올랐다면 주가가 오른 건지, 이익(EPS)이 줄어든 건지부터 나눠 봐요. 같은 상승이라도 다음에 볼 숫자가 달라요.",
   },
   "주가순자산비율-pbr": {
     oneLiner: "주가가 장부 순자산의 몇 배인지를 보는 배수예요.",
@@ -707,11 +714,12 @@ export const CORE_COPY: Record<string, CoreCopy> = {
   },
   "풋옵션": {
     oneLiner: "정해 둔 가격에 팔 수 있는 권리예요. 사야 하는 의무는 아니에요.",
-    easyExplanation: "전환사채·투자계약에 ‘조기 상환을 요구할 수 있다’는 문장이 있으면 이 권리가 붙어 있는 경우가 많아요.",
-    whyItMatters: "가격이 내려갈 위험에 대비하거나 하락에 베팅할 때 써요.",
+    easyExplanation: "주식에서는 가격이 내려갈 때 대비하는 데 쓰고, 전환사채에서는 조기 상환을 요구할 수 있는 권리로 붙어 있는 경우가 많아요.",
+    whyItMatters: "가격이 내려갈 위험에 대비하거나 하락에 베팅할 때 써요. 권리만 있고 팔 의무는 없어요.",
     chain: ["옵션", "풋옵션", "조기상환", "파생부채"],
     keyPoints: ["회계상 파생상품 부채로 잡혀 손익이 출렁일 수 있어요."],
-    commonConfusions: ["풋옵션을 공매도와 같은 거래로 보지 않아요."],
+    commonConfusions: ["풋옵션을 사는 것과 주식을 공매도하는 것은 다른 거래예요."],
+    typicalSituation: "주가가 내려가면 이 권리의 값이 커질 수 있어요. 다만 행사가격·만기·변동성·이미 낸 프리미엄을 빼면, 방향만 맞아도 이득이 안 날 수 있어요.",
   },
   "선물거래": {
     oneLiner: "품질·수량이 표준화된 상품을, 거래소에서 미래의 인수도를 약속하고 지금 가격을 정하는 거래예요.",

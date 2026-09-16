@@ -9,7 +9,8 @@ const checks = [];
 const check = (name, pass, detail = "") => checks.push({ 항목: name, 결과: pass ? "통과" : "실패", 비고: detail });
 
 const learn = readFileSync("src/pages/LearnPage.tsx", "utf8");
-check("학습 세션 같이 보면은 preview", /RelatedConcepts term=\{step\.term\} terms=\{terms\} preview/.test(learn));
+const learnCard = readFileSync("src/components/TermLearnCard.tsx", "utf8");
+check("학습 세션 같이 보면은 preview", learnCard.includes("<RelatedConcepts term={term} terms={terms} preview"));
 check("정답 후 같이 보면도 preview", /RelatedConcepts term=\{step\.term\} terms=\{terms\} note=\{false\} preview/.test(learn));
 check("세션 위치 임시 저장", learn.includes("saveUiResume"));
 
@@ -56,10 +57,19 @@ check("짧은 읽기 닫기는 위치를 남긴다", newsClose.length > 0 && !ne
 check("짧은 읽기 완료만 resume를 지운다", news.includes("clearUiResume") && news.includes("reading_complete"));
 
 const detail = readFileSync("src/pages/TermDetailPage.tsx", "utf8");
-check("사전 상세 같이 보면은 이동", detail.includes("<RelatedConcepts term={term} terms={terms} />") && !detail.includes("preview"));
+check("사전 상세 같이 보면은 이동", /<RelatedConcepts term=\{term\} terms=\{terms\} \/>/.test(detail) && !/<RelatedConcepts term=\{term\} terms=\{terms\} preview/.test(detail));
 check("관련 읽기 CTA는 읽어보기", detail.includes("읽어보기") && !detail.includes("시작하기"));
 check("대형 사전으로 CTA 없음", !detail.includes(">사전으로<"));
 check("문항 전환 시 deep dive 리셋", /DeepDive key=\{`\$\{i\}-\$\{step\.term\.id\}`\}/.test(learn));
+check("신규 카드는 학습 템플릿", learn.includes("TermLearnCard") && !learn.includes("한국은행 설명"));
+check("정답 후 제목만 금지", learn.includes("AnswerFeedback"));
+check("첫 카드는 한 줄 + 접기", learnCard.includes("왜 알아두면 좋을까요?") && learnCard.includes("<details") && !learnCard.includes("조금 더 보면") && !learnCard.includes("이렇게 읽어요"));
+check("이미 시작한 draft는 복습 유지", readFileSync("src/lib/today.ts", "utf8").includes("function reviewPool"));
+const quiz = readFileSync("src/lib/quiz.ts", "utf8");
+check("기사처럼 읽기 절단 금지", !quiz.includes("function shorten") && !quiz.includes("slice(0, 170)"));
+check("기사처럼 읽기는 별도 발췌", quiz.includes("LEARN_STEMS"));
+check("오늘 큐 learningReady 가드", readFileSync("src/lib/today.ts", "utf8").includes("isLearningReady") && readFileSync("src/lib/today.ts", "utf8").includes("isDraftReady"));
+check("검수 전 원고는 qa 플래그", readFileSync("src/lib/qaMode.ts", "utf8").includes("qa=drafts"));
 
 const feed = readFileSync("src/pages/NewsFeedPage.tsx", "utf8");
 check("읽기 목록 상단 예시 고지", feed.includes("학습을 위해 재구성한 예시"));

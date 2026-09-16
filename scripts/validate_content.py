@@ -479,6 +479,96 @@ def main() -> int:
     if extra_copy:
         errors.append(f"CORE_COPY extra keys: {extra_copy}")
 
+    session_src = (ROOT / "src/content/sessionCopy.ts").read_text(encoding="utf-8")
+    session_ids = re.findall(r'^  "([^"]+)": \{', session_src, re.M)
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from report_pool import build as build_pool  # noqa: E402
+    _, terms_by_id, _, pool = build_pool()
+    hop_gt = {p["id"] for p in pool if p["hop"] > 0}
+    missing_session = sorted(hop_gt - set(session_ids))
+    extra_session = sorted(set(session_ids) - hop_gt)
+    if missing_session:
+        errors.append(f"SESSION_COPY missing hop>0 pool ids: {missing_session[:12]}")
+    if extra_session:
+        errors.append(f"SESSION_COPY extra keys: {extra_session[:12]}")
+    overlap_core = [i for i in session_ids if i in core_ids]
+    if overlap_core:
+        errors.append(f"SESSION_COPY overlaps Core100: {overlap_core}")
+    for sid in session_ids:
+        if sid not in terms:
+            errors.append(f"SESSION_COPY unknown id: {sid}")
+    for m in re.finditer(
+        r'^  "([^"]+)": \{\n((?:    .*\n)+?)  \},',
+        session_src,
+        re.M,
+    ):
+        sid, body = m.group(1), m.group(2)
+        for field in ("oneLiner", "easyExplanation", "whyItMatters", "typicalSituation"):
+            if f"{field}:" not in body:
+                errors.append(f"{sid} SESSION_COPY missing {field}")
+        if "commonConfusions:" not in body:
+            WARNINGS.append(f"{sid} SESSION_COPY has no commonConfusions — 없어도 된다. 억지 비교인지 볼 것")
+        one = re.search(r'oneLiner: "((?:[^"\\]|\\.)*)"', body)
+        easy = re.search(r'easyExplanation: "((?:[^"\\]|\\.)*)"', body)
+        why = re.search(r'whyItMatters: "((?:[^"\\]|\\.)*)"', body)
+        if one and easy and one.group(1).strip() == easy.group(1).strip():
+            WARNINGS.append(f"{sid} oneLiner == easyExplanation")
+        if one and why and one.group(1).strip() == why.group(1).strip():
+            WARNINGS.append(f"{sid} oneLiner == whyItMatters")
+        if easy and why and easy.group(1).strip() == why.group(1).strip():
+            WARNINGS.append(f"{sid} easyExplanation == whyItMatters")
+        if easy and len(easy.group(1)) > 240:
+            WARNINGS.append(f"{sid} easyExplanation {len(easy.group(1))} chars > 240")
+    if 'copyReview: "approved"' in session_src:
+        errors.append("SESSION_COPY must stay copyReview pending until human review")
+
+    quiz_src = (ROOT / "src/lib/quiz.ts").read_text(encoding="utf-8")
+    today_src = (ROOT / "src/lib/today.ts").read_text(encoding="utf-8")
+    card_src = (ROOT / "src/components/TermLearnCard.tsx").read_text(encoding="utf-8")
+    learn_src = (ROOT / "src/pages/LearnPage.tsx").read_text(encoding="utf-8")
+    # 학습 invariant: 확장해도 같은 버그가 반복되지 않게 고정한다.
+    if "function shorten" in quiz_src or "slice(0, 170)" in quiz_src:
+        errors.append("invariant: quiz must not auto-truncate stems with ellipsis")
+    if "LEARN_STEMS" not in quiz_src:
+        errors.append("invariant: quiz context must use authored LEARN_STEMS")
+    if "isLearningReady" not in today_src or "isDraftReady" not in today_src:
+        errors.append("invariant: today queue must require approved learning_ready")
+    if "includeDraftTerms" not in today_src:
+        errors.append("invariant: drafts must stay behind qa flag")
+    if "function reviewPool" not in today_src:
+        errors.append("invariant: already-started drafts must remain reviewable")
+    if "한국은행 설명" in learn_src or "step.term.definition" in learn_src:
+        errors.append("invariant: raw BoK definition must not be the session body")
+    if "한국은행 원문 보기" not in card_src:
+        errors.append("invariant: BoK source must stay behind an official fold")
+    if "AnswerFeedback" not in learn_src:
+        errors.append("invariant: answer feedback must exist")
+    if "term.oneLiner || term.easyExplanation || term.whyItMatters" not in quiz_src:
+        errors.append("invariant: explanationNote must not be empty")
+    if "tooSimilar" not in quiz_src:
+        errors.append("invariant: oneLiner/feedback overlap must be filtered")
+    if "조금 더 보면" in card_src or "이렇게 읽어요" in card_src:
+        errors.append("invariant: first learn card must not stack extra copy fields")
+
+    stem_src = (ROOT / "src/content/learnStems.ts").read_text(encoding="utf-8")
+    stem_ids = re.findall(r'^  "(cx-[^"]+)":', stem_src, re.M)
+    reading_ids_for_stem = re.findall(r'\n    id: "(cx-[^"]+)"', (ROOT / "src/content/readingCases.ts").read_text(encoding="utf-8"))
+    if set(stem_ids) != set(reading_ids_for_stem):
+        errors.append(
+            f"LEARN_STEMS mismatch reading cases: extra={sorted(set(stem_ids)-set(reading_ids_for_stem))} missing={sorted(set(reading_ids_for_stem)-set(stem_ids))}"
+        )
+    for m in re.finditer(r'^  "(cx-[^"]+)": "((?:[^"\\]|\\.)*)"', stem_src, re.M):
+        sid, text = m.group(1), m.group(2)
+        if text.endswith("…") or text.endswith("..."):
+            errors.append(f"{sid} learnStem ends with ellipsis")
+        if not 40 <= len(text) <= 240:
+            WARNINGS.append(f"{sid} learnStem {len(text)} chars, want 40-240")
+    qa_src = (ROOT / "src/lib/qaMode.ts").read_text(encoding="utf-8")
+    if "qa=drafts" not in qa_src:
+        errors.append("qaMode must document ?qa=drafts")
+    if "TermLearnCard" not in learn_src or "AnswerFeedback" not in learn_src:
+        errors.append("LearnPage must use TermLearnCard and AnswerFeedback")
+
     related_src = (ROOT / "src/content/related.ts").read_text(encoding="utf-8")
     related_ids = re.findall(r'^  "([^"]+)": \{', related_src, re.M)
     missing_related = [i for i in core_ids if i not in related_ids]

@@ -2,12 +2,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ProgressBar, RelatedConcepts } from "../components/Chrome";
 import { DeepDive } from "../components/DeepDive";
+import { AnswerFeedback, TermLearnCard } from "../components/TermLearnCard";
 import { PushPrompt, shouldAskPush } from "../components/PushPrompt";
 import { InstallNudge, shouldShowInstallNudge } from "../components/InstallNudge";
 import { needsInstallFirst } from "../lib/push";
 import { TAXONOMY_LABEL, type Taxonomy } from "../content/literacy";
-import { alsoCalled } from "../content/alsoCalled";
-import { inTheNews } from "../content/inTheNews";
 import { mapForBriefing } from "../content/learningMaps";
 import { beginTodaySession, endTodaySession, logEvent } from "../lib/events";
 import { displayTitle } from "../lib/hangul";
@@ -258,8 +257,6 @@ export function LearnPage({
           : "복습";
   const topic = topicOf(terms, step.term.id) ?? step.term.taxonomy;
   const taxLabel = topic ? TAXONOMY_LABEL[topic as Taxonomy] ?? topic : null;
-  /** 자체 원고가 있는 용어와, 한국은행 원문만 있는 용어를 다르게 보여 준다. */
-  const hasOwnCopy = Boolean(step.term.oneLiner || step.term.easyExplanation);
 
   function goNext() {
     setPicked(null);
@@ -309,43 +306,9 @@ export function LearnPage({
       <div className="page session stack">
         {step.kind === "new" ? (
           <>
-            <div className="card pad-lg">
-              <div className="caption">{taxLabel ?? step.term.category}</div>
-              <div className="term-title" style={{ marginTop: 12 }}>{displayTitle(step.term)}</div>
-              {step.term.enName ? <div className="muted">{step.term.enName}</div> : null}
-              {/*
-                기사에서 부르는 이름이 표제어와 다른 용어가 있다. 처음 만나는
-                이 화면에서만 한 번 이어 준다. 문제와 해설은 표제어로 통일한다.
-              */}
-              {alsoCalled(step.term.id).length ? (
-                <div className="caption" style={{ marginTop: 8, letterSpacing: 0 }}>
-                  기사에서는 {alsoCalled(step.term.id).join(" · ")}라고도 해요
-                </div>
-              ) : null}
-              {hasOwnCopy ? (
-                <>
-                  {step.term.oneLiner ? (
-                    <p style={{ marginTop: 16, fontWeight: 500, lineHeight: 1.65 }}>{step.term.oneLiner}</p>
-                  ) : null}
-                  {step.term.easyExplanation ? (
-                    <p style={{ marginTop: 12 }}>{step.term.easyExplanation}</p>
-                  ) : null}
-                  {step.term.whyItMatters ? (
-                    <p className="why"><strong>알아두면 좋은 이유</strong> {step.term.whyItMatters}</p>
-                  ) : null}
-                  {inTheNews(step.term.id) ? (
-                    <p className="why"><strong>기사에서는</strong> {inTheNews(step.term.id)}</p>
-                  ) : null}
-                  <RelatedConcepts term={step.term} terms={terms} preview />
-                  <DeepDive key={`${i}-${step.term.id}`} termId={step.term.id} />
-                </>
-              ) : (
-                <>
-                  <div className="caption" style={{ marginTop: 16 }}>한국은행 설명</div>
-                  <p style={{ marginTop: 8, lineHeight: 1.7 }}>{step.term.definition}</p>
-                </>
-              )}
-            </div>
+            <TermLearnCard term={step.term} terms={terms} topic={topic}>
+              <DeepDive key={`${i}-${step.term.id}`} termId={step.term.id} />
+            </TermLearnCard>
             <div className="grade-bar two">
               <button className="btn btn-ghost" disabled={prevNewIndex < 0} onClick={goPrevNew}>
                 이전
@@ -461,13 +424,7 @@ export function LearnPage({
                   두 개념을 맞바꿔 알고 있는 상태를 그대로 두면 다음에 또 바꿔 고른다.
                 */}
                 {wrongPickNote ? <p className="why">{wrongPickNote}</p> : null}
-                <p className="why">
-                  <strong>
-                    {displayTitle(step.term)}
-                    {alsoCalled(step.term.id)[0] ? `(${alsoCalled(step.term.id)[0]})` : ""}
-                  </strong>{" "}
-                  {drill.note}
-                </p>
+                <AnswerFeedback term={step.term} note={drill.note} />
                 {lastDue ? <div className="caption">{dueLabel(daysUntil(lastDue))}</div> : null}
                 {familiarId === step.term.id ? (
                   <div className="card familiar-note" role="status">

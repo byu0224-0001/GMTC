@@ -21,9 +21,9 @@ const EXTRA_BUDGET = 5;
 const EXTRA_NEW_DAILY_CAP = 2;
 const COST = { new: 1.15, first_recall: 0.7, recall: 0.8, practice: 0.8 };
 
-/** 학습 후보 221개 중 뜻 고르기까지 만들어지는 것은 171개(scripts/report_pool.py). */
-const CANDIDATES = 221;
-const MULTI_FORM = 171;
+/** Production 큐는 검수 완료분(Core100 100 + 리포트 27). 94개 draft는 기본 큐에 안 넣는다. */
+const CANDIDATES = 127;
+const MULTI_FORM = 127;
 
 function intervalFor(reps) {
   return REVIEW_STEPS[Math.min(Math.max(reps, 1), REVIEW_STEPS.length) - 1];
@@ -272,7 +272,7 @@ if (import.meta.url !== pathToFileURL(process.argv[1]).href) {
 
 function main() {
 const full = PERSONAS.map((p) => run(p));
-console.log("30일, 모두 정답 가정. 학습 후보 221개.");
+console.log("30일, 모두 정답 가정. 검수 완료 학습 후보 127개.");
 console.table(full.map(({ 추이, ...r }) => r));
 
 for (const r of full) {

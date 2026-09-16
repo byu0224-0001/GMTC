@@ -178,13 +178,18 @@ def build():
 def main() -> int:
     data, terms, core, pool = build()
     copy_src = (ROOT / "src/content/coreCopy.ts").read_text(encoding="utf-8")
+    session_src = (ROOT / "src/content/sessionCopy.ts").read_text(encoding="utf-8")
     drills = (ROOT / "src/content/drills.ts").read_text(encoding="utf-8")
     reading = (ROOT / "src/content/readingCases.ts").read_text(encoding="utf-8")
     report_src = (ROOT / "src/content/reportLexicon.ts").read_text(encoding="utf-8")
 
-    one_liners = dict(
+    core_liners = dict(
         re.findall(r'\n  "([^"]+)": \{\s*\n\s*oneLiner: "((?:[^"\\]|\\.)*)"', copy_src)
     )
+    session_liners = dict(
+        re.findall(r'\n  "([^"]+)": \{\s*\n\s*oneLiner: "((?:[^"\\]|\\.)*)"', session_src)
+    )
+    one_liners = {**core_liners, **session_liners}
     report_ids = re.findall(r'id: "(rpt-[^"]+)"', report_src)
     REPORT_HEAD.update(
         dict(re.findall(r'id: "(rpt-[^"]+)"[\s\S]*?headword: "([^"]+)"', report_src))
@@ -205,7 +210,8 @@ def main() -> int:
     )
     ctx_answers = {canon.get(a, a) for a in re.findall(r'answerTermId: "([^"]+)"', reading)}
 
-    candidates = [{"id": p["id"], "hop": p["hop"], "topic": p["topic"], "prompt": p["prompt"]} for p in pool]
+    drafts = [{"id": p["id"], "hop": p["hop"], "topic": p["topic"], "prompt": p["prompt"]} for p in pool if p["id"] in session_liners]
+    candidates = [{"id": p["id"], "hop": p["hop"], "topic": p["topic"], "prompt": p["prompt"]} for p in pool if p["id"] in core_liners]
     for rid in report_ids:
         if rid in canon:
             continue
@@ -248,12 +254,14 @@ def main() -> int:
     print(f"한국은행 원문           {len(data['terms'])}개")
     print(f"리포트 표현             {len(report_ids)}개 (그중 {len(canon)}개는 원문 용어와 동일)")
     print(f"핵심 100개에서 3다리 안 {sum(1 for i in terms if True and _hop_ok(i, pool))}개 (문항 성립 기준 통과)")
-    print(f"최종 학습 후보          {len(candidates)}개")
+    print(f"학습 노출 가능 approved  {len(candidates)}개  <- Production 큐")
+    print(f"세션 원고 draft_ready    {len(drafts)}개  <- 사람 검수 전, 기본 큐에 안 넣음")
     print()
     print("  단계별:")
-    print(f"    CORE100 (자체 원고)         {sum(1 for c in candidates if c['hop'] == 0 and c['id'] in one_liners)}개")
+    print(f"    CORE100 (검수 완료)         {sum(1 for c in candidates if c['hop'] == 0 and c['id'] in core_liners)}개")
     print(f"    리포트 표현 (자체 원고)     {sum(1 for c in candidates if c['id'].startswith('rpt-'))}개")
-    print(f"    한국은행 원문 정의문        {sum(1 for c in candidates if c['hop'] > 0)}개")
+    print(f"    세션 원고 draft (검수 전)   {len(drafts)}개")
+    print(f"    원문만 있어 큐에서 제외     {sum(1 for p in pool if p['hop'] > 0 and p['id'] not in session_liners and p['id'] not in core_liners)}개")
     print(f"  사전에만 남는 용어          {len(data['terms']) - sum(1 for c in candidates if not c['id'].startswith('rpt-'))}개")
     print()
     print("  후보에서 빠지는 이유 (한국은행 787개 기준):")

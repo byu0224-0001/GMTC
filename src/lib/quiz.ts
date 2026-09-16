@@ -1,5 +1,6 @@
 import { CLOZE, CONTRAST, MISCONCEPTIONS } from "../content/drills";
 import { CONTEXT_CASES } from "../content/literacy";
+import { LEARN_STEMS } from "../content/learnStems";
 import { learningPool, maskLenient } from "./pool";
 import type { DrillItem, RetrievalForm, SrsCard, Term } from "../types";
 import { displayTitle } from "./hangul";
@@ -205,7 +206,7 @@ function explanationNote(term: Term, prompt: string): string {
   if (worthAdding) return `${reading} ${confusion}`;
   if (reading) return reading;
   if (confusion && !tooSimilar(confusion, prompt)) return confusion;
-  return term.whyItMatters || term.easyExplanation || confusion || "";
+  return term.oneLiner || term.easyExplanation || term.whyItMatters || "";
 }
 
 /** 앞말의 끝소리에 따라 조사를 고른다. `듀레이션은` / `국채는`. */
@@ -253,7 +254,7 @@ export function promptTextFor(term: Term, pool: Term[]): string | null {
  * 같은 용어를 여러 번 물을 때 쓸, 서로 다른 설명 문장.
  * 형태를 바꿀 수 없는 용어라도 문장 표현은 바뀌게 해서 문항을 그대로 되풀이하지 않는다.
  */
-export function promptVariantsFor(term: Term, pool: Term[]): string[] {
+export function promptVariantsFor(term: Term, _pool: Term[]): string[] {
   const out: string[] = [];
   const push = (s: string | null | undefined) => {
     if (!s) return;
@@ -264,8 +265,6 @@ export function promptVariantsFor(term: Term, pool: Term[]): string[] {
   };
   push(term.oneLiner);
   push(term.easyExplanation);
-  const official = learningPool(pool).byId.get(term.id)?.officialPrompt;
-  if (official && !out.some((x) => tooSimilar(x, official))) out.push(official);
   return out;
 }
 
@@ -339,8 +338,21 @@ const CAPTION: Record<RetrievalForm, string> = {
   context: "기사처럼 읽기",
 };
 
-function shorten(s: string, max: number): string {
-  return s.length <= max ? s : `${s.slice(0, max - 1)}…`;
+/**
+ * 기사처럼 읽기 문항의 본문.
+ * 읽기 탭 긴 본문을 잘라 쓰지 않는다. 단서가 있는 짧은 발췌만 쓴다.
+ */
+function contextExcerpt(termId: string, situation: string): string {
+  const authored = LEARN_STEMS[termId]?.trim();
+  if (authored) return authored;
+  const text = situation.trim();
+  const sentences = text.split(/(?<=[다요]\.)\s+/).filter(Boolean);
+  if (sentences.length === 0) return text;
+  let acc = sentences[0] ?? "";
+  if (sentences[1] && `${acc} ${sentences[1]}`.length <= 240) {
+    acc = `${acc} ${sentences[1]}`;
+  }
+  return acc || text;
 }
 
 /** 용어 → 뜻. 설명 네 개를 나란히 두므로 짧은 것만 쓴다. */
@@ -448,7 +460,7 @@ function makeContext(term: Term, pool: Term[], seed: number): DrillItem {
   return {
     kind: "context",
     termId: term.id,
-    prompt: `${shorten(cse.situation, 170)}\n\n${cse.question}`,
+    prompt: `${contextExcerpt(term.id, cse.situation)}\n\n${cse.question}`,
     caption: CAPTION.context,
     choices,
     answerId,

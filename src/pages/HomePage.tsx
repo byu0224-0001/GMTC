@@ -4,7 +4,7 @@ import { InstallNudge, shouldShowInstallNudge } from "../components/InstallNudge
 import { PushBell, PushPrompt, PushSheet, shouldOfferPush, showPushEntry } from "../components/PushPrompt";
 import { TopBar } from "../components/Chrome";
 import { APP_SHORT_NAME, READING_KIND_LONG, SOURCE_DISCLAIMER } from "../content/brand";
-import { CORE100 } from "../content/literacy";
+import { CORE100, pendingDraftTerms } from "../content/literacy";
 import { mapForBriefing } from "../content/learningMaps";
 import { labelFor } from "../lib/lookup";
 import { nudgeFor } from "../content/notifications";
@@ -13,6 +13,7 @@ import { daysSinceStudy } from "../lib/learner";
 import { defaultDoneToday, extraSessionsToday, stats, storageWritable } from "../lib/progress";
 import { isFamiliar, kstDateKey } from "../lib/srs";
 import { extraQueue, planCounts } from "../lib/today";
+import { includeDraftTerms } from "../lib/qaMode";
 import { progressEvidence } from "../lib/evidence";
 import { selectDailyReading, type TodayPlanFile } from "../lib/todayPlan";
 import type { ProgressState, Term } from "../types";
@@ -56,7 +57,7 @@ export function HomePage({
   const moreLeft = termsDone ? extraQueue(terms, progress).length : 0;
   /**
    * 홈에 적는 진도는 Core100이 아니라 실제로 학습한 전체를 센다.
-   * 학습 후보는 221개인데 Core100만 세면 사용자가 본 것보다 적게 나온다.
+   * 검수 완료 큐와 Core100만 세면 사용자가 본 것보다 적게 나온다.
    */
   const cards = Object.values(progress.cards);
   const seenAll = cards.length;
@@ -68,6 +69,8 @@ export function HomePage({
   const [hideHomePush, setHideHomePush] = useState(false);
   const [params, setParams] = useSearchParams();
   const offerPush = !hideHomePush && shouldOfferPush(progress);
+  const qaDrafts = includeDraftTerms();
+  const pendingDrafts = qaDrafts ? pendingDraftTerms(terms) : [];
 
   useEffect(() => {
     if (params.get("from") !== "push") return;
@@ -92,6 +95,27 @@ export function HomePage({
       />
       {pushOpen ? <PushSheet onClose={() => setPushOpen(false)} /> : null}
       <div className="page page-home stack">
+        {qaDrafts ? (
+          <div className="card pad-lg">
+            <div className="caption">검수 모드</div>
+            <p style={{ margin: "8px 0 0", lineHeight: 1.65 }}>
+              검수 전 원고 {pendingDrafts.length}개가 오늘 학습에도 들어와요. 아래는 사전에서
+              내용만 먼저 읽는 목록이에요. 끝나면{" "}
+              <Link to="/?qa=off">검수 모드를 끄면</Link> 다시 검수 완료 용어만 나와요.
+            </p>
+            {pendingDrafts.slice(0, 15).map((t) => (
+              <Link key={t.id} to={`/terms/${encodeURIComponent(t.id)}`} className="term-row">
+                <strong>{t.headword}</strong>
+                <span>{t.oneLiner}</span>
+              </Link>
+            ))}
+            {pendingDrafts.length > 15 ? (
+              <Link to="/terms?filter=draft" className="text-link" style={{ display: "inline-flex", minHeight: "var(--touch-min)", alignItems: "center" }}>
+                검수 전 원고 나머지 보기
+              </Link>
+            ) : null}
+          </div>
+        ) : null}
         <div className="card pad-lg featured">
           {done ? (
             <>
@@ -277,7 +301,7 @@ export function HomePage({
 
         {/*
           `학습 가능한 용어 221개 · 아직 안 본 용어 215개`를 지웠다.
-          221은 우리가 문항을 만들 수 있는 범위이지 사용자가 알아야 할 수가 아니다.
+          필드가 채워진 수와 검수 완료 수를 사용자에게 섞어 보이지 않는다.
           `한국은행 용어가 787개라는데 왜 221개지`라는 의문만 새로 만들고,
           `215개 남음`은 우리가 원하지 않는 완주 압박을 준다.
           대신 지금까지 쌓인 것만 보여 준다. 이번 주 카드가 있으면 그 숫자로 충분하다.
