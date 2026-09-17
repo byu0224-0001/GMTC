@@ -555,8 +555,10 @@ def main() -> int:
         errors.append("invariant: quiz context must use authored LEARN_STEMS")
     if "isLearningReady" not in today_src or "isDraftReady" not in today_src:
         errors.append("invariant: today queue must require approved learning_ready")
-    if "includeDraftTerms" not in today_src:
-        errors.append("invariant: drafts must stay behind qa flag")
+    if "includeDraftTerms" in today_src or "qa=drafts" in today_src:
+        errors.append("invariant: in-app draft QA mode must stay removed")
+    if (ROOT / "src/lib/qaMode.ts").exists():
+        errors.append("invariant: qaMode.ts must be deleted; review is file-based")
     if "function reviewPool" not in today_src:
         errors.append("invariant: already-started drafts must remain reviewable")
     if "한국은행 설명" in learn_src or "step.term.definition" in learn_src:
@@ -591,9 +593,6 @@ def main() -> int:
             errors.append(f"{sid} learnStem ends with ellipsis")
         if not 40 <= len(text) <= 240:
             WARNINGS.append(f"{sid} learnStem {len(text)} chars, want 40-240")
-    qa_src = (ROOT / "src/lib/qaMode.ts").read_text(encoding="utf-8")
-    if "qa=drafts" not in qa_src:
-        errors.append("qaMode must document ?qa=drafts")
     if "TermLearnCard" not in learn_src or "AnswerFeedback" not in learn_src:
         errors.append("LearnPage must use TermLearnCard and AnswerFeedback")
 

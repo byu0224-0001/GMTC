@@ -1,24 +1,20 @@
 import { useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { TopBar } from "../components/Chrome";
-import { pendingDraftTerms } from "../content/literacy";
 import { REPORT_BOK_CANON, REPORT_ESSENTIALS, reportIdForBok, reportTermById, reportToTerm } from "../content/reportLexicon";
-import { includeDraftTerms } from "../lib/qaMode";
 import { CHO_RAIL, choOf, displayTitle, railMatches, searchTerms } from "../lib/hangul";
 import type { ChoBucket, Term } from "../types";
 
-type Filter = "all" | "bok" | "report" | "draft";
+type Filter = "all" | "bok" | "report";
 
 function byHangul(a: Term, b: Term) {
   return displayTitle(a).localeCompare(displayTitle(b), "ko");
 }
 
 export function GlossaryPage({ terms }: { terms: Term[] }) {
-  const [params] = useSearchParams();
-  const qaDrafts = includeDraftTerms() || params.get("filter") === "draft";
   const [q, setQ] = useState("");
   const [cho, setCho] = useState<ChoBucket | null>(null);
-  const [filter, setFilter] = useState<Filter>(params.get("filter") === "draft" ? "draft" : "all");
+  const [filter, setFilter] = useState<Filter>("all");
   const [choOpen, setChoOpen] = useState(false);
 
   const reportTerms = useMemo(
@@ -36,9 +32,7 @@ export function GlossaryPage({ terms }: { terms: Term[] }) {
         ? terms
         : filter === "report"
           ? reportTerms
-          : filter === "draft"
-            ? pendingDraftTerms(terms)
-            : [...terms, ...reportTerms.filter((t) => !REPORT_BOK_CANON[t.id])];
+          : [...terms, ...reportTerms.filter((t) => !REPORT_BOK_CANON[t.id])];
     return [...raw].sort(byHangul);
   }, [filter, terms, reportTerms]);
 
@@ -67,9 +61,6 @@ export function GlossaryPage({ terms }: { terms: Term[] }) {
           <button className={filter === "all" ? "chip picked" : "chip"} onClick={() => setFilter("all")}>전체</button>
           <button className={filter === "bok" ? "chip picked" : "chip"} onClick={() => setFilter("bok")}>경제·금융</button>
           <button className={filter === "report" ? "chip picked" : "chip"} onClick={() => setFilter("report")}>리포트</button>
-          {qaDrafts ? (
-            <button className={filter === "draft" ? "chip picked" : "chip"} onClick={() => setFilter("draft")}>검수 전</button>
-          ) : null}
         </div>
         <button
           type="button"
@@ -103,16 +94,13 @@ export function GlossaryPage({ terms }: { terms: Term[] }) {
             const report = t.id.startsWith("rpt-");
             const mergedReportId = reportIdForBok(t.id);
             const href = report ? `/lexicon/${t.id}` : `/terms/${encodeURIComponent(t.id)}`;
-            const showDraftCopy = t.copyReview === "pending" && t.easyExplanation && qaDrafts;
             const tag = report
               ? "리포트"
-              : showDraftCopy
-                ? "검수 전"
-                : t.priority === "core"
-                  ? "핵심"
-                  : null;
+              : t.priority === "core"
+                ? "핵심"
+                : null;
             const merged = mergedReportId ? reportTermById(mergedReportId) : null;
-            const showCopy = t.copyReview === "approved" || (qaDrafts && t.copyReview === "pending");
+            const showCopy = t.copyReview === "approved";
             const blurb = showCopy
               ? merged?.easyExplanation || t.easyExplanation || t.shortDef
               : t.shortDef;

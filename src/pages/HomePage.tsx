@@ -4,7 +4,7 @@ import { InstallNudge, shouldShowInstallNudge } from "../components/InstallNudge
 import { PushBell, PushPrompt, PushSheet, shouldOfferPush, showPushEntry } from "../components/PushPrompt";
 import { TopBar } from "../components/Chrome";
 import { APP_SHORT_NAME, READING_KIND_LONG, SOURCE_DISCLAIMER } from "../content/brand";
-import { CORE100, draftQaBatch, pendingDraftTerms } from "../content/literacy";
+import { CORE100 } from "../content/literacy";
 import { mapForBriefing } from "../content/learningMaps";
 import { labelFor } from "../lib/lookup";
 import { nudgeFor } from "../content/notifications";
@@ -13,7 +13,6 @@ import { daysSinceStudy } from "../lib/learner";
 import { defaultDoneToday, extraSessionsToday, stats, storageWritable } from "../lib/progress";
 import { isFamiliar, kstDateKey } from "../lib/srs";
 import { extraQueue, planCounts } from "../lib/today";
-import { includeDraftTerms } from "../lib/qaMode";
 import { progressEvidence } from "../lib/evidence";
 import { selectDailyReading, type TodayPlanFile } from "../lib/todayPlan";
 import type { ProgressState, Term } from "../types";
@@ -69,10 +68,6 @@ export function HomePage({
   const [hideHomePush, setHideHomePush] = useState(false);
   const [params, setParams] = useSearchParams();
   const offerPush = !hideHomePush && shouldOfferPush(progress);
-  const qaDrafts = includeDraftTerms();
-  const pendingAll = qaDrafts ? pendingDraftTerms(terms) : [];
-  const batchNo = Number(params.get("batch") || "1");
-  const qaBatch = qaDrafts ? draftQaBatch(terms, batchNo) : { items: [], batch: 1, total: 1 };
 
   useEffect(() => {
     if (params.get("from") !== "push") return;
@@ -97,34 +92,6 @@ export function HomePage({
       />
       {pushOpen ? <PushSheet onClose={() => setPushOpen(false)} /> : null}
       <div className="page page-home stack">
-        {qaDrafts ? (
-          <div className="card pad-lg">
-            <div className="caption">검수 모드 · 묶음 {qaBatch.batch}/{qaBatch.total}</div>
-            <p style={{ margin: "8px 0 0", lineHeight: 1.65 }}>
-              pending {pendingAll.length}개 가운데 이번엔 {qaBatch.items.length}개만 봐요. 한 줄·범위·인과·중복·혼동·전이를
-              통과한 것만 승인하고, 나머지는 pending으로 둬요. 끝나면{" "}
-              <Link to="/?qa=off">검수 모드를 끄면</Link> 다시 검수 완료 용어만 나와요.
-            </p>
-            {qaBatch.items.map((t) => (
-              <Link key={t.id} to={`/terms/${encodeURIComponent(t.id)}`} className="term-row">
-                <strong>{t.headword}</strong>
-                <span>{t.oneLiner}</span>
-              </Link>
-            ))}
-            <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
-              {qaBatch.batch > 1 ? (
-                <Link to={`/?qa=drafts&batch=${qaBatch.batch - 1}`} className="text-link" style={{ display: "inline-flex", minHeight: "var(--touch-min)", alignItems: "center" }}>
-                  이전 묶음
-                </Link>
-              ) : null}
-              {qaBatch.batch < qaBatch.total ? (
-                <Link to={`/?qa=drafts&batch=${qaBatch.batch + 1}`} className="text-link" style={{ display: "inline-flex", minHeight: "var(--touch-min)", alignItems: "center" }}>
-                  다음 묶음
-                </Link>
-              ) : null}
-            </div>
-          </div>
-        ) : null}
         <div className="card pad-lg featured">
           {done ? (
             <>

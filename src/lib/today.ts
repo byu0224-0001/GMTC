@@ -1,5 +1,4 @@
 import { isDraftReady, isLearningReady } from "../content/literacy";
-import { includeDraftTerms } from "./qaMode";
 import { REPORT_BOK_CANON, REPORT_ESSENTIALS, canonBokId, reportToTerm } from "../content/reportLexicon";
 import { briefingForPlan, type TodayPlanFile } from "./todayPlan";
 import { LEARNING_MAPS } from "../content/learningMaps";
@@ -93,16 +92,15 @@ interface Candidates {
   pool: Pool;
 }
 
-let candidateCache: { key: Term[]; drafts: boolean; value: Candidates } | null = null;
+let candidateCache: { key: Term[]; value: Candidates } | null = null;
 
 /**
  * 학습 세션에 들어갈 수 있는 용어.
- * 기본은 검수 완료(approved)만. 원문만 있거나 pending 원고는 넣지 않는다.
- * `?qa=drafts`일 때만 검수 전 원고를 큐에 넣어 사람이 확인한다.
+ * 검수 완료(approved)만. 원문만 있거나 pending 원고는 넣지 않는다.
+ * 검수는 파일로 하고, 앱 검수 모드는 두지 않는다.
  */
 function candidatesOf(terms: Term[]): Candidates {
-  const drafts = includeDraftTerms();
-  if (candidateCache && candidateCache.key === terms && candidateCache.drafts === drafts) {
+  if (candidateCache && candidateCache.key === terms) {
     return candidateCache.value;
   }
   const pool = learningPool(terms);
@@ -111,14 +109,14 @@ function candidatesOf(terms: Term[]): Candidates {
   for (const id of pool.ids) {
     const t = byId.get(id);
     if (!t) continue;
-    if (isLearningReady(t) || (drafts && isDraftReady(t))) out.push(t);
+    if (isLearningReady(t)) out.push(t);
   }
   for (const r of REPORT_ESSENTIALS) {
     if (REPORT_BOK_CANON[r.id]) continue;
     out.push({ ...reportToTerm(r), cho: choOf(r.headword) });
   }
   const value = { terms: out, pool };
-  candidateCache = { key: terms, drafts, value };
+  candidateCache = { key: terms, value };
   return value;
 }
 

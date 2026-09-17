@@ -8,7 +8,6 @@ import {
   reportToTerm,
 } from "../content/reportLexicon";
 import { displayTitle, normalizeQuery } from "./hangul";
-import { includeDraftTerms } from "./qaMode";
 import { isLearningReady } from "../content/literacy";
 import type { Term } from "../types";
 
@@ -53,7 +52,7 @@ function keysMatch(query: string, keys: string[]): boolean {
 }
 
 function summaryOf(term: Term): string | null {
-  const copyOk = isLearningReady(term) || includeDraftTerms();
+  const copyOk = isLearningReady(term);
   const s = copyOk
     ? term.oneLiner || term.easyExplanation || term.shortDef
     : term.shortDef;

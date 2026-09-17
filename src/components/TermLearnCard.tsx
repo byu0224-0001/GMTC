@@ -6,11 +6,15 @@ import { TAXONOMY_LABEL, type Taxonomy } from "../content/literacy";
 import { displayTitle } from "../lib/hangul";
 import type { Term } from "../types";
 
+function compactKey(s: string): string {
+  return s.replace(/[\s·ㆍ\-_/()]/g, "");
+}
+
 export function sourceLooksAligned(term: Pick<Term, "definition" | "headword" | "abbr" | "enName">): boolean {
-  const official = term.definition?.trim() ?? "";
+  const official = compactKey(term.definition?.trim() ?? "");
   if (!official) return false;
   return [term.headword, term.abbr, term.enName].some(
-    (k) => Boolean(k && k.length >= 2 && official.includes(k)),
+    (k) => Boolean(k && compactKey(k).length >= 2 && official.includes(compactKey(k))),
   );
 }
 

@@ -1,14 +1,13 @@
 import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { RelatedConcepts, TopBar } from "../components/Chrome";
-import { TermLearnCard, sourceLooksAligned } from "../components/TermLearnCard";
+import { sourceLooksAligned } from "../components/TermLearnCard";
 import { displayTitle } from "../lib/hangul";
 import { SOURCE_DISCLAIMER } from "../content/brand";
 import { readingsForTerm } from "../content/termReadings";
 import { BOK_REPORT_BRIDGE, reportTermById } from "../content/reportLexicon";
 import { logEvent } from "../lib/events";
-import { isDraftReady, isLearningReady, termSurfaceLabel } from "../content/literacy";
-import { includeDraftTerms } from "../lib/qaMode";
+import { isLearningReady, termSurfaceLabel } from "../content/literacy";
 import type { Term } from "../types";
 
 export function TermDetailPage({ terms }: { terms: Term[] }) {
@@ -17,9 +16,7 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
   const term = terms.find((t) => t.id === termId);
   const related = term ? terms.filter((t) => term.relatedIds.includes(t.id)).slice(0, 5) : [];
   const readings = term ? readingsForTerm(term.id) : [];
-  const showLearn = Boolean(
-    term && (isLearningReady(term) || (includeDraftTerms() && isDraftReady(term))),
-  );
+  const showLearn = Boolean(term && isLearningReady(term));
   const bridge = term ? BOK_REPORT_BRIDGE[term.id] : undefined;
 
   useEffect(() => {
@@ -40,13 +37,6 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
     <>
       <TopBar title="용어" back />
       <div className="page stack">
-        {term.copyReview === "pending" && showLearn ? (
-          <>
-            <p className="caption" style={{ margin: 0 }}>① 오늘 학습 카드 · 승인되면</p>
-            <TermLearnCard term={term} terms={terms} moreHref={false} />
-            <p className="caption" style={{ margin: 0 }}>② 사전 상세 · 승인되면</p>
-          </>
-        ) : null}
         <div className="card pad-lg">
           <div className="eyebrow">{termSurfaceLabel(term)}</div>
           <h2 className="term-title" style={{ margin: "8px 0 4px" }}>{displayTitle(term)}</h2>
@@ -115,26 +105,6 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
             <p className="muted" style={{ margin: 0 }}>{term.definition}</p>
           </details>
         ) : null}
-        {term.copyReview === "pending" && showLearn ? (
-          <div className="card pad-lg">
-            <div className="caption">③ 검수 필드 · 아직 pending</div>
-            <p className="muted" style={{ margin: "8px 0 0", lineHeight: 1.65 }}>
-              {[
-                ["한 줄 뜻", term.oneLiner],
-                ["쉬운 설명", term.easyExplanation],
-                ["이렇게 읽어요", term.typicalSituation],
-                ["알아두면 좋은 이유", term.whyItMatters],
-                ["핵심 포인트", term.keyPoints[0]],
-                ["헷갈리기 쉬운 점", term.commonConfusions[0]],
-              ].map(([label, value]) => `${label} ${value ? "있음" : "없음(생략 가능)"}`).join(" · ")}
-            </p>
-            <p className="muted" style={{ margin: "12px 0 0", lineHeight: 1.65 }}>
-              승인 전에: 한 줄이 맞는가 · 사례를 전체처럼 쓰지 않았는가 · 인과를 과장하지 않았는가 ·
-              필드가 같은 말을 반복하지 않는가 · 혼동은 진짜 인접 개념인가 · 뉴스에서 다시 만날 문장이 있는가.
-              하나라도 걸리면 pending.
-            </p>
-          </div>
-        ) : null}
         {readings.length > 0 ? (
           <div>
             <div className="caption">관련 읽기</div>
@@ -152,7 +122,7 @@ export function TermDetailPage({ terms }: { terms: Term[] }) {
             {related.map((t) => (
               <Link key={t.id} to={`/terms/${encodeURIComponent(t.id)}`} className="term-row">
                 <strong>{displayTitle(t)}</strong>
-                <span>{isLearningReady(t) || includeDraftTerms() ? t.easyExplanation || t.shortDef : t.shortDef}</span>
+                <span>{isLearningReady(t) ? t.easyExplanation || t.shortDef : t.shortDef}</span>
               </Link>
             ))}
           </div>

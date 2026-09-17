@@ -5,7 +5,6 @@ import { ScrollReset } from "./components/ScrollReset";
 import { loadTerms } from "./lib/data";
 import { fallbackPlan, loadExtraBriefings, loadTodayPlan, resolveDisplayPlan, type TodayPlanFile } from "./lib/todayPlan";
 import { loadProgress, storageWritable } from "./lib/progress";
-import { syncQaMode } from "./lib/qaMode";
 import type { Term } from "./types";
 import { HomePage } from "./pages/HomePage";
 import { OnboardingPage } from "./pages/OnboardingPage";
@@ -41,12 +40,7 @@ export default function App() {
 
   useEffect(() => {
     setTick((n) => n + 1);
-  }, [loc.pathname]);
-
-  useEffect(() => {
-    syncQaMode(loc.search);
-    setTick((n) => n + 1);
-  }, [loc.search]);
+  }, [loc.pathname, loc.search]);
 
   const session =
     loc.pathname.startsWith("/learn/session") ||

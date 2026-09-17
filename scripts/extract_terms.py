@@ -305,6 +305,25 @@ def resolve_related(terms: list[dict]) -> None:
 
 
 def infer_category(term: dict) -> str:
+    overrides = {
+        "고객확인절차-kyc": "제도·규제",
+        "고정이하여신비율": "금융안정",
+        "국가채무": "실물경제",
+        "경기조절정책": "실물경제",
+        "외국환업무취급기관": "국제금융",
+        "해외외국환업무취급기관-rfi": "국제금융",
+        "현지금융": "국제금융",
+        "매몰비용": "실물경제",
+        "발행시장": "금융시장",
+        "신용파생상품": "금융시장",
+        "최종수요": "실물경제",
+        "통화지표": "통화정책",
+        "평잔": "금융시장",
+        "통상임금": "제도·규제",
+        "대외지급준비자산": "국제금융",
+    }
+    if term.get("id") in overrides:
+        return overrides[term["id"]]
     text = term["headword"] + " " + term["definition"][:400]
     rules = [
         ("지급결제", r"지급|결제|송금|어음|수표|CD공동망|VAN|전자금융|RTGS"),

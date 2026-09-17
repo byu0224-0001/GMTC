@@ -64,15 +64,14 @@ check("문항 전환 시 deep dive 리셋", /DeepDive key=\{`\$\{i\}-\$\{step\.t
 check("신규 카드는 학습 템플릿", learn.includes("TermLearnCard") && !learn.includes("한국은행 설명"));
 check("정답 후 제목만 금지", learn.includes("AnswerFeedback"));
 check("첫 카드는 한 줄 + 같이 보면", learnCard.includes("조금 더 알아보기") && learnCard.includes("RelatedConcepts") && !learnCard.includes("왜 알아두면 좋을까요?") && !learnCard.includes("헷갈리기 쉬워요"));
-check("검수 화면은 학습·사전·필드를 나눈다", detail.includes("① 오늘 학습 카드") && detail.includes("② 사전 상세") && detail.includes("③ 검수 필드"));
 check("사전 유형 라벨은 출처 혼합이 아님", detail.includes("termSurfaceLabel") && !detail.includes("한국은행 · 리포트"));
-check("검수 홈은 묶음으로 본다", readFileSync("src/pages/HomePage.tsx", "utf8").includes("draftQaBatch") && readFileSync("src/pages/HomePage.tsx", "utf8").includes("다음 묶음"));
+check("앱 검수 모드는 없다", !detail.includes("① 오늘 학습 카드") && !readFileSync("src/pages/HomePage.tsx", "utf8").includes("draftQaBatch") && !readFileSync("src/pages/HomePage.tsx", "utf8").includes("?qa=drafts"));
 check("이미 시작한 draft는 복습 유지", readFileSync("src/lib/today.ts", "utf8").includes("function reviewPool"));
 const quiz = readFileSync("src/lib/quiz.ts", "utf8");
 check("기사처럼 읽기 절단 금지", !quiz.includes("function shorten") && !quiz.includes("slice(0, 170)"));
 check("기사처럼 읽기는 별도 발췌", quiz.includes("LEARN_STEMS"));
 check("오늘 큐 learningReady 가드", readFileSync("src/lib/today.ts", "utf8").includes("isLearningReady") && readFileSync("src/lib/today.ts", "utf8").includes("isDraftReady"));
-check("검수 전 원고는 qa 플래그", readFileSync("src/lib/qaMode.ts", "utf8").includes("qa=drafts"));
+check("검수 전 원고는 큐에 안 넣는다", !readFileSync("src/lib/today.ts", "utf8").includes("includeDraftTerms"));
 
 const feed = readFileSync("src/pages/NewsFeedPage.tsx", "utf8");
 check("읽기 목록 상단 예시 고지", feed.includes("학습을 위해 재구성한 예시"));
