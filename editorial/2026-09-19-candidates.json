@@ -1,0 +1,92 @@
+{
+  "generatedAt": "2026-09-19T08:29:31.482987+09:00",
+  "windowHours": 24,
+  "count": 4,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
+      "publishedAt": "2026-09-18T15:00:00+00:00",
+      "matchedTermIds": [
+        "유럽연합-eu",
+        "은행인수어음-ba",
+        "기준금리"
+      ],
+      "termIds": [
+        "유럽연합-eu",
+        "은행인수어음-ba",
+        "기준금리"
+      ],
+      "score": 11,
+      "fitness": "높음"
+    },
+    {
+      "id": "c2",
+      "title": "Federal Reserve Board issues enforcement actions with former employee of Northstar Bank, former employee of American Express Travel Related Services Company, Inc., and former employee of Regions Bank",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918a.htm",
+      "publishedAt": "2026-09-18T15:00:00+00:00",
+      "matchedTermIds": [
+        "은행인수어음-ba",
+        "기준금리"
+      ],
+      "termIds": [
+        "은행인수어음-ba",
+        "기준금리"
+      ],
+      "score": 8,
+      "fitness": "중간"
+    },
+    {
+      "id": "c3",
+      "title": "ECB Consumer Expectations Survey results – August 2026",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260918~295b3ab978.en.html",
+      "publishedAt": "2026-09-18T08:00:00+00:00",
+      "matchedTermIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "termIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "score": 6,
+      "fitness": "중간"
+    },
+    {
+      "id": "c4",
+      "title": "Boris Vujčić: Interview with Reuters",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in260918~33f023fe26.en.html",
+      "publishedAt": "2026-09-18T06:00:00+00:00",
+      "matchedTermIds": [
+        "유럽연합-eu"
+      ],
+      "termIds": [
+        "유럽연합-eu"
+      ],
+      "score": 3,
+      "fitness": "중간"
+    }
+  ]
+}
