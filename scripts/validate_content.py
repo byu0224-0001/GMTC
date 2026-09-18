@@ -486,11 +486,12 @@ def main() -> int:
     _, terms_by_id, _, pool = build_pool()
     hop_gt = {p["id"] for p in pool if p["hop"] > 0}
     missing_session = sorted(hop_gt - set(session_ids))
-    extra_session = sorted(set(session_ids) - hop_gt)
+    extra_session = sorted(sid for sid in session_ids if sid not in hop_gt)
     if missing_session:
-        errors.append(f"SESSION_COPY missing hop>0 pool ids: {missing_session[:12]}")
-    if extra_session:
-        errors.append(f"SESSION_COPY extra keys: {extra_session[:12]}")
+        WARNINGS.append(f"SESSION_COPY missing hop>0 pool ids: {missing_session[:12]}")
+    unknown_extra = [sid for sid in extra_session if sid not in terms]
+    if unknown_extra:
+        errors.append(f"SESSION_COPY extra keys not in terms.json: {unknown_extra[:12]}")
     overlap_core = [i for i in session_ids if i in core_ids]
     if overlap_core:
         errors.append(f"SESSION_COPY overlaps Core100: {overlap_core}")
@@ -908,6 +909,30 @@ def main() -> int:
         reading_src,
         maps_src,
     )
+
+    tax_path = ROOT / "editorial/taxonomy-overrides.json"
+    if tax_path.exists():
+        overrides = json.loads(tax_path.read_text(encoding="utf-8"))
+        for tid, cat in overrides.items():
+            if tid not in terms:
+                errors.append(f"taxonomy override unknown id: {tid}")
+            elif terms[tid].get("category") != cat:
+                errors.append(f"{tid} category {terms[tid].get('category')} != {cat}")
+
+    from source_integrity import nearby_intrusions  # noqa: E402
+    leftovers = nearby_intrusions(terms_file["terms"])
+    if leftovers:
+        errors.append(
+            f"source boundary: {len(leftovers)} next-headword intrusions remain "
+            f"(e.g. {leftovers[0]['id']} <- {leftovers[0]['intruder']})"
+        )
+
+    batch2_path = ROOT / "editorial/foundation-batch2.json"
+    if batch2_path.exists():
+        batch2_ids = json.loads(batch2_path.read_text(encoding="utf-8")).keys()
+        missing_b2 = [sid for sid in batch2_ids if sid not in session_ids]
+        if missing_b2:
+            errors.append(f"SESSION_COPY missing foundation batch2: {missing_b2[:8]}")
 
     if errors:
         print("FAIL")

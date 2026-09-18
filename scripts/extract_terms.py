@@ -304,24 +304,15 @@ def resolve_related(terms: list[dict]) -> None:
         t["relatedIds"] = ids[:5]
 
 
+def taxonomy_overrides() -> dict[str, str]:
+    path = ROOT / "editorial" / "taxonomy-overrides.json"
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def infer_category(term: dict) -> str:
-    overrides = {
-        "고객확인절차-kyc": "제도·규제",
-        "고정이하여신비율": "금융안정",
-        "국가채무": "실물경제",
-        "경기조절정책": "실물경제",
-        "외국환업무취급기관": "국제금융",
-        "해외외국환업무취급기관-rfi": "국제금융",
-        "현지금융": "국제금융",
-        "매몰비용": "실물경제",
-        "발행시장": "금융시장",
-        "신용파생상품": "금융시장",
-        "최종수요": "실물경제",
-        "통화지표": "통화정책",
-        "평잔": "금융시장",
-        "통상임금": "제도·규제",
-        "대외지급준비자산": "국제금융",
-    }
+    overrides = taxonomy_overrides()
     if term.get("id") in overrides:
         return overrides[term["id"]]
     text = term["headword"] + " " + term["definition"][:400]
@@ -358,6 +349,9 @@ def main() -> int:
     body = clean_body_pages(doc)
     terms, used, toc_n = split_terms(body, toc)
     resolve_related(terms)
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from source_integrity import clean_definitions  # noqa: E402
+    clean_definitions(terms)
     for t in terms:
         t["category"] = infer_category(t)
         t["difficulty"] = infer_difficulty(t)

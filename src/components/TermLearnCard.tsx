@@ -7,7 +7,7 @@ import { displayTitle } from "../lib/hangul";
 import type { Term } from "../types";
 
 function compactKey(s: string): string {
-  return s.replace(/[\s·ㆍ\-_/()]/g, "");
+  return s.normalize("NFKC").replace(/[\s·ㆍ\-_/()]/g, "");
 }
 
 export function sourceLooksAligned(term: Pick<Term, "definition" | "headword" | "abbr" | "enName">): boolean {

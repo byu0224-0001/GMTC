@@ -33,7 +33,7 @@ def main() -> None:
     a = lines.append
     a("# Foundation 검수팩 2")
     a("")
-    a("상태: **전부 pending**. SESSION_COPY에 아직 넣지 않았다. 일괄 승인 금지.")
+    a("상태: **전부 pending**. 일괄 승인 금지. 사람 10~15개 재확인 전에는 approved로 바꾸지 않는다.")
     a(f"개수: **{len(rows)}개** · 한글 표제어 다음 묶음(원문 정렬된 항목만)")
     a("이전 묶음 94개는 `editorial/session-copy-qa.md`")
     a("생성: `python3 scripts/export_foundation_qa.py`")
@@ -82,7 +82,7 @@ def main() -> None:
         a(f"- 유형: {surface_label(term)} · 분류: {term.get('category') or '—'}")
         if extra:
             a(f"- 영문·약어: {' · '.join(extra)}")
-        a("- copyReview: pending · 코드 미반영")
+        a("- copyReview: pending")
         a(f"- 원문 접기: {'표제어가 원문에 보임' if source_aligned(term) else '표제어가 원문에 안 보임 — 매핑부터'}")
         hint = flags(term["id"], copy)
         if hint:
@@ -114,7 +114,7 @@ def main() -> None:
     a("## 집계")
     a("")
     a(f"- 전체 {len(rows)} · 통과 __ · 수정 __ · 보류 __")
-    a("- 이 묶음은 검수 통과 후에만 SESSION_COPY로 옮긴다")
+    a("- 재검수에서 통과한 항목만 10~15개 단위로 사람 확인 뒤 approved")
     a("")
     OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"{OUT.relative_to(ROOT)}  {len(rows)}개  {OUT.stat().st_size} bytes")

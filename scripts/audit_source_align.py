@@ -16,20 +16,15 @@ TERMS = ROOT / "public/data/terms.json"
 
 
 def compact(s: str) -> str:
-    return re.sub(r"[\s·ㆍ\-_/()]", "", s)
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from source_integrity import compact as compact_key  # noqa: E402
+    return compact_key(s)
 
 
 def aligned(term: dict) -> bool:
-    body = term.get("definition") or ""
-    keys = [term.get("headword") or "", term.get("abbr") or "", term.get("enName") or ""]
-    keys += term.get("pairHeadwords") or []
-    keys += term.get("aliases") or []
-    for k in keys:
-        if k and len(k) >= 2 and k in body:
-            return True
-        if k and len(compact(k)) >= 2 and compact(k) in compact(body):
-            return True
-    return False
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from source_integrity import source_aligned  # noqa: E402
+    return source_aligned(term)
 
 
 def main() -> int:

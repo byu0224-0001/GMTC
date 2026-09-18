@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import locale
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,13 +59,9 @@ def surface_label(term: dict) -> str:
 
 
 def source_aligned(term: dict) -> bool:
-    official = (term.get("definition") or "").strip()
-    if not official:
-        return False
-    for k in (term.get("headword"), term.get("abbr"), term.get("enName")):
-        if k and len(k) >= 2 and k in official:
-            return True
-    return False
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from source_integrity import source_aligned as aligned  # noqa: E402
+    return aligned(term)
 
 
 def flags(sid: str, copy: dict) -> list[str]:
