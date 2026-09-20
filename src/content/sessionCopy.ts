@@ -2,7 +2,7 @@ import type { CoreCopy } from "./coreCopy";
 
 /**
  * Core100 밖의 세션 후보 원고.
- * copyReview는 pending. 필드가 있다고 검수 완료가 아니다.
+ * copyReview approved는 통과·수정 반영분. 보류는 pending.
  *
  * 한 줄 뜻         이게 뭐예요? 개념의 정체성. 사례가 정체성으로 올라오면 안 된다.
  * 쉬운 설명         조금 더 풀어 말하면요?
@@ -27,6 +27,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["다른 조건이 비슷하다면, 소득보다 소비가 더 빠르게 늘었을 가능성을 생각해볼 수 있어요."],
     commonConfusions: ["저축률이 높다고 가계가 부유하다는 뜻은 아니에요. 불안해서 덜 쓰는 것일 수도 있어요."],
     typicalSituation: "저축률 상승이 소득 증가 때문인지 소비 감소 때문인지 나눠 봐요. 경기 불안 때문에 소비가 줄어도 저축률은 오를 수 있어요.",
+    copyReview: "approved",
   },
 
   "가계처분가능소득": {
@@ -37,6 +38,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["명목 처분가능소득의 증가와 물가를 함께 봐 실제 구매력이 늘었는지 확인해요."],
     commonConfusions: ["월급이 올랐다고 바로 처분가능소득이 같은 폭으로 늘지는 않아요. 세금·보험료가 같이 늘 수 있어요. 이전소득이 있으면 월급과 폭이 더 달라져요."],
     typicalSituation: "임금이 올라도 세금이나 국민연금·건강보험료가 함께 늘면 처분가능소득의 증가폭은 작을 수 있어요. 여기에 물가까지 더 빠르게 오르면 실제 구매력은 줄어들 수 있어요.",
+    copyReview: "approved",
   },
 
   "간접금융": {
@@ -47,6 +49,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["금융기관의 자본 여력이 약해지거나 건전성 규제가 강화되면 대출 공급이 줄어들 수 있어요."],
     commonConfusions: ["주식 공모나 회사채 발행은 직접금융에 가까워요. 은행 대출과 같은 길이 아니에요."],
     typicalSituation: "신용경색 국면에서는 기준금리뿐 아니라 은행의 대출 태도와 신용공급도 함께 봐야 해요.",
+    copyReview: "approved",
   },
 
   "경기조절정책": {
@@ -57,6 +60,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["정책이 효과를 내기까지 시차가 있어요."],
     commonConfusions: ["기준금리 인하와 추경은 둘 다 경기를 떠받칠 수 있지만, 주체와 전달 경로가 달라요."],
     typicalSituation: "경기가 약해도 물가가 높은 상황에서는 경기 부양과 물가 안정이 서로 충돌할 수 있어요.",
+    copyReview: "approved",
   },
 
   "경제활동인구": {
@@ -67,6 +71,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["구직활동을 중단하는 사람이 늘면 경제활동인구에서 빠져 실업률이 낮아 보일 수 있어요."],
     commonConfusions: ["경제활동인구가 늘었다고 고용이 좋아진 것은 아니에요. 일자리를 찾는 사람이 늘었을 수도 있어요."],
     typicalSituation: "실업률이 내려갔는데 경제활동인구도 같이 줄면, 취업이 늘어난 게 아니라 구직을 포기한 사람 때문일 수 있어요. 고용률을 같이 봐요.",
+    copyReview: "approved",
   },
 
   "계절변동조정시계열": {
@@ -77,6 +82,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["조정 시계열과 원지수를 같은 문장에서 섞어 읽지 않아요."],
     commonConfusions: ["계절조정 숫자가 올랐다고 실제 가게 매출이 그 달 더 바빴다는 뜻은 아니에요."],
     typicalSituation: "1월 소매판매가 크게 줄어도 계절조정을 하면 감소 폭이 작을 수 있어요. 연말 소비가 빠진 효과인지, 경기가 꺾인 건지 가리려면 조정 숫자를 봐요.",
+    copyReview: "approved",
   },
 
   "고객확인절차-kyc": {
@@ -87,6 +93,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["한 번 통과했다고 평생 면제는 아니에요. 거래 패턴이 바뀌면 다시 물어요."],
     commonConfusions: ["고객 확인은 신용평가와 달라요. 돈을 갚을 능력보다 ‘이 사람이 맞는지’를 봐요."],
     typicalSituation: "송금이나 출금이 보류됐을 때 가격 문제가 아니라 신원·거래 목적 확인 절차 때문일 수도 있어요.",
+    copyReview: "approved",
   },
 
   "고용보조지표": {
@@ -97,6 +104,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["보조지표가 여러 개라서, 어떤 정의를 썼는지부터 봐요."],
     commonConfusions: ["고용보조지표가 높다고 당장 실업률이 잘못됐다는 뜻은 아니에요. 보는 범위가 다를 뿐이에요."],
     typicalSituation: "실업률은 낮은데 고용보조지표가 높다면, 더 일하고 싶거나 구직 주변부에 있는 사람이 여전히 많다는 뜻일 수 있어요.",
+    copyReview: "approved",
   },
 
   "고정이하여신비율": {
@@ -107,6 +115,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["비율이 낮아도 특정 업종에 부실이 몰려 있을 수 있어요."],
     commonConfusions: ["연체율과 비슷한 신호지만, 고정이하여신은 이미 회수가 어렵다고 분류된 여신의 비중이에요."],
     typicalSituation: "금리가 오른 뒤 이 비율이 올라가면 은행이 충당금을 늘리고 대출을 조일 수 있어요. 그때 기업 자금 사정도 같이 나빠질 수 있어요.",
+    copyReview: "pending",
   },
 
   "고정환율제도": {
@@ -117,6 +126,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["고정 수준을 지키려면 외화를 사고팔 준비금이 필요해요."],
     commonConfusions: ["환율이 고정돼 있다고 수출 경쟁력이 항상 안정되는 것은 아니에요."],
     typicalSituation: "자국 통화의 약세 압력이 큰데 고정 환율을 유지하려면 외화를 공급해야 할 수 있어요. 압력이 오래 이어지면 외환보유액·금리·자본이동 정책에도 부담이 생길 수 있어요.",
+    copyReview: "approved",
   },
 
   "골디락스경제": {
@@ -127,6 +137,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["사후적으로 붙는 이름인 경우가 많아요."],
     commonConfusions: ["주가가 오른다고 골디락스인 것은 아니에요. 물가와 고용을 같이 봐야 해요."],
     typicalSituation: "성장은 유지되는데 물가가 목표 근처로 내려오면 이 표현이 나와요. 근원물가가 안 내려오면 같은 성장도 과열로 읽혀요.",
+    copyReview: "approved",
   },
 
   "국가채무": {
@@ -137,6 +148,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["GDP 대비 비율·증가 속도·이자비용·만기구조를 같이 봐요."],
     commonConfusions: ["국가채무가 있다고 나라가 곧 파산한다는 뜻은 아니에요."],
     typicalSituation: "금리가 오른 해에 국가채무가 크면 이자 비용이 예산에서 더 커져요. 같은 빚이라도 저금리 때와 부담이 달라요.",
+    copyReview: "approved",
   },
 
   "국내총투자율": {
@@ -147,6 +159,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["재고가 쌓여서 투자가 늘어 보이면, 수요가 좋은 신호가 아닐 수 있어요."],
     commonConfusions: ["투자율이 높다고 가계가 부유해진 것은 아니에요. 기업·정부가 설비에 돈을 넣은 것일 수 있어요."],
     typicalSituation: "금리가 오르거나 수요 전망이 약해지면 투자율이 낮아질 수 있어요. 설비·건설·재고 중 어디가 움직였는지 나눠 봐요.",
+    copyReview: "approved",
   },
 
   "국민부담률": {
@@ -157,6 +170,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["국제 비교는 복지 범위가 달라서 숫자만으로 높고 낮을 말하기 어려워요."],
     commonConfusions: ["국민부담률이 올랐다고 바로 가계 소득이 줄었다는 뜻은 아니에요. 돌려받는 혜택도 같이 봐요."],
     typicalSituation: "세율이 그대로여도 사회보험 기여금이 늘면 국민부담률은 오를 수 있어요. 다만 이 숫자만으로 복지의 수준이나 효율을 판단할 수는 없어요.",
+    copyReview: "approved",
   },
 
   "국부펀드": {
@@ -167,6 +181,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["전략이 바뀌면 특정 시장에서 자금이 빠질 수 있어요."],
     commonConfusions: ["국부펀드를 그 나라 중앙은행의 기준금리 정책과 같은 것으로 보지 않아요."],
     typicalSituation: "유가 수입이 많은 나라가 주식·부동산에 돈을 넣으면 해당 시장 수급이 달라져요. 반대로 본국 재정이 급하면 해외 자산을 팔기도 해요.",
+    copyReview: "approved",
   },
 
   "국채선물": {
@@ -177,6 +192,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["선물 가격이 오르면 금리 하락 기대로 읽히는 경우가 많아요."],
     commonConfusions: ["국채선물을 산다고 그 국채 이자를 바로 받는 것은 아니에요."],
     typicalSituation: "물가 발표가 예상보다 높으면 국채선물 가격이 떨어지고 금리는 오를 수 있어요. 현물 거래가 한산해도 선물부터 움직이는 날이 있어요.",
+    copyReview: "pending",
   },
 
   "규제샌드박스": {
@@ -187,6 +203,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["샌드박스 지정이 영구 면허는 아니에요."],
     commonConfusions: ["규제 샌드박스를 통과했다고 모든 소비자 보호 규제가 사라진 것은 아니에요."],
     typicalSituation: "새로운 송금 앱이 샌드박스로 출시됐다가, 기간이 끝나면 기존 규제를 다시 적용받을 수 있어요. 성장 스토리만 보지 않고 만료 일정을 봐요.",
+    copyReview: "approved",
   },
 
   "글로벌금융안전망": {
@@ -197,6 +214,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["실제로 쓰이기 전에 ‘있다’는 사실만으로도 심리를 안정시키기도 해요."],
     commonConfusions: ["안전망이 있다고 외환보유액을 안 봐도 되는 것은 아니에요."],
     typicalSituation: "달러 유동성이 마를 때 한·미 통화스왑 뉴스가 나오면 원/달러가 진정되기도 해요. 스왑이 만료되면 같은 불안이 다시 올 수 있어요.",
+    copyReview: "approved",
   },
 
   "금리스왑": {
@@ -207,6 +225,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["스왑 금리가 시장 금리 기대를 보여 주기도 해요."],
     commonConfusions: ["금리스왑을 예금 이자와 같은 확정 수익으로 보지 않아요."],
     typicalSituation: "변동금리 대출을 받은 기업이 금리가 더 오를 것 같아 고정으로 바꾸면 이 거래가 늘어요. 나중에 금리가 내리면 고정 쪽이 손해처럼 보일 수 있어요.",
+    copyReview: "approved",
   },
 
   "금본위제": {
@@ -217,6 +236,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["금을 기준으로 두면 국내 경기보다 금 보유가 정책을 제약해요."],
     commonConfusions: ["금값이 오른다고 금본위제로 돌아간 것은 아니에요."],
     typicalSituation: "달러 약세와 금값 상승 기사를 읽을 때, 과거의 금 태환 약속과 지금의 자유변동 환율을 같은 제도로 묶지 않아요.",
+    copyReview: "approved",
   },
 
   "금융의탈집중화": {
@@ -227,6 +247,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["서비스가 나뉘면 고객 데이터와 리스크도 나뉘어요."],
     commonConfusions: ["탈집중화가 규제가 사라졌다는 뜻은 아니에요."],
     typicalSituation: "간편송금이 늘어 은행 이체 수수료가 줄면, 은행은 다른 수익을 찾거나 같은 서비스를 따라 만들어요. 편리함과 예금자 보호 범위를 같이 봐요.",
+    copyReview: "approved",
   },
 
   "금융채": {
@@ -237,6 +258,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["국채 금리가 내려도 금융채 스프레드가 벌어지면 조달 비용은 안 내려가요."],
     commonConfusions: ["금융채를 예금자 보호가 되는 예금과 같은 것으로 보지 않아요."],
     typicalSituation: "은행 건전성 우려가 나오면 금융채 금리가 국채보다 더 오를 수 있어요. 그때 주택담보대출 금리도 같이 굳어질 수 있어요.",
+    copyReview: "approved",
   },
 
   "기저효과": {
@@ -247,6 +269,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["절대 금액·전월 대비를 같이 보면 왜곡을 줄여요."],
     commonConfusions: ["증가율이 높다고 지금 수준이 좋은 것은 아니에요. 출발점이 낮았을 수 있어요."],
     typicalSituation: "작년 한 달 공장 가동이 멈췄다면 올해 같은 달 증가율이 크게 나와요. 생산 수준 자체는 평년만 못 할 수도 있어요.",
+    copyReview: "approved",
   },
 
   "기준순환일": {
@@ -257,6 +280,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["실시간 뉴스의 경기 판단과 공식 기준일은 시차가 있어요."],
     commonConfusions: ["주가가 빠진 날이 곧 기준순환일은 아니에요."],
     typicalSituation: "고용과 생산이 몇 달 꺾인 뒤에야 정점이 언제였는지 발표돼요. 그날의 주가 급락과 혼동하지 않아요.",
+    copyReview: "approved",
   },
 
   "기초가격": {
@@ -267,6 +291,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["구매자 가격·생산자 가격·기초가격을 같은 숫자로 읽지 않아요."],
     commonConfusions: ["기초가격은 소비자물가나 시장 판매가격과 같은 개념이 아니에요."],
     typicalSituation: "생산물세나 보조금이 바뀌면 소비자가격과 기초가격이 다르게 움직일 수 있어요. GDP를 생산 측면에서 볼 때 어떤 가격 기준인지 확인해요.",
+    copyReview: "approved",
   },
 
   "대외의존도": {
@@ -277,6 +302,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["원자재 수입 비중이 크면 환율 상승이 국내 비용과 물가에 전가될 가능성이 커질 수 있어요."],
     commonConfusions: ["대외의존도가 높다고 항상 위험한 것은 아니에요. 경쟁력 있는 수출 구조일 수도 있어요."],
     typicalSituation: "주요 수출국 경기가 식으면 국내 제조업 생산이 먼저 꺾여요. 내수 지표만 보고 안심하기 어려운 이유예요.",
+    copyReview: "approved",
   },
 
   "대외지급준비자산": {
@@ -287,6 +313,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["규모뿐 아니라 얼마나 빨리 현금화할 수 있는지도 중요해요."],
     commonConfusions: ["준비자산이 많다고 재정이 흑자라는 뜻은 아니에요."],
     typicalSituation: "환율 급등 때 당국이 외화를 공급하면 준비자산이 줄 수 있어요. 환율 움직임과 준비자산 변화의 원인을 함께 봐요.",
+    copyReview: "approved",
   },
 
   "레그테크": {
@@ -297,6 +324,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["비용을 줄여도 규제 책임 자체가 사라지지는 않아요."],
     commonConfusions: ["레그테크를 규제를 피하는 기술로 보지 않아요. 지키기를 돕는 기술이에요."],
     typicalSituation: "규제 보고나 거래 모니터링 의무가 늘면 금융회사가 자동화 시스템 투자를 늘릴 수 있어요. 비용 절감뿐 아니라 오류·오탐·운영 위험도 같이 봐요.",
+    copyReview: "approved",
   },
 
   "매몰비용": {
@@ -307,6 +335,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["본전 심리는 매몰비용에 집착하는 전형적인 오류예요."],
     commonConfusions: ["매몰비용을 앞으로 나갈 추가 투자와 같은 것으로 보지 않아요."],
     typicalSituation: "주가가 빠진 종목을 ‘본전이 안 되어서’ 더 사는 것은 매몰비용에 끌린 결정일 수 있어요. 지금부터의 전망만으로 다시 판단해야 해요.",
+    copyReview: "pending",
   },
 
   "명목소득": {
@@ -317,6 +346,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["명목이 올라도 물가가 더 오르면 실질은 감소예요."],
     commonConfusions: ["명목소득이 늘었다고 살림이 넉넉해진 것은 아니에요."],
     typicalSituation: "임금이 3% 올랐는데 물가가 4% 오르면 명목은 증가, 실질은 감소예요. 소비 지표는 실질 쪽에 더 가깝게 움직여요.",
+    copyReview: "approved",
   },
 
   "물가지수": {
@@ -327,6 +357,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["가중치가 큰 품목이 지수를 흔들어요."],
     commonConfusions: ["물가지수 하나를 내 장바구니 가격과 같다고 보지 않아요."],
     typicalSituation: "에너지 가격이 급등하면 소비자물가는 오르는데, 근원 지수는 덜 움직일 수 있어요. ‘물가가 올랐다’는 문장에 어떤 지수가 붙었는지 봐요.",
+    copyReview: "approved",
   },
 
   "발행시장": {
@@ -337,6 +368,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["발행이 많다고 그 기업의 사업이 좋아진 것은 아니에요. 돈이 필요하다는 뜻일 수도 있어요."],
     commonConfusions: ["거래소에서 주식을 사는 것은 대개 유통시장 거래예요. 회사로 돈이 바로 들어가지 않아요."],
     typicalSituation: "금리가 오르면 회사채 발행이 줄어들 수 있어요. 주가가 높아지면 반대로 유상증자가 늘기도 해요. 왜 지금 나오는지가 핵심이에요.",
+    copyReview: "pending",
   },
 
   "비용인상인플레이션": {
@@ -347,6 +379,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["유가 급등이 전형적인 촉발 요인이에요."],
     commonConfusions: ["수요가 뜨거워서 생기는 물가와 같은 처방으로 단정하지 않아요."],
     typicalSituation: "원유 가격이 오르면 운송·제조 비용이 오르고 소비자 가격으로 전가될 수 있어요. 소비가 약한 데도 물가가 오르면 이 쪽을 의심해요.",
+    copyReview: "pending",
   },
 
   "빅데이터": {
@@ -357,6 +390,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["양보다 어떤 질문에 쓰는지가 가치를 갈라요."],
     commonConfusions: ["빅데이터가 있다고 실적이 보장되는 것은 아니에요."],
     typicalSituation: "플랫폼 기업이 이용자 데이터로 대출을 심사한다고 하면, 연체율과 개인정보 규제를 같이 봐요. 데이터 보유만으로 해자가 되지는 않아요.",
+    copyReview: "approved",
   },
 
   "4차산업혁명": {
@@ -367,6 +401,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["테마 이름과 개별 기업의 실적을 같은 문장으로 읽지 않아요."],
     commonConfusions: ["4차 산업혁명은 특정 산업 하나나 특정 기술 하나의 이름은 아니에요."],
     typicalSituation: "정책 지원이나 기술 발표가 늘어도 기업마다 실제 도입·수주·매출로 이어지는 속도는 달라요. 산업 변화와 개별 기업의 성과를 나눠 봐요.",
+    copyReview: "approved",
   },
 
   "사회보험": {
@@ -377,6 +412,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["보험료 변화는 근로자와 사용자에게 나뉘어 영향을 줄 수 있어요."],
     commonConfusions: ["사회보험을 민영 보험 상품과 같은 선택 가입으로 보지 않아요."],
     typicalSituation: "사회보험료율이나 부과 기준이 바뀌면 근로자 실수령액과 사용자 부담 비용이 달라질 수 있어요. 부담이 누구에게 얼마나 가는지는 제도별로 봐야 해요.",
+    copyReview: "approved",
   },
 
   "생산자제품재고지수": {
@@ -387,6 +423,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["출하가 줄면서 재고가 늘면 수요 부진 신호에 가까워요."],
     commonConfusions: ["재고가 늘었다고 항상 불황은 아니에요. 성수기를 앞두고 쌓는 경우도 있어요."],
     typicalSituation: "출하는 줄고 재고만 늘면 공장이 나중에 생산을 줄일 수 있어요. 반대로 출하와 재고가 같이 늘면 수요를 대비한 축적일 수 있어요.",
+    copyReview: "approved",
   },
 
   "생산자제품출하지수": {
@@ -397,6 +434,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["내수 출하와 수출 출하를 나누면 원인이 더 분명해져요."],
     commonConfusions: ["출하가 늘었다고 기업 이익이 바로 늘지는 않아요. 가격과 비용을 같이 봐요."],
     typicalSituation: "생산은 늘었는데 출하가 안 따라가면 재고가 쌓여요. 그다음 달 생산 감속이 나올 수 있어요.",
+    copyReview: "approved",
   },
 
   "생산확산지수": {
@@ -407,6 +445,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["총량 지수가 좋은데 확산이 좁으면 회복이 편중된 거예요."],
     commonConfusions: ["확산지수가 50을 넘는다고 모든 업종이 호황인 것은 아니에요."],
     typicalSituation: "반도체만 살아나고 다른 업종 생산은 줄면 총량은 버텨도 확산지수는 약해요. ‘경기가 좋다’는 문장을 업종별로 나눠 봐요.",
+    copyReview: "approved",
   },
 
   "서비스수지": {
@@ -417,6 +456,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["환율이 오르면 해외여행 지출이 줄고 수지가 개선되기도 해요."],
     commonConfusions: ["서비스수지를 국내 서비스업 매출과 같은 숫자로 보지 않아요. 국경을 넘는 거래예요."],
     typicalSituation: "해외여행이 늘면 서비스수지 적자가 커질 수 있어요. 수출 상품이 잘 팔려도 경상수지는 생각보다 약할 수 있어요.",
+    copyReview: "approved",
   },
 
   "선물환거래": {
@@ -427,6 +467,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["헤지 비율이 높으면 환율 하락이 실적에 바로 안 반영돼요."],
     commonConfusions: ["선물환을 지금 현찰을 사고파는 현물환과 같은 거래로 보지 않아요."],
     typicalSituation: "원/달러가 급등할 것 같아 수출기업이 달러 매도를 미리 해 두면, 나중에 환율이 더 올라도 그 차익은 못 얻어요. 실적 안정과 기회비용이 같이 있어요.",
+    copyReview: "approved",
   },
 
   "소프트랜딩": {
@@ -437,6 +478,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["물가만 내려가고 고용이 무너지면 연착륙이 아니에요."],
     commonConfusions: ["주가가 오르면 소프트랜딩이 확정된 것은 아니에요."],
     typicalSituation: "물가는 둔화하지만 실업률이 빠르게 오르면 연착륙 기대가 약해져요. 물가·고용·성장이 함께 완만해지는지 봐요.",
+    copyReview: "approved",
   },
 
   "수요견인인플레이션": {
@@ -447,6 +489,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["고용과 소비가 강한 채 물가가 오르면 이 쪽 신호예요."],
     commonConfusions: ["유가 급등만으로 생긴 물가와 같은 원인으로 단정하지 않아요."],
     typicalSituation: "임금과 소비가 강한 가운데 물가가 오르면 금리 인상 압력이 커져요. 수요가 이미 식었는데 물가만 남으면 원인 진단이 달라져요.",
+    copyReview: "pending",
   },
 
   "수출입물량지수": {
@@ -457,6 +500,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["유가처럼 단가가 출렁이는 품목은 금액과 물량이 어긋나기 쉬워요."],
     commonConfusions: ["수출 금액 최고치가 곧 물량 최고치는 아니에요."],
     typicalSituation: "반도체 가격이 오르면 수출 금액은 늘고 물량은 제자리일 수 있어요. 업황을 보려면 금액과 물량을 같이 봐요.",
+    copyReview: "approved",
   },
 
   "순상품교역조건지수": {
@@ -467,6 +511,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["물량은 좋은데 교역조건이 나빠지면 실질 소득은 덜 늘어요."],
     commonConfusions: ["무역흑자가 곧 교역조건 개선은 아니에요."],
     typicalSituation: "원유 가격이 오르면 수입 단가가 올라 교역조건이 나빠져요. 수출이 잘돼도 나라 전체의 실질 여력은 줄어들 수 있어요.",
+    copyReview: "approved",
   },
 
   "스마트계약": {
@@ -477,6 +522,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["자동 실행이 곧 분쟁 없음을 뜻하지는 않아요."],
     commonConfusions: ["스마트계약을 종이 계약서의 전자 서명과 같은 것으로 보지 않아요."],
     typicalSituation: "담보가 일정 가격 아래로 떨어지면 자동 청산되는 대출이 이 방식으로 돌아가요. 시장이 급변하면 사람이 개입할 틈 없이 손실이 확정될 수 있어요.",
+    copyReview: "approved",
   },
 
   "스왑": {
@@ -487,6 +533,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["금리스왑·통화스왑처럼 무엇을 교환하는지, 원금 교환 여부와 만기를 먼저 확인해요."],
     commonConfusions: ["스왑을 그냥 ‘맞교환 이벤트’ 정도로만 보면 만기·신용위험을 놓쳐요."],
     typicalSituation: "변동금리 대출을 고정처럼 바꾸고 싶으면 금리 스왑을 써요. 중간에 깨면 그 시점 시장 금리로 손익이 결정돼요.",
+    copyReview: "approved",
   },
 
   "스왑베이시스": {
@@ -497,6 +544,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["부호 하나만 보고 외화 사정이 좋다·나쁘다고 단정하지 않아요."],
     commonConfusions: ["스왑베이시스를 국채와 회사채의 신용스프레드와 같은 것으로 보지 않아요."],
     typicalSituation: "달러 조달이나 환헤지 수요가 급해지면 스왑베이시스가 크게 움직일 수 있어요. 방향을 해석할 때는 시장의 표시 방식과 거래 구조를 먼저 확인해요.",
+    copyReview: "approved",
   },
 
   "시뇨리지": {
@@ -506,6 +554,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     chain: ["중앙은행", "인플레이션", "화폐"],
     keyPoints: ["화폐 발행액 전체가 곧 시뇨리지 이익은 아니에요."],
     typicalSituation: "물가가 빠르게 오르는 나라에서 정부가 화폐 발행에 기대면, 현금 보유자의 구매력이 먼저 깎여요. 금리·재정 이야기와 겹쳐 나와요.",
+    copyReview: "approved",
   },
 
   "신용레버리지": {
@@ -515,6 +564,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     chain: ["부채", "자산가격", "금리"],
     keyPoints: ["레버리지가 높으면 작은 가격 변동에도 자본이 빨리 닳아요."],
     typicalSituation: "부채 비중이 높은 주체는 금리 상승이나 자산가격 하락 때 상환 부담과 자본 손실이 더 커질 수 있어요.",
+    copyReview: "approved",
   },
 
   "신용창조": {
@@ -525,6 +575,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["대출 수요와 은행 자본이 막히면 신용창조도 막혀요."],
     commonConfusions: ["중앙은행이 돈을 찍는 것과 은행의 신용창조를 같은 행위로 보지 않아요."],
     typicalSituation: "기준금리를 내려도 은행이 대출을 꺼리거나 대출 수요가 약하면 신용과 예금통화가 기대만큼 늘지 않을 수 있어요.",
+    copyReview: "approved",
   },
 
   "신용파생상품": {
@@ -535,6 +586,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["보장 매수자가 많아 보이면 그 반대편에 보장 매도자가 있어요."],
     commonConfusions: ["신용파생을 샀다고 그 기업의 주식을 보유하는 것은 아니에요."],
     typicalSituation: "회사채를 든 기관이 부도 보험을 사 두면 스프레드가 안정돼 보여도, 보험을 판 쪽이 흔들리면 위험이 다시 불거져요.",
+    copyReview: "pending",
   },
 
   "신주인수권부사채-bw": {
@@ -545,6 +597,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["워런트만 떼어 거래되는 경우도 있어요."],
     commonConfusions: ["신주인수권부사채를 이미 주식으로 바뀌는 전환사채와 같은 것으로 보지 않아요."],
     typicalSituation: "주가가 행사가격 위로 오르면 권리가 행사되어 주식 수가 늘 수 있어요. 그때 EPS와 지분율이 희석돼요.",
+    copyReview: "pending",
   },
 
   "실질구매력": {
@@ -555,6 +608,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["명목소득 증가율과 물가상승률의 차이를 보면 실질 구매력의 방향을 대략 가늠할 수 있어요."],
     commonConfusions: ["계좌 잔액이 늘었다고 구매력이 늘어난 것은 아니에요."],
     typicalSituation: "월급이 올라도 장바구니 물가가 더 오르면 살 수 있는 물건은 줄어요. 환율이 오르면 해외 직구·여행의 구매력도 같이 줄어요.",
+    copyReview: "approved",
   },
 
   "실질임금": {
@@ -565,6 +619,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["협상은 명목으로 하고, 생활 수준은 실질로 갈려요."],
     commonConfusions: ["임금이 올랐다는 기사만 보고 가계가 여유로워졌다고 보지 않아요."],
     typicalSituation: "임금 3% 인상에 물가 4%면 실질임금은 감소예요. 소매판매가 약한 이유를 여기서 찾기도 해요.",
+    copyReview: "approved",
   },
 
   "역모기지론": {
@@ -575,6 +630,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["거주권은 유지되는 경우가 많지만, 상속할 수 있는 집의 순자산은 줄어들 수 있어요."],
     commonConfusions: ["주택을 담보로 돈을 빌리고 원리금을 갚아가는 일반 주택담보대출과는 자금 흐름의 방향이 달라요."],
     typicalSituation: "은퇴 후 월급은 없는데 집은 있는 고령층이 생활자금을 받아요. 처음 받을 수 있는 금액이나 대출 한도를 정할 때 집값, 금리, 가입 조건 등이 영향을 줄 수 있어요.",
+    copyReview: "pending",
   },
 
   "연구개발": {
@@ -585,6 +641,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["매출 대비 비율과 실제 상용화 성과를 같이 봐요."],
     commonConfusions: ["연구개발비를 설비투자(CAPEX)와 같은 항목으로 읽지 않아요."],
     typicalSituation: "신약을 만드는 회사는 적자여도 연구개발비가 커요. 그 비용이 나중에 매출이 될지는 임상·허가 결과를 봐야 해요.",
+    copyReview: "approved",
   },
 
   "영업잉여": {
@@ -595,6 +652,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["회계상 영업이익과 정의가 완전히 같지는 않아요."],
     commonConfusions: ["영업잉여를 한 회사의 영업이익과 바로 같은 숫자로 보지 않아요."],
     typicalSituation: "국민소득이 늘 때 피용자보수와 영업잉여가 각각 어떻게 움직이는지 보면 소득이 어디로 분배되는지 이해하는 데 도움이 돼요.",
+    copyReview: "approved",
   },
 
   "예금취급기관": {
@@ -605,6 +663,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["예금을 받는 곳이 모두 같은 규제를 받지는 않아요."],
     commonConfusions: ["증권 계좌 잔액을 은행 예금과 같은 보호 대상으로 단정하지 않아요."],
     typicalSituation: "M1·M2나 금융기관 통계를 읽을 때 어떤 기관까지 포함했는지에 따라 숫자가 달라질 수 있어요.",
+    copyReview: "approved",
   },
 
   "예금토큰": {
@@ -615,6 +674,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["토큰이라고 해서 익명 가상자산과 같지는 않아요."],
     commonConfusions: ["예금토큰을 비트코인 같은 가상자산과 같은 것으로 보지 않아요."],
     typicalSituation: "예금토큰 실험이 나와도 CBDC 도입이나 기존 예금의 대체가 확정됐다는 뜻은 아니에요. 발행은행·상환 구조·법적 보호·결제 구조를 봐요.",
+    copyReview: "approved",
   },
 
   "외국환업무취급기관": {
@@ -625,6 +685,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["등록 기관과 해외 파트너(RFI)를 구분해요."],
     commonConfusions: ["환전 앱이 있다고 그 회사가 곧 외국환업무 취급기관인 것은 아니에요."],
     typicalSituation: "핀테크가 송금·환전 서비스를 제공해도 실제 외국환 업무는 등록된 금융기관과 연계될 수 있어요. 서비스 제공자와 법적 취급기관을 구분해요.",
+    copyReview: "approved",
   },
 
   "외환스왑거래": {
@@ -635,6 +696,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["만기가 짧은 거래가 많아, 만기 때 다시 돌려줘야 해요."],
     commonConfusions: ["외환스왑을 그냥 환전과 같은 일회성 거래로 보지 않아요."],
     typicalSituation: "달러가 귀해지면 스왑 포인트가 불리해져 해외 투자 헤지 비용이 커져요. 원/달러 현물만 보고 싸다고 단정하기 어려워요.",
+    copyReview: "pending",
   },
 
   "우발전환사채": {
@@ -645,6 +707,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["전환인지 상각인지, 어떤 조건에서 손실을 흡수하는지가 핵심이에요."],
     commonConfusions: ["높은 이자를 주는 일반 회사채와 같은 안전도로 보지 않아요."],
     typicalSituation: "정해진 자본비율 하락이나 당국의 부실 판단 같은 트리거가 발생하면 주식으로 전환되거나 원금이 상각될 수 있어요. 실제 트리거와 손실흡수 방식은 상품별로 확인해요.",
+    copyReview: "approved",
   },
 
   "유동성커버리지비율": {
@@ -655,6 +718,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["비율이 낮아지면 은행이 자산을 팔거나 조달을 늘려요."],
     commonConfusions: ["자기자본비율과 같은 숫자로 보지 않아요. 자본이 아니라 단기 현금 여력이에요."],
     typicalSituation: "예금이 빠르게 빠지면 이 비율이 깎여 은행이 대출을 조이거나 고금리 예금을 유치해요. 건전성(자본)과 다른 문제예요.",
+    copyReview: "approved",
   },
 
   "유통시장": {
@@ -665,6 +729,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["거래량이 많다고 그 회사에 신규 자금이 들어간 것은 아니에요."],
     commonConfusions: ["주식 매수 대금이 곧 그 회사의 매출이나 증자는 아니에요."],
     typicalSituation: "주가가 오르는 날에도 회사가 신주를 안 팔면 회사 금고는 그대로예요. 자금이 회사에 들어가는 건 유상증자·IPO 같은 발행 때예요.",
+    copyReview: "approved",
   },
 
   "유틸리티토큰": {
@@ -675,6 +740,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["사용 권리가 곧 지분권은 아니에요."],
     commonConfusions: ["유틸리티 토큰을 그 회사 주식과 같은 소유권으로 보지 않아요."],
     typicalSituation: "게임 아이템을 사는 토큰 가격이 올라도, 이용자가 늘지 않으면 수요는 투기일 수 있어요. 실제 사용량과 시세를 나눠 봐요.",
+    copyReview: "approved",
   },
 
   "의중임금": {
@@ -685,6 +751,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["의중임금이 오르면 같은 공고에도 지원이 줄어요."],
     commonConfusions: ["최저임금과 같은 법정 하한으로 보지 않아요. 개인마다 달라요."],
     typicalSituation: "제시 임금이 구직자의 의중임금보다 낮으면 빈자리가 남을 수 있어요. 임금뿐 아니라 근로조건·지역·직무 불일치도 함께 봐요.",
+    copyReview: "approved",
   },
 
   "이전소득수지": {
@@ -695,6 +762,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["대가를 받고 보낸 돈은 여기가 아니라 다른 항목으로 가요."],
     commonConfusions: ["해외 공장의 배당 수입과 같은 항목으로 보지 않아요. 배당은 본원소득 쪽이에요."],
     typicalSituation: "해외에 나간 근로자가 가족에게 보내는 돈이 늘면 이 수지가 개선돼요. 수출과 무관한 경상 흑자 요인이에요.",
+    copyReview: "approved",
   },
 
   "자기자본비율": {
@@ -705,6 +773,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["같은 이름이라도 은행 규제 자본과 일반 기업 재무비율이 달라요."],
     commonConfusions: ["자기자본비율이 높다고 현금이 많다는 뜻은 아니에요."],
     typicalSituation: "손실이 나면 자본이 깎여 이 비율이 내려가고, 은행은 대출을 줄이거나 유상증자를 검토해요. 이익이 나도 배당을 많이 하면 비율은 안 올라요.",
+    copyReview: "approved",
   },
 
   "작업증명": {
@@ -715,6 +784,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["계산이 많다고 거래가 빠른 것은 아니에요."],
     commonConfusions: ["작업증명(PoW)과 지분증명(PoS)은 둘 다 합의 방식이지만, 전력을 쓰는 쪽과 코인을 담보로 두는 쪽이 달라요."],
     typicalSituation: "전력비가 오르면 채굴 수익성이 낮아져 일부 채굴자가 이탈할 수 있어요. 해시레이트가 반드시 같은 폭으로 떨어지는 것은 아니어서 코인 가격과 장비 효율도 함께 봐요.",
+    copyReview: "approved",
   },
 
   "장기금융시장": {
@@ -725,6 +795,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["장기채권은 일반적으로 만기가 길수록 금리 변화에 가격이 더 민감해져요. 주식까지 같은 원리로 묶지는 않아요."],
     commonConfusions: ["장기금융시장을 은행 정기예금과 같은 곳으로 보지 않아요."],
     typicalSituation: "기준금리가 오르면 회사채·IPO가 줄어들 수 있어요. 단기는 굴러가는데 장기 투자가 멈추면 성장 동력이 약해져요.",
+    copyReview: "approved",
   },
 
   "재산소득": {
@@ -735,6 +806,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["재산소득이 늘어도 자산 가격 하락으로 순자산은 줄 수 있어요."],
     commonConfusions: ["재산소득을 집을 팔아서 생긴 매매차익과 바로 같은 항목으로 보지 않아요."],
     typicalSituation: "금리 변화는 이자소득과 자산가격에 서로 다르게 작용할 수 있어요. 재산소득의 변화와 자산 평가손익을 나눠 봐요.",
+    copyReview: "approved",
   },
 
   "정책시차": {
@@ -745,6 +817,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["금융시장은 즉시, 실물은 늦게 반응하는 경우가 많아요."],
     commonConfusions: ["금리를 내린 다음 주에 물가가 안 떨어졌다고 정책이 실패라고 단정하지 않아요."],
     typicalSituation: "금리 인하 직후 주가는 오르는데 고용은 아직 나빠 보일 수 있어요. 실물 지표로 성패를 보려면 시차를 두고 봐야 해요.",
+    copyReview: "approved",
   },
 
   "정크본드": {
@@ -755,6 +828,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["높은 금리가 곧 높은 확정 수익은 아니에요. 부도 위험이 가격에 들어 있어요."],
     commonConfusions: ["정크본드를 국채처럼 안전한 이자 상품으로 보지 않아요."],
     typicalSituation: "신용 시장이 얼면 우량채는 소화돼도 정크본드 발행이 먼저 멈춰요. 주가가 아직 버텨도 이쪽이 먼저 경고를 줄 수 있어요.",
+    copyReview: "approved",
   },
 
   "청년실업률": {
@@ -765,6 +839,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["구직 포기 청년이 늘면 실업률이 낮아져 보일 수 있어요."],
     commonConfusions: ["청년실업률이 전체 실업률과 같은 숫자라고 보지 않아요."],
     typicalSituation: "전체 실업률과 청년실업률이 다르게 움직이면 신규채용·업종별 채용·경제활동참가율을 함께 봐요. 경력직 채용 하나로 원인을 단정하지 않아요.",
+    copyReview: "approved",
   },
 
   "최종수요": {
@@ -775,6 +850,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["반도체 장비 수요는 최종인지 중간인지에 따라 해석이 달라요."],
     commonConfusions: ["공장 가동이 바쁘다고 곧 최종수요가 강한 것은 아니에요. 재고 비축일 수 있어요."],
     typicalSituation: "부품 주문이 늘어도 완성품 소비가 안 따라오면 나중에 주문이 취소돼요. 중간 수요와 최종 수요를 나눠 봐요.",
+    copyReview: "pending",
   },
 
   "추가경정예산": {
@@ -785,6 +861,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["규모뿐 아니라 재원과 지출 용도를 같이 봐요."],
     commonConfusions: ["추경이 곧 기준금리 인하는 아니에요. 주체가 정부예요."],
     typicalSituation: "추경을 국채 발행으로 조달하면 채권 공급 증가가 금리 상승 압력으로 작용할 수 있어요. 동시에 지출 확대는 경기 수요를 받칠 수 있어요.",
+    copyReview: "approved",
   },
 
   "출구전략": {
@@ -795,6 +872,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["출구는 금리와 대차대조표가 따로 움직일 수 있어요."],
     commonConfusions: ["출구전략을 한 번의 금리 인상과 같은 말로 쓰지 않아요."],
     typicalSituation: "자산매입은 줄이면서 기준금리는 아직 안 올리는 단계가 있어요. 장기금리가 먼저 오르고 단기금리는 나중에 따라올 수 있어요.",
+    copyReview: "approved",
   },
 
   "코리보": {
@@ -805,6 +883,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["신용 위험이 거의 없는 지표 금리여도, 시장 수급에 따라 움직여요."],
     commonConfusions: ["코리보를 한국은행이 정하는 기준금리와 같은 숫자로 보지 않아요."],
     typicalSituation: "코리보가 움직였다고 기준금리가 바뀐 것은 아니에요. 은행 간 단기 자금 사정과 호가 기반 산출 특성을 같이 봐요.",
+    copyReview: "approved",
   },
 
   "통상임금": {
@@ -815,6 +894,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["기본급만 보는 것과 통상임금 범위는 달라요."],
     commonConfusions: ["통상임금을 실수령 월급 총액과 같은 말로 쓰지 않아요."],
     typicalSituation: "정기 상여가 통상임금 범위에 들어가는지가 쟁점이 되면, 연장근로수당 산정부터 봐요. 퇴직금까지 자동으로 오른다고 단정하지 않아요.",
+    copyReview: "pending",
   },
 
   "통화스왑": {
@@ -825,6 +905,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["시장 통화스왑과 중앙은행 간 통화스왑을 한 개념처럼 섞지 않아요."],
     commonConfusions: ["통화스왑을 그냥 환전과 같은 일회성 거래로 보지 않아요."],
     typicalSituation: "기업이나 금융기관의 장기 외화 조달에서 통화스왑 조건이 바뀌면 실제 조달비용도 달라질 수 있어요. 중앙은행 스왑 발표와 시장의 통화스왑 거래를 구분해요.",
+    copyReview: "approved",
   },
 
   "통화정책": {
@@ -835,6 +916,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["중앙은행은 여러 지표와 금융여건을 종합해 정책을 결정해요."],
     commonConfusions: ["정부의 추경과 중앙은행의 금리 결정을 같은 정책으로 묶지 않아요."],
     typicalSituation: "물가 압력이 높으면 긴축을 유지할 가능성이 커질 수 있지만, 성장·금융안정 등 다른 여건도 함께 봐요. 한 지표만으로 다음 결정을 단정하지 않아요.",
+    copyReview: "approved",
   },
 
   "통화정책커뮤니케이션": {
@@ -845,6 +927,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["한 표현만 떼기보다 결정문·전망·기자회견의 전체 맥락을 함께 봐요."],
     commonConfusions: ["총재의 발언을 이미 확정된 금리 결정과 같은 것으로 보지 않아요."],
     typicalSituation: "금리는 동결인데 ‘추가 인상 가능성을 열어 둔다’는 문장이 나오면 시장금리가 오를 수 있어요. 결정과 메시지를 나눠 봐요.",
+    copyReview: "approved",
   },
 
   "통화지표": {
@@ -855,6 +938,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["어느 M을 말하는지가 해석을 갈라요."],
     commonConfusions: ["통화지표가 늘었다고 가계가 모두 여유로워진 것은 아니에요. 기업 예금이 늘어난 것일 수도 있어요."],
     typicalSituation: "금리를 내렸는데 M2가 기대만큼 늘지 않으면 신용 공급이 약한지 살펴볼 수 있어요. 반대로 금리가 올라도 유동성이 남아 있으면 자산 가격이 바로 꺾이지 않을 수 있어요.",
+    copyReview: "pending",
   },
 
   "트리핀딜레마": {
@@ -865,6 +949,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["역사적 개념을 현재 국제금융의 단일 법칙처럼 적용하지 않아요."],
     commonConfusions: ["미국 무역적자가 곧 달러가 곧 무너진다는 뜻은 아니에요."],
     typicalSituation: "오늘날 달러 체제를 이해하는 배경으로 참고할 수 있지만, 현대의 달러 공급이 미국 무역적자 하나로만 결정되는 것은 아니에요.",
+    copyReview: "approved",
   },
 
   "파생금융상품": {
@@ -875,6 +960,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["선물·옵션·스왑은 만기·레버리지·변동성·증거금의 영향이 서로 달라요."],
     commonConfusions: ["파생상품을 기초자산을 직접 보유하는 것과 같은 거래로 보지 않아요."],
     typicalSituation: "환율 하락에 대비해 선물환을 들면 실적은 안정돼요. 같은 선물을 방향 베팅으로 쓰면 증거금 추가 납부 위험이 커요.",
+    copyReview: "approved",
   },
 
   "평잔": {
@@ -884,6 +970,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     chain: ["예금", "대출", "은행"],
     keyPoints: ["기말 잔액이 커도 평잔이 작으면 그달은 돈이 짧게만 머물렀던 거예요."],
     typicalSituation: "급여일에만 잔액이 늘고 금방 빠져나가면 기말 잔액은 그럴듯해도 평잔은 작아요. 수수료·우대금리 조건이 평잔 기준인 경우가 많아요.",
+    copyReview: "pending",
   },
 
   "프로젝트한강": {
@@ -894,6 +981,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["테스트와 법정 도입 결정을 같은 뉴스로 읽지 않아요."],
     commonConfusions: ["프로젝트 한강을 비트코인 실험과 같은 것으로 보지 않아요."],
     typicalSituation: "테스트 결과가 나와도 바로 CBDC 도입을 뜻하지는 않아요. 발표 시점의 단계·참여기관·대상 업무를 확인해요.",
+    copyReview: "pending",
   },
 
   "피용자보수": {
@@ -904,6 +992,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["한 회사 인건비 합과 정의가 완전히 같지는 않아요."],
     commonConfusions: ["피용자보수를 한 사람 월급 실수령액과 같은 숫자로 보지 않아요."],
     typicalSituation: "국민소득이 늘 때 피용자보수가 얼마나 늘었는지 보면 가계소득으로 전달되는 정도를 가늠하는 데 도움이 돼요. 소비는 세금·물가·다른 소득에도 영향을 받아요.",
+    copyReview: "approved",
   },
 
   "필립스곡선": {
@@ -914,6 +1003,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["단기 관계와 기대인플레이션 변화로 인한 곡선 이동을 구분해요."],
     commonConfusions: ["실업이 낮다고 항상 물가가 오른다고 단정하지 않아요."],
     typicalSituation: "실업률이 낮아도 물가가 크게 오르지 않는 기간이 이어진다면 단기 관계가 약해졌는지 살펴볼 수 있어요. 기대인플레이션과 공급 충격도 같이 봐요.",
+    copyReview: "approved",
   },
 
   "해외외국환업무취급기관-rfi": {
@@ -924,6 +1014,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["RFI는 한국 외환시장 직접 참여 자격에 관한 제도예요."],
     commonConfusions: ["해외 유명 투자은행이라고 해서 자동으로 이 등록 기관인 것은 아니에요."],
     typicalSituation: "RFI가 늘었다는 뉴스는 미국주식 주문 경로보다, 해외 금융기관이 한국 원화 외환시장에 얼마나 직접 접근할 수 있게 됐는지를 보는 뉴스에 가까워요.",
+    copyReview: "approved",
   },
 
   "현지금융": {
@@ -934,6 +1025,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["현지 금리가 올라도 조달비용이 같은 폭으로 오르는지는 고정·변동금리와 환헤지 조건을 같이 봐요."],
     commonConfusions: ["현지금융을 국내 외화대출과 같은 거래로 보지 않아요."],
     typicalSituation: "해외 공장 자금을 현지에서 빌리면 현지 금리뿐 아니라 차입 통화와 매출 통화의 차이, 환헤지 여부가 실적에 영향을 줄 수 있어요.",
+    copyReview: "approved",
   },
 
   "현지법인": {
@@ -944,6 +1036,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["현지 손익뿐 아니라 본사와의 거래·환율·내부거래 제거도 연결 실적에 영향을 줘요."],
     commonConfusions: ["해외 지사 사무실과 현지법인을 같은 형태로 보지 않아요."],
     typicalSituation: "현지법인이 큰 손실을 내면 연결 실적이 깎여요. 본사가 보증한 빚이면 국내 신용 위험으로도 번질 수 있어요.",
+    copyReview: "pending",
   },
 
   "협의통화-m1": {
@@ -954,6 +1047,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["M1이 준다고 시중 돈이 사라진 것은 아니에요. 형태로 옮긴 것일 수 있어요."],
     commonConfusions: ["M1을 중앙은행 기준금리와 같은 정책 변수로 보지 않아요."],
     typicalSituation: "예금 금리가 오르면 요구불예금이 정기예금 등으로 이동해 M1이 줄 수 있어요. 이때 M2까지 함께 줄었는지를 보면 돈의 총량이 줄었는지, 형태만 옮긴 것인지 구분하기 쉬워요.",
+    copyReview: "approved",
   },
 
   "가계부실위험지수-hdri": {
@@ -964,6 +1058,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["위험·고위험 가구는 상환능력의 취약성을 보기 위한 분류예요. 당장 채무를 이행하지 못하는 임계상황과 같은 말이 아니에요."],
     commonConfusions: ["원리금상환비율(DSR)만 보는 지표와 달라요. 이 지수는 자산 대비 부채도 같이 넣어요."],
     typicalSituation: "지수가 기준을 넘었다는 문장이 나오면, 고DSR인지 고DTA인지 둘 다인지부터 나눠 봐요. 소득이 회복 중인데도 자산 가격이 빠지면 같은 빚이라도 위험 분류가 달라질 수 있어요.",
+    copyReview: "approved",
   },
 
   "가계수지": {
@@ -974,6 +1069,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["적자가 곧 그 가구가 파산했다는 뜻은 아니에요. 자산을 팔거나 차입으로 메운 기간일 수 있어요."],
     commonConfusions: ["나라 전체의 국제수지와 다른 개념이에요. 여기는 가구의 수입·지출 비교예요."],
     typicalSituation: "가계수지 적자가 늘었다는 문장은, 소득이 줄어서인지 주거비·교육비 같은 지출이 늘어서인지 나눠 봐요. 물가와 고용을 같이 보면 해석이 달라질 수 있어요.",
+    copyReview: "approved",
   },
 
   "가계신용통계": {
@@ -984,6 +1080,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["가계대출만 보면 카드 할부 같은 판매신용이 빠질 수 있어요."],
     commonConfusions: ["가계신용은 가계대출보다 범위가 넓어요. 판매신용이 포함돼요."],
     typicalSituation: "가계신용이 늘었다는 문장은 주택담보대출인지 신용대출인지, 판매신용인지부터 나눠 봐요. 금리와 집값 흐름을 같이 보면 증가의 성격이 달라 보여요.",
+    copyReview: "pending",
   },
 
   "가교은행": {
@@ -994,6 +1091,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["충격을 줄이고 시간을 벌기 위한 임시 장치예요. 정리가 끝나면 사라져요."],
     commonConfusions: ["평소에 영업하는 시중은행과 달라요. 부실 기관을 정리하는 동안만 두는 한시 기관이에요."],
     typicalSituation: "부실 은행을 가교은행이 받는다는 문장은, 예금 인출이 이어지는지와 인수·매각까지 남은 절차를 같이 봐요. 가교은행 자체가 영구 은행이 된 것으로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "가상자산공개-ico": {
@@ -1004,6 +1102,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["토큰 가치는 프로젝트 성과에 달려 있을 수 있어요. 주식의 소유권과 같은 권리가 아닐 수 있어요."],
     commonConfusions: ["기업공개(IPO)와 이름이 닮았지만, IPO는 주식을, ICO는 코인·토큰을 발행하는 쪽에 가까워요."],
     typicalSituation: "ICO로 자금을 모았다는 문장은, 토큰이 어떤 권리인지와 발행·유통 규제가 어떻게 적용되는지를 같이 봐요. 국내 규율은 법·제도가 정한 시점과 범위를 공식 자료로 확인하고, 상장 주식 공모와 같은 보호가 있다고 단정하지 않아요.",
+    copyReview: "pending",
   },
 
   "간접세": {
@@ -1014,6 +1113,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["부가가치세처럼 소비 과정에서 부담이 전가되는 세금은 소득이 낮은 가구에 상대적으로 더 큰 부담이 될 수 있어 역진성이 논의돼요."],
     commonConfusions: ["직접세와 짝을 이뤄요. 누가 신고·납부하느냐가 아니라, 부담이 전가되는지로 나눠 봐요."],
     typicalSituation: "부가세가 오른다는 문장은, 사업자가 가격에 얼마나 전가하는지와 소득 계층별 부담을 같이 봐요. 세수가 늘어도 누진 부담과 같은 말로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "간편송금": {
@@ -1024,6 +1124,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["절차가 짧다고 결제 리스크나 한도·인증 책임이 사라진 것은 아니에요."],
     commonConfusions: ["은행 계좌이체와 결과가 비슷해 보여도, 인증 방식과 중개 사업자가 다를 수 있어요."],
     typicalSituation: "간편 송금이 늘었다는 문장은, 은행 이체를 대체한 건지 소액 이체가 새로 늘어난 건지 나눠 봐요. 수수료·한도·사고 시 책임 범위도 같이 확인해요.",
+    copyReview: "pending",
   },
 
   "갑기금": {
@@ -1034,6 +1135,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["지점별로 최저 규모 요건이 감독 규정에 따로 있어요. 그 숫자는 규정이 바뀌면 달라질 수 있어요."],
     commonConfusions: ["국내은행 본점의 자본금과 같은 개념으로 보지 않아요. 외은지점 전용의 자본 계정이에요."],
     typicalSituation: "외은지점의 갑기금이 늘었다는 문장은, 본점이 자금을 새로 넣었는지 이익 전입인지 나눠 봐요. 국내은행의 자기자본과 바로 같은 숫자로 비교하지는 않아요.",
+    copyReview: "approved",
   },
 
   "거래정보저장소": {
@@ -1044,6 +1146,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["저장소는 거래를 체결하는 거래소가 아니라, 이미 이뤄진 거래 정보를 모으는 쪽에 가까워요."],
     commonConfusions: ["증권·파생 거래소와 달라요. 여기서는 체결이 아니라 거래 정보의 집적·관리가 핵심이에요."],
     typicalSituation: "장외파생 보고 의무가 강화됐다는 문장은, 어떤 상품·참가자가 보고 대상인지와 보고 정보의 범위를 같이 봐요. 거래소에서 체결되는 상장 파생상품 시장과 같은 장소로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "거시건전성정책": {
@@ -1054,6 +1157,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["불균형 축적 억제, 급격한 되돌림 완화, 복원력 강화 등이 목표로 거론돼요. 수단 구성은 시점에 따라 달라요."],
     commonConfusions: ["미시건전성 정책과 짝을 이뤄요. 한 회사의 자본비율만 보는 감독과 층위가 달라요."],
     typicalSituation: "주택담보 규제를 조인다는 문장은, 물가 대응 금리와 별개로 가계부채·자산가격 불균형을 겨냥한 것인지 나눠 봐요. 은행 한 곳의 건전성 등급만으로 목적을 단정하지 않아요.",
+    copyReview: "approved",
   },
 
   "거액익스포저규제": {
@@ -1064,6 +1168,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["동일인 신용공여 한도와 취지가 겹치지만, 연계 상대 그룹과 기본자본 대비 비율로 보는 국제 기준 쪽 틀이 있어요. 한도 숫자는 규정이 바뀌면 달라질 수 있어요."],
     commonConfusions: ["총여신 한도나 연체율과 달라요. 여기서 핵심은 한 상대(그룹)에 얼마나 몰렸는가예요."],
     typicalSituation: "거액 익스포저 한도를 맞춘다는 문장은, 상대가 단일 기업인지 그룹인지, 담보·보증으로 익스포저가 어떻게 잡히는지를 같이 봐요. 연체율이 낮아도 편중은 클 수 있어요.",
+    copyReview: "pending",
   },
 
   "거액지급시스템": {
@@ -1074,6 +1179,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["거래 가능한 최소 금액이 법으로 고정된 것은 아니에요. 다루는 거래의 성격상 거액이 되는 쪽에 가까워요."],
     commonConfusions: ["카드·계좌이체 같은 소액지급시스템과 달라요. 여기는 금융기관 사이 큰 대금 결제에 가까워요."],
     typicalSituation: "거액결제망 장애 뉴스가 나오면, 개인 카드 결제인지 금융기관 간 거액 결제인지부터 나눠 봐요. 소액 시스템이 정상이어도 도매 결제는 멈출 수 있어요.",
+    copyReview: "approved",
   },
 
   "결제": {
@@ -1084,6 +1190,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["지급 지시와 결제는 같은 말이 아니에요. 지시 뒤에도 이전·종결이 남아 있어요."],
     commonConfusions: ["지급과 섞어 쓰기 쉬워요. 지급은 지시를 내는 쪽, 결제는 채권·채무가 법적으로 끝나는 쪽에 가까워요."],
     typicalSituation: "체결은 됐는데 결제가 안 됐다는 문장은, 지급 지시와 계좌 이전 중 어디가 남았는지 봐요. 가격 변동과 별개로 결제 시점 리스크가 있을 수 있어요.",
+    copyReview: "approved",
   },
 
   "결제리스크": {
@@ -1094,6 +1201,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["신용·유동성·운영·법률·시스템 리스크 등으로 나눠 볼 수 있어요."],
     commonConfusions: ["시장 가격이 불리해지는 시장리스크와 달라요. 여기는 끝나기로 한 이전이 안 될 위험이에요."],
     typicalSituation: "결제 지연 문장이 나오면, 상대 신용 문제인지 시스템 장애인지 법률 해석 문제인지 나눠 봐요. 거래량만 늘었다고 위험이 줄었다고 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "결제부족자금공동분담제": {
@@ -1104,6 +1212,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["신용한도와 같이 쓰면, 상대에게 준 한도가 분담 기준이 되어 한도를 더 신중히 정하게 하는 효과도 기대해요."],
     commonConfusions: ["채무불이행자 부담(담보로 본인이 댐)과 달라요. 여기는 결제를 끝낸 생존 기관이 나누는 쪽에 가까워요."],
     typicalSituation: "공동분담이 발동됐다는 문장은, 사전 담보로 얼마나 막았는지와 신용한도 분담 기준을 같이 봐요. 분담 비율이 곧 그 기관의 잘못 비율이라고 단정하지 않아요.",
+    copyReview: "pending",
   },
 
   "결제완결성": {
@@ -1114,6 +1223,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["단순히 화면에 ‘처리 완료’가 뜨는 것과 달라요. 파산 등 사후 상황에서도 결제를 법적으로 되돌리지 못하게 하는 보호가 핵심이에요."],
     commonConfusions: ["이체가 처리 완료로 보이는 것과 달라요. 완결성은 파산 등 사후에도 법적 취소를 막는 쪽에 가까워요."],
     typicalSituation: "결제완결성이 보장된다는 문장은, 해당 시스템이 법률상 지정 대상인지와 어느 시점부터 결제가 취소 불가능해지는지를 봐요. 일반 계좌이체가 모두 같은 보호를 받는다고 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "겸업주의": {
@@ -1124,6 +1234,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["편리함·규모와 함께, 업권 사이 방화벽이 얇아질 위험도 같이 거론돼요."],
     commonConfusions: ["금산분리와 바로 같은 말이 아니에요. 겸업은 금융업 안에서의 업권 결합, 금산은 산업자본과 금융자본의 결합을 다루는 쪽에 가까워요."],
     typicalSituation: "은행이 증권 자회사를 둔다는 문장은, 내부겸업인지 지주·자회사 구조인지 나눠 봐요. 겸업이 곧 규제 면제는 아니에요.",
+    copyReview: "approved",
   },
 
   "경기순응성": {
@@ -1134,6 +1245,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["같은 방향이라고 항상 나쁜 것은 아니지만, 진폭을 키우면 위기 때 충격이 커질 수 있어요."],
     commonConfusions: ["경기와 반대로 움직이는 경기대응(경기역행) 정책과 짝을 이뤄요."],
     typicalSituation: "불황에 은행이 대출을 줄인다는 문장은, 부실 우려 때문인지 규제·담보가치 하락이 겹친 순응성인지 나눠 봐요. 대출이 줄었다고 수요가 먼저 줄었다고 단정하지 않아요.",
+    copyReview: "approved",
   },
 
   "경영실태평가": {
@@ -1144,6 +1256,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["업권·기관 유형에 따라 평가 항목 구성이 달라요. 등급 체계도 바뀔 수 있어요."],
     commonConfusions: ["신용평가사 신용등급과 달라요. 여기는 감독 목적의 경영 상태 평가예요."],
     typicalSituation: "경영실태평가 등급이 낮아졌다는 문장은, 수익성 문제인지 자산 건전성·내부통제 문제인지 부문별로 봐요. 회사채 신용등급과 같은 말로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "경제서프라이즈지수": {
@@ -1154,6 +1267,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["예상이 비관적이면 평범한 실적도 플러스 서프라이즈가 될 수 있어요."],
     commonConfusions: ["한국은행 경제심리지수(ESI)와 약자가 겹칠 수 있어요. 서프라이즈 지수는 예상 대비 오차예요."],
     typicalSituation: "서프라이즈 지수가 올랐다는 문장은, 어떤 지표가 예상 밖으로 나왔는지와 예상이 원래 높았는지를 같이 봐요. 실물 수준이 절대적으로 좋아졌다는 뜻은 아니에요.",
+    copyReview: "approved",
   },
 
   "경제심리지수": {
@@ -1164,6 +1278,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["실물 지표와 대체로 같이 가지만, 질적 조사와 양적 통계의 차이로 괴리될 수 있어요."],
     commonConfusions: ["경제 서프라이즈 지수와 약자가 같아 헷갈려요. 심리지수는 체감·전망 조사, 서프라이즈는 예상 대비 발표 오차예요."],
     typicalSituation: "심리지수가 실물 지표와 어긋난다는 문장은, 기대가 먼저 움직인 건지 조사 척도 차이인지 나눠 봐요. 심리가 좋다고 생산이 같은 폭으로 늘었다고 단정하지 않아요.",
+    copyReview: "approved",
   },
 
   "경제협력개발기구-oecd": {
@@ -1174,6 +1289,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["회원 구성과 권고는 시점에 따라 달라요. 가입국 수를 고정된 사실처럼 외우지 않아요."],
     commonConfusions: ["IMF나 세계은행과 달라요. OECD는 위기 구제금융 기관이라기보다 정책 협의·규범·통계 협력에 가까워요."],
     typicalSituation: "OECD 평균과 비교한다는 문장은, 그 지표의 정의와 회원 구성이 같은지 봐요. 세계 전체 평균과 같은 말로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "경제후생지표": {
@@ -1184,6 +1300,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["제안 취지와 실제 편제 가능 여부는 따로 봐요. 작성의 어려움 때문에 주력 지표는 아니에요."],
     commonConfusions: ["GDP나 GNI의 공식 대체 지표가 아니에요. 한계를 보완하려고 나온 제안 지표에 가까워요."],
     typicalSituation: "성장률은 높다는 문장 옆에 후생 논의가 나오면, 가사노동·여가·환경 비용이 빠졌는지 봐요. 후생지표가 공식 국민계정을 대체한 통계는 아니에요.",
+    copyReview: "approved",
   },
 
   "경직적물가지수": {
@@ -1194,6 +1311,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["장기 인플레이션 흐름을 보는 보조 지표로 쓰여요. 근원물가와 품목 구성이 완전히 같지는 않아요."],
     commonConfusions: ["근원물가(식료품·에너지 제외 등)와 비슷해 보여도, 여기는 가격이 잘 안 움직이는 품목 기준이에요."],
     typicalSituation: "전체 소비자물가는 내렸는데 경직적 물가가 안 내려간다는 문장은, 공공요금·서비스 물가가 남아 있는지 봐요. 유가 하락만으로 기조 물가가 꺾였다고 단정하지 않아요.",
+    copyReview: "pending",
   },
 
   "계좌대체": {
@@ -1204,6 +1322,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["실물이 없다고 권리가 없다는 뜻은 아니에요. 장부 기록이 소유 이전의 수단이에요."],
     commonConfusions: ["자금 계좌이체와 비슷해 보여도, 여기는 증권 소유권을 예탁 계좌 사이에서 옮기는 절차예요."],
     typicalSituation: "결제가 계좌대체로 이뤄진다는 문장은, 예탁 계좌에 증권이 이미 들어가 있는지와 결제 주기를 같이 봐요. 증권을 손에 쥐었다와 같은 말로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "고정금리부채권-sb": {
@@ -1214,6 +1333,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["이자가 고정이라고 가격까지 고정은 아니에요. 시장 금리가 오르면 이 채권 가격은 떨어질 수 있어요."],
     commonConfusions: ["전환사채(CB)와 달라요. 스트레이트 본드는 주식 전환권 없이 이자와 원금만 약속하는 쪽에 가까워요."],
     typicalSituation: "고정금리부 사채를 발행했다는 문장은, 만기·신용도·시장 금리 수준을 같이 봐요. 금리가 나중에 내려가도 표면이자는 그대로인 경우가 많아요.",
+    copyReview: "approved",
   },
 
   "고정자본소모": {
@@ -1224,6 +1344,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["언젠가 설비를 유지·교체하려면 나갈 몫이라, 기업 관점에서는 순생산이 더 의미 있을 수 있어요."],
     commonConfusions: ["중간투입(부품·원재료)과 달라요. 고정자본소모는 여러 기간에 걸쳐 쓰는 시설의 가치 감소예요."],
     typicalSituation: "총부가가치는 늘었는데 순부가가치가 약하다는 문장은, 설비 마모·교체 부담이 큰지 봐요. 중간재 비용과 같은 항목으로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "고통지수": {
@@ -1234,6 +1355,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["단순 합이라 두 항목의 가중치가 같아요. 체감 고통의 정확한 측정이라기보다 비교용 스케치에 가까워요."],
     commonConfusions: ["GDP나 국민소득의 반대말이 아니에요. 물가와 실업 두 가지만 더한 보조 지표예요."],
     typicalSituation: "고통지수가 올랐다는 문장은, 물가 탓인지 실업 탓인지 나눠 봐요. GDP가 좋아도 이 합이 높을 수 있어요.",
+    copyReview: "approved",
   },
 
   "공공재": {
@@ -1244,6 +1366,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["규모는 정치적 결정에 맡겨지는 경우가 많아요. 시장 가격이 없거나 약해요."],
     commonConfusions: ["정부가 공급하는 모든 서비스가 공공재는 아니에요. 비경합·비배제 성질로 봐요."],
     typicalSituation: "도로·공원을 공공재로 부른다는 문장은, 혼잡으로 경합성이 생겼는지(유료도로 등)도 같이 봐요. 정부가 공급한다고 모두 순수 공공재는 아니에요.",
+    copyReview: "pending",
   },
 
   "공급병목": {
@@ -1254,6 +1377,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["한 구간의 제약이지, 모든 산업의 생산능력이 사라진 것과는 달라요."],
     commonConfusions: ["수요가 과열돼 가격이 오르는 경우와 달라요. 병목은 중간 단계가 막힌 공급 쪽 제약이에요."],
     typicalSituation: "특정 품목 물가가 올랐다는 문장은, 수요 급증인지 부품·물류 병목인지 나눠 봐요. 병목이 풀려도 재고·계약 때문에 가격이 바로 안 내릴 수 있어요.",
+    copyReview: "approved",
   },
 
   "공급사용표-sut": {
@@ -1264,6 +1388,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["공급표는 누가 무엇을 얼마나 만들었는지, 사용표는 그 상품이 어디에 투입·소비됐는지를 보여 줘요."],
     commonConfusions: ["투입산출표와 짝을 이뤄요. 투입산출표는 상품 기준, 공급사용표는 산업 기준이에요."],
     typicalSituation: "공급사용표에서 한 산업의 산출이 늘었다는 문장은, 주력 상품인지 부산물인지, 중간수요인지 수출·소비인지 가로·세로를 나눠 봐요. 투입산출표의 상품 기준 숫자와 바로 같다고 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "공급탄력성": {
@@ -1274,6 +1399,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["생산자가 가격 변화에 맞춰 공급량을 조절할 수 있는 능력에 따라 달라요. 단기와 장기의 값이 다를 수 있어요."],
     commonConfusions: ["수요탄력성과 짝을 이뤄요. 여기는 사는 쪽이 아니라 파는 쪽의 민감도예요."],
     typicalSituation: "가격이 올랐는데 공급이 안 늘었다는 문장은, 설비·인력·원자재를 늘리는 데 시간이 걸리는지 봐요. 수요 탄력성과 같은 숫자로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "공동부유": {
@@ -1283,6 +1409,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     chain: ["소득분배", "불평등", "산업정책"],
     keyPoints: ["특정 시기 정책 방향의 이름에 가까워요. 수단과 강도는 시점에 따라 달라요."],
     typicalSituation: "공동부유를 강조한다는 문장은, 어떤 업권·세제·분배 수단이 실제로 거론되는지를 같이 봐요. 슬로건만으로 제도가 확정됐다고 읽지 않아요.",
+    copyReview: "pending",
   },
 
   "관리변동환율제도": {
@@ -1293,6 +1420,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["시장이 기본이지만, 당국이 적정하다고 보는 범위에서 안정시키려 개입할 수 있어요."],
     commonConfusions: ["자유변동환율제도와 고정환율제도 사이에 있어요. 시장에 맡긴다고 개입이 원천 금지된 것은 아니에요."],
     typicalSituation: "환율이 급등하는데 당국이 개입했다는 문장은, 방향만 보는지 수준을 지키려는 건지 나눠 봐요. 자유변동으로 선언돼 있어도 실제 개입 여부는 따로 확인해요.",
+    copyReview: "approved",
   },
 
   "관리통화제도": {
@@ -1303,6 +1431,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["통화 공급에 금이라는 자동 제약이 없는 대신, 중앙은행의 정책 운영과 물가 안정 책임이 중요해져요."],
     commonConfusions: ["금본위제와 짝을 이뤄요. 지금은 주요국이 금을 기준으로 돈을 찍지 않아요."],
     typicalSituation: "중앙은행이 통화를 늘린다는 문장은, 금 보유가 늘어서가 아니라 정책 목적에 따른 조절인지 봐요. 금값 움직임과 통화량 결정을 같은 규칙으로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "교환사채-eb": {
@@ -1313,6 +1442,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["교환이 이뤄지면 발행회사의 자산과 부채가 같이 줄어요. 새 돈이 들어오거나 신주가 늘어나는 구조가 아니에요."],
     commonConfusions: ["전환사채(CB)는 발행회사 신주로 바꾸고, 신주인수권부사채(BW)는 신주를 살 권리예요. 교환사채는 이미 가진 다른 증권을 내줘요."],
     typicalSituation: "교환사채를 발행했다는 문장은, 교환 대상 증권이 무엇인지와 그 가격 조건을 같이 봐요. 전환사채처럼 자본금이 늘어난다고 읽지 않아요.",
+    copyReview: "pending",
   },
 
   "교환성통화": {
@@ -1323,6 +1453,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["쓰임이 넓은 정의와 좁은 정의가 있어요. 문장이 어느 범위를 말하는지 먼저 봐요."],
     commonConfusions: ["기축통화와 바로 같지는 않아요. 교환성은 바꿀 수 있는 성질이고, 기축은 국제 거래의 중심 화폐 역할에 가까워요."],
     typicalSituation: "교환성 통화로 결제한다는 문장은, 시장에서 실제로 잘 바뀌는지와 준비자산으로 통하는지 같이 봐요. 기축통화와 같은 말로 단정하지 않아요.",
+    copyReview: "approved",
   },
 
   "구독경제": {
@@ -1333,6 +1464,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["공급자 쪽에서는 취향·이용 습관에 맞춰 고객을 붙잡아 두는 것이 핵심 과제가 돼요."],
     commonConfusions: ["할부는 한 번 산 물건의 대금을 나눠 내는 구조예요. 구독은 일정 기간 관계가 이어지며 반복 결제가 발생하고, 소유권 여부는 상품에 따라 달라요."],
     typicalSituation: "구독 매출이 늘었다는 문장은, 신규 가입인지 해지 대비 잔존인지 나눠 봐요. 한 해 비용이 일시 구매보다 작아 보여도 누적하면 더 클 수 있어요.",
+    copyReview: "approved",
   },
 
   "구매력평가환율": {
@@ -1343,6 +1475,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["화폐 교환비율이라기보다 자국 화폐의 실질 구매력을 나타내는 쪽에 가까워요."],
     commonConfusions: ["외환시장 환율과 달라요. 구매력평가 환율은 물가 차이를 보정한 비교용 환율이에요."],
     typicalSituation: "PPP 기준으로 보면 소득이 더 높다는 문장은, 시장환율 환산치와 물가 조정치를 나눠 봐요. 외환시장에서 당장 그 환율로 바꿀 수 있다는 뜻은 아니에요.",
+    copyReview: "approved",
   },
 
   "구인배수": {
@@ -1353,6 +1486,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["높을수록 구직자 입장에서는 자리가 많은 편으로 읽어요. 다만 일자리의 질까지 보여 주지는 않아요."],
     commonConfusions: ["실업률과 달라요. 실업률은 경제활동인구 대비 실업자, 구인배수는 구직자 대비 빈 자리예요."],
     typicalSituation: "구인배수가 올랐다는 문장은, 일자리가 늘어서인지 구직자가 줄어서인지 나눠 봐요. 실업률이 낮아도 특정 직종 배수는 낮을 수 있어요.",
+    copyReview: "approved",
   },
 
   "국가경쟁력": {
@@ -1363,6 +1497,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["기관마다 정의와 구성이 달라요. 한 순위를 경쟁력의 전부로 보지 않아요."],
     commonConfusions: ["GDP 규모나 성장률과 같은 말이 아니에요. 성장의 지속 여건을 종합한 평가에 가까워요."],
     typicalSituation: "국가경쟁력 순위가 올랐다는 문장은, 설문인지 통계인지, 어느 부문이 변했는지 봐요. GDP가 크다고 순위가 자동으로 높은 것은 아니에요.",
+    copyReview: "approved",
   },
 
   "국가신용등급": {
@@ -1373,6 +1508,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["해당국 기업·금융기관 등급을 정하는 기준 중 하나가 돼요. 등급이 바뀌면 외화 조달 비용이 달라질 수 있어요."],
     commonConfusions: ["그 나라 기업의 개별 신용등급과 같아 보이지 않아요. 다만 국가 등급이 사실상 상한처럼 작용하는 경우가 많아요."],
     typicalSituation: "국가신용등급이 내려갔다는 문장은, 외화표시인지 자국통화표시인지, 단기인지 장기인지를 같이 봐요. 국내 기업의 개별 등급도 이 천장에 영향을 받을 수 있어요.",
+    copyReview: "approved",
   },
 
   "국고금실시간전자이체": {
@@ -1383,6 +1519,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["정부는 국고수표를 따로 발행할 필요가 줄어 행정과 인쇄 비용을 아낄 수 있어요."],
     commonConfusions: ["일반 계좌이체와 결과가 비슷해 보여도, 여기는 정부가 국고금을 지급하는 전용 경로예요."],
     typicalSituation: "국고금이 실시간 이체된다는 문장은, 수취인 계좌와 정부 지출 시점 사이에 수표 수령이 끼는지 봐요. 일반 개인 간 송금 앱과 같은 시스템으로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "국고대리점": {
@@ -1393,6 +1530,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["대리점 수와 계약 형태는 시점에 따라 달라요. 숫자를 제도의 본질처럼 외우지 않아요."],
     commonConfusions: ["한국은행 지점과 달라요. 민간 금융기관이 국고 수납만 위탁받아 처리하는 창구예요."],
     typicalSituation: "국고 수납이 은행 창구에서 이뤄진다는 문장은, 그 점이 대리점 계약을 맺었는지 봐요. 한은이 그 점포를 직접 운영한다고 읽지 않아요.",
+    copyReview: "pending",
   },
 
   "국고수표": {
@@ -1403,6 +1541,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["폐지와 일상 미사용은 달라요. 제도가 남아 있어도 평소 지급 경로가 아닐 수 있어요."],
     commonConfusions: ["일반 수표·자기앞수표와 달라요. 정부가 국고 지출용으로 발행하던 지급 수단이에요."],
     typicalSituation: "국고수표가 나왔다는 문장은, 전자이체 장애 같은 예외 상황인지부터 봐요. 일반 자기앞수표와 같은 개인 지급 수단으로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "국고전산망": {
@@ -1413,6 +1552,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["운영 시간과 참가 범위는 운영 규칙에 따라 달라질 수 있어요."],
     commonConfusions: ["한은금융망과 달라요. 국고전산망은 국고금 수납·지급 업무용 연결망에 가까워요."],
     typicalSituation: "국고전산망 장애라는 문장은, 세금 수납·국고 지급인지 금융기관 간 거액 결제인지를 나눠 봐요. 한은금융망 장애와 같은 사건으로 단정하지 않아요.",
+    copyReview: "approved",
   },
 
   "국내공급물가지수": {
@@ -1423,6 +1563,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["생산 단계별 지수가 있어 파급 과정을 추적하기 좋아요."],
     commonConfusions: ["소비자물가지수나 생산자물가지수 하나와 달라요. 국산 출하와 수입 공급을 결합한 국내 공급 가격이에요."],
     typicalSituation: "국내공급물가가 올랐다는 문장은, 원재료인지 중간재·최종재인지, 국산인지 수입인지를 나눠 봐요. 소비자물가와 같은 장바구니라고 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "국민계정체계-sna": {
@@ -1433,6 +1574,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["플로(기간 중 거래)와 스톡(특정 시점 잔액)을 한 체계 안에서 연결해요."],
     commonConfusions: ["GDP 통계 하나와 같아 보이지 않아요. SNA는 GDP를 포함해 여러 국민계정 통계를 묶는 틀이에요."],
     typicalSituation: "SNA 기준으로 작성했다는 문장은, 생산 측 GDP인지 소득·자본 계정 숫자인지를 나눠 봐요. 가계부 합계와 같은 말로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "국민대차대조표": {
@@ -1443,6 +1585,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["기초·기말 대차대조표와 증감 계정으로, 재산이 왜 변했는지 분해해 볼 수 있어요."],
     commonConfusions: ["기업 재무제표나 한 해 GDP와 달라요. 여기는 나라·부문의 자산·부채 잔액 표예요."],
     typicalSituation: "국부가 늘었다는 문장은, 토지·건물 가격이 올라서인지 금융자산이 늘어서인지, 대외 순자산이 바뀌어서인지 나눠 봐요. 그해 GDP가 크다고 국부가 같은 폭으로 늘지는 않아요.",
+    copyReview: "approved",
   },
 
   "국민소득": {
@@ -1453,6 +1596,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["임금·지대·이자·이윤처럼 요소에 돌아간 몫의 합으로도 읽어요."],
     commonConfusions: ["GDP나 GNI와 같은 숫자가 아니에요. 국민소득은 자본 마모와 생산세를 조정한 순 요소소득에 가까워요."],
     typicalSituation: "국민소득이 줄었다는 문장은, 임금이 줄어서인지 영업잉여가 줄어서인지 나눠 봐요. GDP가 늘어도 고정자본소모나 생산세 때문에 국민소득 폭은 다를 수 있어요.",
+    copyReview: "pending",
   },
 
   "국민연금": {
@@ -1463,6 +1607,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["개인연금·퇴직연금과 함께 노후 소득의 한 축이에요. 가입·수급 조건은 법률 개정에 따라 달라질 수 있어요."],
     commonConfusions: ["개인이 가입하는 연금저축·펀드와 달라요. 여기는 법령에 따른 공적 연금이에요."],
     typicalSituation: "국민연금 제도 변화가 나왔다는 문장은, 보험료율·수급 연령·급여 수준 중 무엇이 바뀌는지와 시행 시점을 공식 안내로 확인해요. 한 시점 기금 전망을 확정 사실처럼 읽지 않아요.",
+    copyReview: "pending",
   },
 
   "국민처분가능소득-ndi": {
@@ -1473,6 +1618,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["총처분가능소득으로 소비·저축을 나누면 평균소비성향·평균저축성향을 구할 수 있어요."],
     commonConfusions: ["가계 처분가능소득과 층위가 달라요. 국민처분가능소득은 나라 전체의 처분 가능 규모예요."],
     typicalSituation: "처분가능소득이 총소득보다 작다는 문장은, 국외로 나간 경상이전이 큰지 봐요. 가계 처분가능소득과 같은 범위로 읽지 않아요. 이쪽은 나라 전체 계정이에요.",
+    copyReview: "approved",
   },
 
   "국외순수취경상이전": {
@@ -1483,6 +1629,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["대가 없는 이전이에요. 노동·자본을 제공하고 받은 요소소득과 구분이 필요해요."],
     commonConfusions: ["국외순수취요소소득과 달라요. 경상이전은 무상, 요소소득은 노동·자본의 대가예요."],
     typicalSituation: "국외 경상이전 순액이 줄었다는 문장은, 교포 송금이 줄어서인지 대외 원조 지급이 늘어서인지 나눠 봐요. 해외 투자 수익(요소소득)과 같은 항목으로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "국외순수취요소소득": {
@@ -1493,6 +1640,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["생산 장소 기준(GDP)과 국민 기준(GNI)을 잇는 다리예요."],
     commonConfusions: ["국외순수취경상이전과 달라요. 요소소득은 생산요소의 대가이고, 경상이전은 무상 이전이에요."],
     typicalSituation: "GDP는 늘었는데 GNI가 약하다는 문장은, 외국인에게 나간 배당·이자가 큰지 봐요. 반대로 해외 자회사 수익이 크면 GNI가 GDP보다 클 수 있어요.",
+    copyReview: "approved",
   },
 
   "국외투자율": {
@@ -1503,6 +1651,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["플러스는 해외로 자금이 나가는 쪽에, 마이너스는 해외에서 자금을 들여오는 쪽에 가까워요."],
     commonConfusions: ["기업의 해외직접투자(FDI) 한 항목과 달라요. 여기는 국민계정에서 저축과 국내투자의 차이 비율이에요."],
     typicalSituation: "국외투자율이 마이너스라는 문장은, 국내투자가 과해서인지 저축이 약해서인지 나눠 봐요. 경상수지 적자·순대외채무 증가와 같이 읽되, 해외직접투자 한 건과 같은 말로 보지 않아요.",
+    copyReview: "approved",
   },
 
   "국제결제은행-bis": {
@@ -1513,6 +1662,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["회원은 중앙은행 중심이에요. 가입 시기·회원 구성은 시점에 따라 달라요."],
     commonConfusions: ["IMF와 달라요. BIS는 구제금융보다 중앙은행 협력과 건전성 기준 논의에 가까워요."],
     typicalSituation: "BIS가 경고했다는 문장은, 조사 보고서인지 바젤 규제 논의인지를 나눠 봐요. IMF 구제금융 기관과 같은 역할로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "국제금융시장": {
@@ -1523,6 +1673,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["장소(금융 중심지)와 거래 메커니즘 두 층위로 쓰여요. 문장이 어느 뜻인지 먼저 봐요."],
     commonConfusions: ["한 나라 안의 금융시장과 달라요. 여기는 국경을 넘는 자금 거래 전체를 가리키는 경우가 많아요."],
     typicalSituation: "국제금융시장이 경색됐다는 문장은, 달러 단기 시장인지 채권·주식인지 장소를 나눠 봐요. 국내 콜시장만의 이야기로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "국제금융중심지": {
@@ -1533,6 +1684,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["뉴욕·런던 같은 종합 중심지와, 홍콩·싱가포르처럼 역외 중개에 강한 중심지를 나눠 보는 시각이 있어요."],
     commonConfusions: ["국제금융시장(거래 메커니즘)과 달라요. 중심지는 그 거래가 집중되는 장소예요."],
     typicalSituation: "국제금융중심지를 육성한다는 문장은, 실제 거래량·기관 입주인지 제도 특례인지를 같이 봐요. 국내 증권시장이 있다는 것만으로 같은 지위라고 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "국제산업연관표": {
@@ -1543,6 +1695,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["작성 기관·대상 국가 범위가 표마다 달라요. 같은 연도의 다른 표라도 숫자가 다를 수 있어요."],
     commonConfusions: ["한 나라 산업연관표와 달라요. 여기는 나라 사이 수출입을 매개로 표를 연결한 거예요."],
     typicalSituation: "해외 수요가 국내 산업에 파급된다는 문장은, 어느 나라 어느 산업을 경유하는지 국제표로 봐요. 국내 산업연관표만으로는 국경을 넘는 단계가 빠져요.",
+    copyReview: "approved",
   },
 
   "국제수지표": {
@@ -1553,6 +1706,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["플로 통계예요. 잔액을 보려면 국제투자대조표 쪽을 봐요."],
     commonConfusions: ["국제투자대조표와 짝을 이뤄요. 수지표는 기간 중 거래, 투자대조표는 특정 시점 잔액이에요."],
     typicalSituation: "경상수지가 흑자라는 문장은, 상품수지인지 서비스·본원소득·이전소득인지 나눠 봐요. 흑자를 단순히 ‘외화가 그만큼 들어왔다’고 읽지 말고, 금융계정과 함께 거래의 대응 관계를 봐요.",
+    copyReview: "approved",
   },
 
   "국제원유가격": {
@@ -1563,6 +1717,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["선물 거래가 활발해지면서 선물 가격이 현물 거래의 참고가 되는 경우가 많아요. 다만 유종·지역에 따라 차이가 나요."],
     commonConfusions: ["국내 주유소 가격과 바로 같지 않아요. 세금, 환율, 정제 마진이 사이에 있어요."],
     typicalSituation: "국제유가가 올랐다는 문장은, 어느 기준 유종인지와 선물 가격인지 현물인지를 같이 봐요. 국내 휘발유 소매가가 같은 날 같은 폭으로 움직인다고 단정하지 않아요.",
+    copyReview: "approved",
   },
 
   "국제증권감독기구-iosco": {
@@ -1573,6 +1728,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["회원 구성과 기준의 세부 내용은 시점에 따라 달라요."],
     commonConfusions: ["바젤 위원회·BIS와 달라요. IOSCO는 증권 시장 규제 쪽 국제 협의체예요."],
     typicalSituation: "IOSCO 기준을 따른다는 문장은, 공시·시장 감시·투자자 보호 중 어느 원칙인지 봐요. 은행 자본규제(바젤) 기구와 같은 단체로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "국제통화시장-imm": {
@@ -1583,6 +1739,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["만기가 특정 달의 정해진 결제일에 몰리는 등 계약 명세가 표준이에요. 세부 명세는 거래소 규칙에 따라 달라질 수 있어요."],
     commonConfusions: ["현물 외환시장과 달라요. IMM은 표준화된 통화 선물·옵션 거래소 시장이에요."],
     typicalSituation: "IMM 포지션이 순매수로 기울었다는 문장은, 헤지인지 방향 베팅인지를 단정하지 않고 만기·기초 통화와 현물환율을 같이 봐요. 현물 원/달러 시장 그 자체로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "국제투자대조표-iip": {
@@ -1593,6 +1750,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["스톡 통계예요. 플로인 국제수지 금융계정과 반드시 일치하지는 않아요."],
     commonConfusions: ["국제수지표와 짝을 이뤄요. 수지표는 기간 중 거래, 투자대조표는 특정 시점 잔액이에요."],
     typicalSituation: "대외자산이 늘었다는 문장은, 새로 투자해서인지 주가·환율 평가 때문인지를 나눠 봐요. 그해 금융계정 흑자와 잔액 증가가 같은 폭이 아닐 수 있어요.",
+    copyReview: "approved",
   },
 
   "국제회계기준": {
@@ -1603,6 +1761,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["기준이 개정되면 표시 방식과 비교 가능성이 바뀌어요. 적용 시점을 현재 상태로 고정해 외우지 않아요."],
     commonConfusions: ["세무회계나 예전의 국내 독자 기준과 달라요. 재무보고용 국제 기준이에요."],
     typicalSituation: "IFRS로 작성했다는 문장은, 연결 기준인지 공정가치 평가가 큰 항목인지를 봐요. 국내 세법상 소득과 같은 숫자로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "규모의경제": {
@@ -1613,6 +1772,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["생산 규모가 커진다고 항상 평균비용이 내려가는 것은 아니에요. 비용 구조와 생산 구간을 같이 봐요."],
     commonConfusions: ["범위의 경제와 달라요. 규모는 같은 것을 많이 만들어서, 범위는 여러 제품을 같이 만들어서 비용을 나누는 쪽에 가까워요."],
     typicalSituation: "생산을 늘려 단가가 내려갔다는 문장은, 설비가 충분히 돌아가는지와 재고가 쌓인 것은 아닌지를 같이 봐요. 규모가 커졌다고 항상 평균비용이 내리는 것은 아니에요.",
+    copyReview: "approved",
   },
 
   "그램-리치-블라일리법": {
@@ -1623,6 +1783,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["금융 자유화의 한 전환점으로 읽혀요. 이후 위기 원인 중 하나로 거론되기도 하지만, 인과는 조건과 함께 봐요."],
     commonConfusions: ["글래스-스티걸법과 짝을 이뤄요. 글래스는 업권을 가르고, 그램-리치-블라일리는 그 칸막이를 허문 쪽에 가까워요."],
     typicalSituation: "이 법 이후 겸업이 확대됐다는 문장은, 경쟁이 세진 경로와 위험 관리가 따라갔는지를 같이 봐요. 법 하나가 위기의 유일한 원인이라고 단정하지 않아요.",
+    copyReview: "approved",
   },
 
   "그린본드": {
@@ -1633,6 +1794,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["기존 채권과 발행·유통 구조는 비슷한 경우가 많아요. 차이는 자금 용도와 그 투명성에 있어요."],
     commonConfusions: ["일반 회사채와 현금흐름 구조는 닮을 수 있어요. 구분은 조달 자금의 환경 사용처예요."],
     typicalSituation: "그린본드를 발행했다는 문장은, 사용처 보고·검증이 있는지와 일반 채권 대비 금리 차이를 같이 봐요. 이름만으로 환경 효과가 보장된다고 읽지 않아요.",
+    copyReview: "pending",
   },
 
   "글래스-스티걸법": {
@@ -1643,6 +1805,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["연방예금보험과 공개시장 운영 기구 정비 등 은행 안전망도 같이 다룬 개혁법이에요."],
     commonConfusions: ["그램-리치-블라일리법과 짝을 이뤄요. 글래스는 칸막이를 세우고, 나중에 그 칸막이가 완화됐어요."],
     typicalSituation: "글래스-스티걸 체제라는 문장은, 당시 업권 분리인지 나중에 완화된 상태인지를 시점으로 확인해요. 한국 금산분리와 바로 같은 법으로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "글로벌가치사슬-gvc": {
@@ -1653,6 +1816,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["비용 절감에 유리하지만, 한 구간이 막히면 여러 나라 생산이 같이 흔들릴 수 있어요."],
     commonConfusions: ["완제품 수출입만 보는 시각과 달라요. GVC는 단계별 부가가치가 어느 나라에 남는지에 초점을 둬요."],
     typicalSituation: "수출이 늘었다는 문장은, 국내에서 만든 가치인지 수입 부품을 조립해 재수출한 것인지 나눠 봐요. 공급망 재편 뉴스가 나오면 단계가 어느 나라로 옮기는지도 같이 봐요.",
+    copyReview: "approved",
   },
 
   "글로벌공급망압력지수": {
@@ -1663,6 +1827,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["공급망 압력을 평균 대비로 보여 주는 종합지표예요. 국내 수요 과열이나 소비자물가 자체를 직접 재는 지표는 아니에요."],
     commonConfusions: ["소비자물가지수와 달라요. 이 지수는 가격 자체가 아니라 공급망이 막힌 정도를 봐요."],
     typicalSituation: "지수가 높다는 문장은, 운송비·납기 지연 가운데 무엇이 압력을 키웠는지 다른 물류 지표와 같이 봐요. 지수가 내려도 국내 재고·계약 가격 때문에 소비자가 체감하는 변화는 늦을 수 있어요.",
+    copyReview: "approved",
   },
 
   "금리선물": {
@@ -1673,6 +1838,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["채권을 많이 가진 기관은 금리 상승(가격 하락)에 대비해 선물을 매도하는 식으로 헤지할 수 있어요."],
     commonConfusions: ["금리스왑과 달라요. 선물은 거래소의 표준 계약이고, 스왑은 이자 지급을 맞바꾸는 장외 계약에 가까워요."],
     typicalSituation: "국채선물 가격이 떨어졌다는 문장은, 금리 상승 기대가 커진 것인지와 현물 수급을 같이 봐요. 선물 가격이 움직였다고 현물 금리가 이미 같은 폭으로 변했다고 단정하지 않아요.",
+    copyReview: "approved",
   },
 
   "금리자유화": {
@@ -1683,6 +1849,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["업무 영역·진입 제한과 함께 구조적 금융 규제의 하나로 묶여 논의돼 왔어요."],
     commonConfusions: ["중앙은행의 기준금리 결정과 달라요. 자유화는 예금·대출 금리의 상한 규제를 푸는 쪽에 가까워요."],
     typicalSituation: "대출 금리가 올랐다는 문장은, 기준금리 때문인지 은행 간 경쟁·리스크 프리미엄 때문인지 나눠 봐요. 자유화됐다고 금리가 정책과 무관해진 것은 아니에요.",
+    copyReview: "approved",
   },
 
   "금산분리": {
@@ -1693,6 +1860,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["‘금산분리’라는 원칙과 실제 지분 한도·예외 규정은 구분해 봐요."],
     commonConfusions: ["겸업주의와 바로 같은 말이 아니에요. 금산분리는 비금융 산업자본과 은행의 결합을 다루는 쪽에 가까워요."],
     typicalSituation: "산업자본의 은행 지분 한도 논의가 나왔다는 문장은, 예외 인정 요건과 의결권 제한을 같이 봐요. 금융업 안에서의 겸업(은행+증권)과 같은 주제로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "금융하부구조": {
@@ -1703,6 +1871,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["사회 간접자본의 금융 버전에 가까워요. 개별 금융회사의 영업망과는 층위가 달라요."],
     commonConfusions: ["금융시장인프라(FMI)와 겹쳐 보여요. FMI는 지급·청산·결제·기록 시스템에 더 좁혀 쓰는 경우가 많아요."],
     typicalSituation: "금융 인프라 투자라는 문장은, 결제망인지 신용평가·거래소인지를 나눠 봐요. 은행 점포 수와 같은 말로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "금융EDI": {
@@ -1713,6 +1882,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["표준이 맞아야 상대 시스템이 다시 치지 않고 받아 쓸 수 있어요."],
     commonConfusions: ["일반 EDI(거래 정보만 교환)와 달라요. 금융 EDI는 지급결제까지 전자적으로 붙인 형태예요."],
     typicalSituation: "금융 EDI로 결제한다는 문장은, 거래 문서만 오가는지 대금 이체까지 포함인지를 봐요. 이메일 첨부 서류와 같은 말로 읽지 않아요.",
+    copyReview: "pending",
   },
 
   "금융공황": {
@@ -1723,6 +1893,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["예금자 불신과 유동성 부족이 겹칠 때 확산하기 쉬워요."],
     commonConfusions: ["한 은행의 뱅크런이나 일반적인 경기 침체와 달라요. 공황은 인출 사태가 시스템 전체로 번진 상태에 가까워요."],
     typicalSituation: "예금 인출이 한 은행에 그쳤다는 문장은, 다른 기관으로 전염됐는지와 유동성 공급이 있었는지를 같이 봐요. 주가가 빠진 날이라고 모두 금융공황은 아니에요.",
+    copyReview: "approved",
   },
 
   "금융불안지수-fsi": {
@@ -1733,6 +1904,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["임계치와 구성 지표는 편제 방식에 따라 달라질 수 있어요. 숫자를 만고불변 기준으로 외우지 않아요."],
     commonConfusions: ["금융취약성지수(FVI)·금융상황지수(FCI)와 약자가 닮았어요. FSI는 단기 불안, FVI는 중장기 취약, FCI는 금융여건의 완화·긴축에 가까워요."],
     typicalSituation: "금융불안지수가 주의 구간을 넘었다는 문장은, 환율·주가 변동성인지 연체율인지를 부문별로 봐요. 중장기 취약성 지수와 같은 말로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "금융사이클": {
@@ -1743,6 +1915,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["평균 주기 추정치는 표본 기간과 방법에 따라 달라요. 한 연구 숫자를 법칙처럼 쓰지 않아요."],
     commonConfusions: ["실물 경기순환과 달라요. 금융사이클은 신용·자산 쪽 순환을 따로 본 거예요."],
     typicalSituation: "실물은 회복인데 금융사이클이 하강이라는 문장은, 신용 증가 속도가 먼저 꺾였는지 봐요. 두 순환이 항상 같이 움직인다고 단정하지 않아요.",
+    copyReview: "approved",
   },
 
   "금융상황지수-fci": {
@@ -1753,6 +1926,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["구성 변수와 시차 반영 방식은 편제 기관이 바꿀 수 있어요."],
     commonConfusions: ["금융불안지수(FSI)와 달라요. FCI는 여건이 풀렸는지 조였는지, FSI는 단기 불안의 강도예요."],
     typicalSituation: "기준금리는 그대로인데 금융상황이 긴축됐다는 문장은, 신용스프레드나 환율·주택가격이 먼저 움직였는지 봐요. 주가만 올랐다고 여건이 완화된 것으로 단정하지 않아요.",
+    copyReview: "pending",
   },
 
   "금융시장인프라": {
@@ -1763,6 +1937,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["국제적으로 안전성·효율 원칙이 마련되어 각국이 그에 맞춰 감독해요."],
     commonConfusions: ["넓은 뜻의 금융 하부구조와 겹쳐요. FMI는 지급·청산·결제·기록 인프라에 더 초점을 둬요."],
     typicalSituation: "금융시장인프라 장애라는 문장은, 지급인지 증권 예탁·청산인지를 나눠 봐요. 개별 증권사 전산 장애와 같은 층위로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "금융안정": {
@@ -1773,6 +1948,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["한 지표 이름이라기보다 시스템의 작동 상태를 가리키는 목표 개념이에요."],
     commonConfusions: ["물가 안정과 달라요. 물가는 화폐 가치, 금융안정은 중개·시장·인프라가 멈추지 않는 쪽에 가까워요."],
     typicalSituation: "금융안정에 유의한다는 문장은, 물가 목표와 충돌하는 국면인지를 같이 봐요. 주가가 안정됐다고 금융안정과 같은 말로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "금융안정위원회-fsb": {
@@ -1783,6 +1959,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["회원 구성과 산하 위원회 구조는 시점에 따라 달라질 수 있어요."],
     commonConfusions: ["IMF나 BIS와 달라요. FSB는 금융안정 관련 정책·규제 협의체에 가까워요."],
     typicalSituation: "FSB 권고라는 문장은, 은행 규제인지 그림자 금융·벤치마크인지를 같이 봐요. IMF 자금 지원 결정 기구와 같은 말로 읽지 않아요.",
+    copyReview: "pending",
   },
 
   "금융연관비율": {
@@ -1793,6 +1970,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["경제 발전과 함께 오르는 경향이 있다고 보지만, 자산 가격 급등만으로도 올라 보일 수 있어요."],
     commonConfusions: ["GDP 대비 신용 비율과 닮아 보여도, 여기는 금융자산 스톡을 실물자산(또는 소득)과 견준 비율이에요."],
     typicalSituation: "금융연관비율이 올랐다는 문장은, 실물이 정체인데 금융자산 가격이 올라서인지 실제로 중개가 깊어져서인지 나눠 봐요. 비율이 높다고 가계가 부유해진 것은 아니에요.",
+    copyReview: "approved",
   },
 
   "금융의증권화": {
@@ -1803,6 +1981,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["유동성은 높아질 수 있지만, 위험이 사라지는 것은 아니에요. 누가 어떤 위험을 최종적으로 보유하는지 봐요."],
     commonConfusions: ["기업이 주식·채권을 발행하는 직접금융과 달라요. 증권화는 이미 가진 대출 등을 증권으로 바꿔 파는 쪽이에요."],
     typicalSituation: "대출을 증권화했다는 문장은, 위험이 완전히 넘어갔는지 일부 보강을 남겼는지를 봐요. 기업이 주식·회사채를 새로 발행하는 직접금융과 같은 말로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "금융의탈중개화": {
@@ -1813,6 +1992,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["전통적 중개가 줄어도 신용평가·매칭·결제·규제 기능까지 사라지는 것은 아니에요."],
     commonConfusions: ["금융의 탈집중화와 달라요. 탈중개는 중개자를 건너뛰는 것, 탈집중은 기능을 여러 사업자에게 나누는 쪽에 가까워요."],
     typicalSituation: "P2P로 돈을 빌렸다는 문장은, 은행 대출을 우회했는지와 플랫폼이 심사·매칭·보관 같은 기능을 어디까지 맡는지 봐요.",
+    copyReview: "approved",
   },
 
   "금융이해력": {
@@ -1823,6 +2003,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["지식만 있고 행위·태도가 따라가지 않으면 이해력이 높다고 보기 어려워요."],
     commonConfusions: ["투자로 돈을 잘 버는 능력과 같아 보이지 않아요. 이해력은 일상적인 재무 결정의 역량이에요."],
     typicalSituation: "금융이해력 점수가 낮다는 문장은, 지식을 모르는지 실제 저축·부채 관리 행위가 약한지를 나눠 봐요. 투자 수익률이 높다고 이해력이 높다고 읽지 않아요.",
+    copyReview: "pending",
   },
 
   "금융중개지원대출제도": {
@@ -1833,6 +2014,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["사후 실적에 따라 지원하는 구조예요. 프로그램 구성은 금융통화위원회가 정한 한도 안에서 달라질 수 있어요."],
     commonConfusions: ["한국은행 기준금리 대출이나 정부의 재정 지원과 달라요. 은행의 적격 대출 실적에 비례해 싼 자금을 공급하는 제도예요."],
     typicalSituation: "금융중개지원대출 한도를 늘린다는 문장은, 어느 목적 프로그램인지와 은행의 실제 취급 여력을 같이 봐요. 재정 보조금이나 기준금리 인하와 같은 수단으로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "금융지주회사": {
@@ -1843,6 +2025,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["법령은 자회사 주식 보유가 자산에서 일정 비중 이상인 경우를 주된 사업으로 보는 식으로 정의해요. 그 기준은 개정될 수 있어요."],
     commonConfusions: ["일반 대기업 지주회사와 달라요. 금융지주는 금융기관을 지배하는 것이 본업인 회사예요."],
     typicalSituation: "금융지주가 자회사를 편입한다는 문장은, 지주가 실체 있는 은행인지 순수 지주인지 나눠 봐요. 한 은행 안에서 모든 업무를 하는 내부겸업과 같은 구조로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "금융취약성지수-fvi": {
@@ -1853,6 +2036,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["단기 스트레스와 중장기 취약을 구분해 보는 쌍이에요. 구성은 편제 시점에 따라 달라질 수 있어요."],
     commonConfusions: ["금융불안지수(FSI)와 달라요. FVI는 잠재 취약, FSI는 눈앞의 스트레스에 가까워요."],
     typicalSituation: "불안지수는 낮은데 취약성지수가 높다는 문장은, 신용과 자산가격이 오래 쌓였는지 봐요. 두 지수가 같은 방향으로 움직여야 한다고 단정하지 않아요.",
+    copyReview: "approved",
   },
 
   "금전신탁": {
@@ -1863,6 +2047,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["예금과 신탁은 법적 구조와 손익 귀속 방식이 달라요. 예금이 모두 확정금리인 것도, 신탁이 모두 같은 위험을 가진 것도 아니에요."],
     commonConfusions: ["은행 예금과 달라요. 금전신탁은 신탁재산의 운용 결과와 계약 조건에 따라 수익·손실 구조가 달라질 수 있어요."],
     typicalSituation: "금전신탁 수익률이 예금보다 높다는 문장은, 운용자산·수수료·원금 보장 여부·예금자보호 대상인지부터 확인해요. ‘은행에서 판다’는 이유만으로 예금과 같은 상품으로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "기념화폐": {
@@ -1873,6 +2058,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["통용 화폐의 디자인 교체와 달리, 목적은 기념과 수집 가치에 더 가까워요."],
     commonConfusions: ["일상에서 쓰는 통용 화폐와 달라요. 기념화폐는 결제용보다 기념·수집용으로 발행되는 경우가 많아요."],
     typicalSituation: "기념화폐를 발행한다는 문장은, 유통한도인지 수집 판매인지를 봐요. 액면이 있다고 버스비가 그 돈으로만 계산되는 새 단위가 생긴 것은 아니에요.",
+    copyReview: "approved",
   },
 
   "기본자본": {
@@ -1883,6 +2069,7 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["자기자본은 기본자본과 보완자본을 합한 개념이에요. 최저 비율 숫자는 규제 개정에 따라 달라질 수 있어요."],
     commonConfusions: ["보완자본(Tier 2)과 짝을 이뤄요. 기본자본은 계속기업으로서의 손실 흡수, 보완자본은 더 후순위의 완충에 가까워요."],
     typicalSituation: "기본자본비율이 하락했다는 문장은, 손실이 나서인지 위험가중자산이 늘어서인지를 나눠 봐요. 보완자본까지 합친 총자기자본비율과 같은 숫자로 읽지 않아요.",
+    copyReview: "approved",
   },
 
   "기업간B2B지급시스템": {
@@ -1893,5 +2080,6 @@ export const SESSION_COPY: Record<string, SessionCopy> = {
     keyPoints: ["만기가 발행일 이후 일정 영업일이 지나야 시작하는 등 운용 조건이 있어요. 구체 일수는 제도가 바뀌면 달라질 수 있어요."],
     commonConfusions: ["어음이나 일반 기업 계좌이체와 달라요. 여기는 전자 외상매출채권의 발행·만기 결제를 위한 시스템이에요."],
     typicalSituation: "전자채권으로 결제한다는 문장은, 만기까지 판매 기업이 자금을 못 쓰는 외상인지, 할인·양도가 가능한지를 같이 봐요. 개인 간편결제와 같은 시스템으로 읽지 않아요.",
+    copyReview: "approved",
   },
 };

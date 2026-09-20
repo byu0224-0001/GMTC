@@ -43,6 +43,7 @@ def parse_session_copy(src: str) -> dict[str, dict]:
             "chain": arr("chain"),
             "keyPoints": arr("keyPoints"),
             "commonConfusions": arr("commonConfusions"),
+            "copyReview": field("copyReview") or "pending",
         }
     return out
 

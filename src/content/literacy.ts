@@ -189,8 +189,8 @@ export function isDraftReady(term: {
 }
 
 /**
- * 오늘 큐에 넣으려면 우리 설명이 있고, 사람 검수가 끝나 있어야 한다.
- * 원문만 있거나 검수 전 원고는 사전에서 찾고, 기본 세션 본문으로 쓰지 않는다.
+ * 오늘 큐에 넣으려면 우리 설명이 있고, 통과·수정 반영분이 approved여야 한다.
+ * 원문만 있거나 보류 원고는 사전에서 찾고, 기본 세션 본문으로 쓰지 않는다.
  */
 export function isLearningReady(term: {
   oneLiner?: string;
@@ -201,7 +201,7 @@ export function isLearningReady(term: {
   return isDraftReady(term) && term.copyReview === "approved";
 }
 
-/** 우리 설명은 있지만 사람 검수가 끝나지 않은 용어. 기본 학습 큐에는 넣지 않는다. */
+/** 우리 설명은 있지만 보류·미검수인 용어. 기본 학습 큐에는 넣지 않는다. */
 export function pendingDraftTerms(terms: Term[]): Term[] {
   return terms
     .filter((t) => isDraftReady(t) && t.copyReview === "pending")
@@ -229,13 +229,14 @@ export function learningFor(term: { id: string; headword: string }): LearningLay
   /**
    * 자체 원고가 있다는 것과 검수 완료는 다른 플래그다.
    * Core100은 이미 서비스에 나가 있던 유지 원고라 approved로 둔다.
-   * 이번 스프린트에서 한꺼번에 쓴 SESSION_COPY는 pending이다.
+   * SESSION_COPY는 통과·수정만 approved, 보류는 pending.
    */
   if (core) {
     return { ...core, reviewed: true, copyReview: core.copyReview ?? "approved" };
   }
   if (session) {
-    return { ...session, reviewed: false, copyReview: session.copyReview ?? "pending" };
+    const review = session.copyReview ?? "pending";
+    return { ...session, reviewed: review === "approved", copyReview: review };
   }
   return {
     oneLiner: "",

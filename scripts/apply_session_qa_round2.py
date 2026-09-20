@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """GPT 검수 라운드 문장을 SESSION_COPY에 반영하고, 원문 경계를 자른다.
 
-copyReview는 pending으로 둔다. 일괄 승인하지 않는다.
+통과·수정은 approved, 보류는 pending.
 """
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ HEADER = '''import type { CoreCopy } from "./coreCopy";
 
 /**
  * Core100 밖의 세션 후보 원고.
- * copyReview는 pending. 필드가 있다고 검수 완료가 아니다.
+ * copyReview approved는 통과·수정 반영분. 보류는 pending.
  *
  * 한 줄 뜻         이게 뭐예요? 개념의 정체성. 사례가 정체성으로 올라오면 안 된다.
  * 쉬운 설명         조금 더 풀어 말하면요?
@@ -59,6 +59,8 @@ def dump_entry(sid: str, c: dict) -> str:
         cc = ", ".join(f'"{esc(x)}"' for x in conf)
         lines.append(f"    commonConfusions: [{cc}],")
     lines.append(f'    typicalSituation: "{esc(c["typicalSituation"])}",')
+    review = c.get("copyReview") or "pending"
+    lines.append(f'    copyReview: "{review}",')
     lines.append("  },")
     return "\n".join(lines)
 

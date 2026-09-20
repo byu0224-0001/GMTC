@@ -481,6 +481,8 @@ def main() -> int:
 
     session_src = (ROOT / "src/content/sessionCopy.ts").read_text(encoding="utf-8")
     session_ids = re.findall(r'^  "([^"]+)": \{', session_src, re.M)
+    holds_doc = json.loads((ROOT / "editorial/copy-review-holds.json").read_text(encoding="utf-8"))
+    hold_ids = set(holds_doc.get("batch1", []) + holds_doc.get("batch2", []))
     sys.path.insert(0, str(ROOT / "scripts"))
     from report_pool import build as build_pool  # noqa: E402
     _, terms_by_id, _, pool = build_pool()
@@ -504,7 +506,7 @@ def main() -> int:
         re.M,
     ):
         sid, body = m.group(1), m.group(2)
-        for field in ("oneLiner", "easyExplanation", "whyItMatters", "typicalSituation"):
+        for field in ("oneLiner", "easyExplanation", "whyItMatters", "typicalSituation", "copyReview"):
             if f"{field}:" not in body:
                 errors.append(f"{sid} SESSION_COPY missing {field}")
         if "commonConfusions:" not in body:
@@ -542,8 +544,16 @@ def main() -> int:
                 WARNINGS.append(f"{sid} confusion looks forced (전환사채) — 인접 개념인지 볼 것")
         if easy and len(easy.group(1)) > 240:
             WARNINGS.append(f"{sid} easyExplanation {len(easy.group(1))} chars > 240")
-    if 'copyReview: "approved"' in session_src:
-        errors.append("SESSION_COPY must stay copyReview pending until human review")
+        review_m = re.search(r'copyReview: "(pending|approved)"', body)
+        review = review_m.group(1) if review_m else "pending"
+        if sid in hold_ids:
+            if review != "pending":
+                errors.append(f"{sid} is hold and must stay copyReview pending")
+        elif review != "approved":
+            errors.append(f"{sid} passed/revised but copyReview is {review}")
+    missing_holds = [hid for hid in sorted(hold_ids) if hid not in session_ids]
+    if missing_holds:
+        errors.append(f"copy-review holds missing from SESSION_COPY: {missing_holds}")
 
     quiz_src = (ROOT / "src/lib/quiz.ts").read_text(encoding="utf-8")
     today_src = (ROOT / "src/lib/today.ts").read_text(encoding="utf-8")
