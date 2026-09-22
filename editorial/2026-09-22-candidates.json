@@ -1,0 +1,58 @@
+{
+  "generatedAt": "2026-09-22T09:13:51.384496+09:00",
+  "windowHours": 24,
+  "count": 2,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "ECB to invest part of own funds in tokenised securities, with settlement via Pontes",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260921_1~5a011ecbea.en.html",
+      "publishedAt": "2026-09-21T10:00:00+00:00",
+      "matchedTermIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "termIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "score": 6,
+      "fitness": "중간"
+    },
+    {
+      "id": "c2",
+      "title": "Eurosystem brings central bank money to tokenised finance",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260921~e754847a7b.en.html",
+      "publishedAt": "2026-09-21T10:00:00+00:00",
+      "matchedTermIds": [
+        "유럽연합-eu",
+        "은행인수어음-ba"
+      ],
+      "termIds": [
+        "유럽연합-eu",
+        "은행인수어음-ba"
+      ],
+      "score": 6,
+      "fitness": "중간"
+    }
+  ]
+}
