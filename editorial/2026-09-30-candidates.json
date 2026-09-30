@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-09-30T09:40:39.137649+09:00",
+  "windowHours": 24,
+  "count": 2,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "ECB amends monetary policy implementation guidelines as part of regular review",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260929~050089e922.en.html",
+      "publishedAt": "2026-09-29T08:00:00+00:00",
+      "matchedTermIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "termIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "score": 6,
+      "fitness": "중간"
+    },
+    {
+      "id": "c2",
+      "title": "Agencies publish resolution plan feedback letters for 15 banking organizations",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260929a.htm",
+      "publishedAt": "2026-09-29T20:00:00+00:00",
+      "matchedTermIds": [
+        "은행인수어음-ba"
+      ],
+      "termIds": [
+        "은행인수어음-ba"
+      ],
+      "score": 5,
+      "fitness": "중간"
+    }
+  ]
+}
