@@ -1,0 +1,80 @@
+{
+  "generatedAt": "2026-10-01T09:42:31.351674+09:00",
+  "windowHours": 24,
+  "count": 4,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Federal Reserve Board finalizes changes to enhance the transparency and public accountability of its stress test and reduce volatility in its stress test-related capital requirements",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20260930a.htm",
+      "publishedAt": "2026-09-30T13:00:00+00:00",
+      "matchedTermIds": [
+        "기준금리"
+      ],
+      "termIds": [
+        "기준금리"
+      ],
+      "score": 5,
+      "fitness": "중간"
+    },
+    {
+      "id": "c2",
+      "title": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
+      "publishedAt": "2026-09-30T15:45:00+00:00",
+      "matchedTermIds": [
+        "생산자물가지수-ppi"
+      ],
+      "termIds": [
+        "생산자물가지수-ppi"
+      ],
+      "score": 5,
+      "fitness": "중간"
+    },
+    {
+      "id": "c3",
+      "title": "Frank Elderson: Supervisory risk appetite, efficiency and effectiveness",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930~d495288355.en.html",
+      "publishedAt": "2026-09-30T02:20:00+00:00",
+      "matchedTermIds": [
+        "주가수익비율-per"
+      ],
+      "termIds": [
+        "주가수익비율-per"
+      ],
+      "score": 3,
+      "fitness": "중간"
+    },
+    {
+      "id": "c4",
+      "title": "Christine Lagarde: Interview with La Croix",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in260930~10084a5f3d.en.html",
+      "publishedAt": "2026-09-30T17:00:00+00:00",
+      "matchedTermIds": [],
+      "termIds": [],
+      "score": 2,
+      "fitness": "낮음"
+    }
+  ]
+}
