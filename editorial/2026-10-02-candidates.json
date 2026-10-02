@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-10-02T10:01:26.564095+09:00",
+  "windowHours": 24,
+  "count": 2,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Isabel Schnabel: Central banks on-chain",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261001_1~a0be67193b.en.pdf",
+      "publishedAt": "2026-10-01T15:30:00+00:00",
+      "matchedTermIds": [
+        "생성형인공지능-ai",
+        "은행인수어음-ba"
+      ],
+      "termIds": [
+        "생성형인공지능-ai",
+        "은행인수어음-ba"
+      ],
+      "score": 8,
+      "fitness": "중간"
+    },
+    {
+      "id": "c2",
+      "title": "Christine Lagarde: Where AI risks meet",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261001~cf3c630379.en.html",
+      "publishedAt": "2026-10-01T13:30:00+00:00",
+      "matchedTermIds": [
+        "생성형인공지능-ai"
+      ],
+      "termIds": [
+        "생성형인공지능-ai"
+      ],
+      "score": 5,
+      "fitness": "중간"
+    }
+  ]
+}
