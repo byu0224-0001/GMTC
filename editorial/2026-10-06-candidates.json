@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-10-06T10:50:00.111180+09:00",
+  "windowHours": 24,
+  "count": 1,
+  "failedFeeds": [
+    {
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Philip R. Lane: Diagnostic Challenges for ECB Monetary Policy",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261005~1d8d998ef4.en.html",
+      "publishedAt": "2026-10-05T08:00:00+00:00",
+      "matchedTermIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "termIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "score": 6,
+      "fitness": "중간"
+    }
+  ]
+}
