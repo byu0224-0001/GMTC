@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2026-10-09T10:19:54.391089+09:00",
+  "windowHours": 24,
+  "count": 3,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261008a.htm",
+      "publishedAt": "2026-10-08T20:30:00+00:00",
+      "matchedTermIds": [
+        "생성형인공지능-ai",
+        "환매조건부매매",
+        "기준금리"
+      ],
+      "termIds": [
+        "생성형인공지능-ai",
+        "환매조건부매매",
+        "기준금리"
+      ],
+      "score": 11,
+      "fitness": "높음"
+    },
+    {
+      "id": "c2",
+      "title": "Meeting of 9-10 September 2026",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/accounts/2026/html/ecb.mg261008~a10153d090.en.html",
+      "publishedAt": "2026-10-08T11:30:00+00:00",
+      "matchedTermIds": [],
+      "termIds": [],
+      "score": 0,
+      "fitness": "낮음"
+    },
+    {
+      "id": "c3",
+      "title": "Piero Cipollone: Interview with Corriere della Sera",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in261008~3184e7d0d0.en.html",
+      "publishedAt": "2026-10-08T06:00:00+00:00",
+      "matchedTermIds": [],
+      "termIds": [],
+      "score": 0,
+      "fitness": "낮음"
+    }
+  ]
+}
