@@ -1,0 +1,52 @@
+{
+  "generatedAt": "2026-10-14T09:29:16.163488+09:00",
+  "windowHours": 24,
+  "count": 2,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Philip R. Lane: The AI opportunity for Europe",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261013~9db9bf4fd6.en.html",
+      "publishedAt": "2026-10-13T18:30:00+00:00",
+      "matchedTermIds": [
+        "생성형인공지능-ai",
+        "유럽연합-eu"
+      ],
+      "termIds": [
+        "생성형인공지능-ai",
+        "유럽연합-eu"
+      ],
+      "score": 8,
+      "fitness": "중간"
+    },
+    {
+      "id": "c2",
+      "title": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+      "publishedAt": "2026-10-13T18:00:00+00:00",
+      "matchedTermIds": [],
+      "termIds": [],
+      "score": 2,
+      "fitness": "낮음"
+    }
+  ]
+}
