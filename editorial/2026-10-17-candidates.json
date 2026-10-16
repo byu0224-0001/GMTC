@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-10-17T08:46:04.733786+09:00",
+  "windowHours": 24,
+  "count": 1,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Federal Reserve Board announces termination of enforcement actions with Gardner Bancshares, Inc. and Small Business Bank",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261016a.htm",
+      "publishedAt": "2026-10-16T15:00:00+00:00",
+      "matchedTermIds": [
+        "은행인수어음-ba",
+        "기준금리"
+      ],
+      "termIds": [
+        "은행인수어음-ba",
+        "기준금리"
+      ],
+      "score": 8,
+      "fitness": "중간"
+    }
+  ]
+}
