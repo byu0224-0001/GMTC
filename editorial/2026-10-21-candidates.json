@@ -1,0 +1,40 @@
+{
+  "generatedAt": "2026-10-21T09:01:45.605940+09:00",
+  "windowHours": 24,
+  "count": 1,
+  "failedFeeds": [
+    {
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Frank Elderson: Interview with Die Presse",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in261020~97e2e4bc38.en.html",
+      "publishedAt": "2026-10-20T07:00:00+00:00",
+      "matchedTermIds": [],
+      "termIds": [],
+      "score": 0,
+      "fitness": "낮음"
+    }
+  ]
+}
