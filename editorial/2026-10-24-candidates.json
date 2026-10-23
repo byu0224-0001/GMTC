@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-10-24T08:55:19.844712+09:00",
+  "windowHours": 24,
+  "count": 1,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "ECB Consumer Expectations Survey results – September 2026",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261023~a3d201c97c.en.html",
+      "publishedAt": "2026-10-23T08:00:00+00:00",
+      "matchedTermIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "termIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "score": 6,
+      "fitness": "중간"
+    }
+  ]
+}
