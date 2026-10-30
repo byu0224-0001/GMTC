@@ -1,0 +1,97 @@
+{
+  "generatedAt": "2026-10-30T10:16:05.210383+09:00",
+  "windowHours": 24,
+  "count": 5,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "ECB President Lagarde to step down on 7 February 2027",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261029~abbb6dc64b.en.html",
+      "publishedAt": "2026-10-29T10:00:00+00:00",
+      "matchedTermIds": [
+        "교환사채-eb",
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "termIds": [
+        "교환사채-eb",
+        "유럽중앙은행-ecb",
+        "전환사채-cb"
+      ],
+      "score": 9,
+      "fitness": "높음"
+    },
+    {
+      "id": "c2",
+      "title": "Federal Reserve Board announces approval of application by The Bank of Nova Scotia",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261029a.htm",
+      "publishedAt": "2026-10-29T20:30:00+00:00",
+      "matchedTermIds": [
+        "은행인수어음-ba",
+        "기준금리"
+      ],
+      "termIds": [
+        "은행인수어음-ba",
+        "기준금리"
+      ],
+      "score": 8,
+      "fitness": "중간"
+    },
+    {
+      "id": "c3",
+      "title": "Piero Cipollone: Next-day securities settlement, tokenisation and the transformation of Europe’s financial infrastructure",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261029~e9b57c3495.en.html",
+      "publishedAt": "2026-10-29T15:50:00+00:00",
+      "matchedTermIds": [
+        "유럽연합-eu"
+      ],
+      "termIds": [
+        "유럽연합-eu"
+      ],
+      "score": 5,
+      "fitness": "중간"
+    },
+    {
+      "id": "c4",
+      "title": "Christine Lagarde, Boris Vujčić: Monetary policy statement (with Q&A)",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/press_conference/monetary-policy-statement/2026/html/ecb.is261029~5c5ffe99e5.en.html",
+      "publishedAt": "2026-10-29T14:00:00+00:00",
+      "matchedTermIds": [],
+      "termIds": [],
+      "score": 2,
+      "fitness": "낮음"
+    },
+    {
+      "id": "c5",
+      "title": "Monetary policy decisions",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp261029~9a493adf17.en.html",
+      "publishedAt": "2026-10-29T13:15:00+00:00",
+      "matchedTermIds": [],
+      "termIds": [],
+      "score": 0,
+      "fitness": "낮음"
+    }
+  ]
+}
