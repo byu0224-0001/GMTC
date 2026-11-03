@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-11-03T11:59:59.936525+09:00",
+  "windowHours": 24,
+  "count": 1,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Boris Vujčić: Integrated, open and resilient: Europe’s strengths in a fragmenting world",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp.261102~70003226e9.en.html",
+      "publishedAt": "2026-11-02T09:30:00+00:00",
+      "matchedTermIds": [
+        "유럽연합-eu"
+      ],
+      "termIds": [
+        "유럽연합-eu"
+      ],
+      "score": 3,
+      "fitness": "중간"
+    }
+  ]
+}
