@@ -1,0 +1,43 @@
+{
+  "generatedAt": "2026-11-07T10:03:23.893414+09:00",
+  "windowHours": 24,
+  "count": 1,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "ECB publishes consolidated banking data for end-June 2026",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261106~356f2fc73a.en.html",
+      "publishedAt": "2026-11-06T09:00:00+00:00",
+      "matchedTermIds": [
+        "유럽중앙은행-ecb",
+        "은행인수어음-ba",
+        "전환사채-cb"
+      ],
+      "termIds": [
+        "유럽중앙은행-ecb",
+        "은행인수어음-ba",
+        "전환사채-cb"
+      ],
+      "score": 9,
+      "fitness": "높음"
+    }
+  ]
+}
