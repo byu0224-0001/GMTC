@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-11-14T10:37:07.871891+09:00",
+  "windowHours": 24,
+  "count": 2,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Agencies extend comment period for proposed third-party risk management guidance",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261113a.htm",
+      "publishedAt": "2026-11-13T21:15:00+00:00",
+      "matchedTermIds": [
+        "주가수익비율-per",
+        "rpt-guidance"
+      ],
+      "termIds": [
+        "주가수익비율-per",
+        "rpt-guidance"
+      ],
+      "score": 8,
+      "fitness": "중간"
+    },
+    {
+      "id": "c2",
+      "title": "Isabel Schnabel: Made in Europe",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261113~3883f1f187.en.html",
+      "publishedAt": "2026-11-13T07:20:00+00:00",
+      "matchedTermIds": [
+        "유럽연합-eu"
+      ],
+      "termIds": [
+        "유럽연합-eu"
+      ],
+      "score": 3,
+      "fitness": "중간"
+    }
+  ]
+}
