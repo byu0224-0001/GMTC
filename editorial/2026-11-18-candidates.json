@@ -1,0 +1,43 @@
+{
+  "generatedAt": "2026-11-18T12:03:28.906913+09:00",
+  "windowHours": 24,
+  "count": 1,
+  "failedFeeds": [
+    {
+      "source": "BLS",
+      "url": "https://www.bls.gov/feed/bls_latest.rss",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "source": "BOK",
+      "url": "https://www.bok.or.kr/portal/bbs/B0000249/rssList.do?menuNo=200761",
+      "error": "HTTP Error 500: "
+    },
+    {
+      "source": "Reuters Business",
+      "url": "https://feeds.reuters.com/reuters/businessNews",
+      "error": "<urlopen error [Errno -2] Name or service not known>"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "c1",
+      "title": "Philip R. Lane: The practice and science of monetary policy communication: the ECB experience",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261117~7f5d3b1a0e.en.pdf",
+      "publishedAt": "2026-11-17T18:30:00+00:00",
+      "matchedTermIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb",
+        "주가수익비율-per"
+      ],
+      "termIds": [
+        "유럽중앙은행-ecb",
+        "전환사채-cb",
+        "주가수익비율-per"
+      ],
+      "score": 11,
+      "fitness": "높음"
+    }
+  ]
+}
